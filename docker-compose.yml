@@ -1,0 +1,91 @@
+version: '3.9'
+
+services:
+  # Frontend
+  app:
+    container_name: TimeAndBilling_Frontend
+    build:
+      context: ./ProjectBlackBird_Frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./ProjectBlackBird_Frontend/.env
+    volumes:
+      - './ProjectBlackBird_Frontend:/app'
+      - '/app/node_modules'
+    stdin_open: true
+    tty: true
+    networks:
+      customnetwork:
+        ipv4_address: 172.16.0.2
+    restart: always
+
+  # Database
+  db:
+    container_name: TimeAndBilling_Database
+    image: 'postgres'
+    env_file:
+      - ./ProjectBlackBird_Frontend/.env
+      - ./ProjectBlackBird_Backend/.env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - data:/var/lib/postgresql
+    networks:
+      customnetwork:
+        ipv4_address: 172.16.0.3
+    restart: always
+
+  # Backend
+  api:
+    container_name: TimeAndBilling_Backend
+    build:
+      context: ./ProjectBlackBird_Backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./ProjectBlackBird_Backend/.env
+    depends_on:
+      - db
+    ports:
+      - '8000:8000'
+    volumes:
+      - /app/node_modules
+      - ./ProjectBlackBird_Backend:/app
+    networks:
+      customnetwork:
+        ipv4_address: 172.16.0.4
+    restart: always
+
+  # Server
+  server:
+    container_name: TimeAndBilling_Server
+    image: nginx
+    depends_on:
+      - api
+      - app
+      - db
+    build:
+      context: ./Nginx
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+      # - '443:443'
+    networks:
+      customnetwork:
+        ipv4_address: 172.16.0.6
+    # volumes:
+    #   - ./Nginx/Server_ssl/192.168.12.209.crt:/etc/nginx/192.168.12.209.crt
+    #   - ./Nginx/Server_ssl/192.168.12.209.key:/etc/nginx/192.168.12.209.key
+    restart: always
+
+# https://www.howtogeek.com/devops/how-to-assign-a-static-ip-to-a-docker-container/
+# https://www.freecodecamp.org/news/how-to-get-a-docker-container-ip-address-explained-with-examples/
+networks:
+  customnetwork:
+    ipam:
+      config:
+        - subnet: 172.16.0.0/10
+
+volumes:
+  data:
+# Dont forget to homebrew jq.... https://formulae.brew.sh/formula/jq

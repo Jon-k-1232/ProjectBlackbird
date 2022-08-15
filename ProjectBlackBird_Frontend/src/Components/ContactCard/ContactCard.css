@@ -1,0 +1,33 @@
+.contactWrapper {
+  font-size: 0.875rem;
+  font-family: Public Sans, sans-serif;
+  font-weight: 400;
+  color: #4e5b66;
+  padding: 15px;
+  background-color: #fafafa;
+}
+
+.contactWrapper img {
+  width: 18px;
+}
+
+.contactWrapper td {
+  padding-left: 5px;
+}
+
+.contactTables {
+  display: flex;
+  color: #637381;
+}
+
+.contactColumnOne,
+.contactColumnTwo {
+  margin-right: 25px;
+  text-align: justify;
+}
+
+.contactHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}

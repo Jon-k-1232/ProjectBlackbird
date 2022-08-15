@@ -1,0 +1,20 @@
+{
+  "short_name": "Minimal App",
+  "name": "React Material Minimal UI Kit",
+  "icons": [
+    {
+      "src": "favicon/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
