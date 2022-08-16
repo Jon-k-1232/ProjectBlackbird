@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Stack, Alert, TextField, Card, Button, CardContent, Autocomplete } from '@mui/material';
 import { getAnInvoice, getAllCompanies } from '../../ApiCalls/ApiCalls';
 import { postInvoiceUpdate } from '../../ApiCalls/PostApiCalls';
-import AlertBanner from 'src/Components/AlertBanner/AlertBanner';
+import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 
 export default function EditAnInvoice() {
   const [allCompanies, setAllCompanies] = useState([]);
@@ -169,9 +169,19 @@ export default function EditAnInvoice() {
             {invoiceAlert && <Alert severity='warning'>Invoice does not match</Alert>}
 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
-              <TextField type='number' value={beginningBalance} onChange={e => setBeginningBalance(e.target.value)} label='Beginning Balance' />
+              <TextField
+                type='number'
+                value={beginningBalance}
+                onChange={e => setBeginningBalance(e.target.value)}
+                label='Beginning Balance'
+              />
               <TextField type='number' value={totalPayments} onChange={e => setTotalPayments(e.target.value)} label='Total Payments' />
-              <TextField type='number' value={totalNewCharges} onChange={e => setTotalNewCharges(e.target.value)} label='Total New Charges' />
+              <TextField
+                type='number'
+                value={totalNewCharges}
+                onChange={e => setTotalNewCharges(e.target.value)}
+                label='Total New Charges'
+              />
               <TextField type='number' value={endingBalance} onChange={e => setEndingBalance(e.target.value)} label='Ending Balance' />
               <TextField type='number' value={unPaidBalance} onChange={e => setUnPaidBalance(e.target.value)} label='UnPaid Balance' />
             </Stack>

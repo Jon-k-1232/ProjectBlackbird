@@ -6,7 +6,7 @@ import Page from '../../Components/Page';
 import ContactCard from '../../Components/ContactCard/ContactCard';
 import HeaderMenu from '../../Components/HeaderMenu/HeaderMenu';
 import DataTable from '../../Components/DataTable/DataTable';
-import ComingSoon from 'src/Components/ComingSoon';
+import ComingSoon from '../../Components/ComingSoon';
 import clipboardNotes from '@iconify/icons-foundation/clipboard-notes';
 import fileTextFill from '@iconify/icons-eva/file-text-fill';
 import baselineWork from '@iconify/icons-ic/baseline-work';
@@ -71,8 +71,12 @@ export default function ClientDetails() {
         {dataToShow === 'newJob' && <NewJob passedCompany={company} />}
         {dataToShow === 'notes' && <ComingSoon />}
         {dataToShow === 'statistics' && <ComingSoon />}
-        {dataToShow === 'newClient' && <NewClient passedCompany={company} updateContactCard={companyUpdates => setCompany(companyUpdates)} />}
-        {dataToShow === 'accountTools' && <AccountTools companyId={company.oid} updateContact={updateContact => setCompany(updateContact)} />}
+        {dataToShow === 'newClient' && (
+          <NewClient passedCompany={company} updateContactCard={companyUpdates => setCompany(companyUpdates)} />
+        )}
+        {dataToShow === 'accountTools' && (
+          <AccountTools companyId={company.oid} updateContact={updateContact => setCompany(updateContact)} />
+        )}
       </Container>
     </Page>
   );

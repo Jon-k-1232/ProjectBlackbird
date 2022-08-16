@@ -4,13 +4,13 @@ import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import { postTransactions } from '../../ApiCalls/PostApiCalls';
-import AlertBanner from 'src/Components/AlertBanner/AlertBanner';
-import PaymentOptions from 'src/Components/TransactionFormOptions/PaymentOptions';
-import ChargeOptions from 'src/Components/TransactionFormOptions/ChargeOptions';
-import WriteOffOptions from 'src/Components/TransactionFormOptions/WriteOffOptions';
-import TimeOptions from 'src/Components/TransactionFormOptions/TimeOptions';
-import AdjustmentOptions from 'src/Components/TransactionFormOptions/AdjustmentOptions';
-import SelectionOptions from 'src/Components/TransactionFormOptions/SelectionOptions';
+import AlertBanner from '../../Components/AlertBanner/AlertBanner';
+import PaymentOptions from '../../Components/TransactionFormOptions/PaymentOptions';
+import ChargeOptions from '../../Components/TransactionFormOptions/ChargeOptions';
+import WriteOffOptions from '../../Components/TransactionFormOptions/WriteOffOptions';
+import TimeOptions from '../../Components/TransactionFormOptions/TimeOptions';
+import AdjustmentOptions from '../../Components/TransactionFormOptions/AdjustmentOptions';
+import SelectionOptions from '../../Components/TransactionFormOptions/SelectionOptions';
 
 export default function NewTransactions({
   passedCompany,

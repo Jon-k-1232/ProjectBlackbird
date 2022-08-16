@@ -6,7 +6,7 @@ import { Typography, Card, CardContent } from '@mui/material';
 import DataTable from '../../Components/DataTable/DataTable';
 import { getAnInvoice, rePrintInvoice, getZippedInvoices } from '../../ApiCalls/ApiCalls';
 import dayjs from 'dayjs';
-import HeaderMenu from 'src/Components/HeaderMenu/HeaderMenu';
+import HeaderMenu from '../../Components/HeaderMenu/HeaderMenu';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 
