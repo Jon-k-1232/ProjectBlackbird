@@ -15,8 +15,6 @@ export default function NewEmployee() {
   const [hourlyCost, setHourlyCost] = useState('');
   const [inactiveEmployeeChecked, setInactiveEmployeeChecked] = useState(false);
   const [postStatus, setPostStatus] = useState(null);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,10 +48,7 @@ export default function NewEmployee() {
       lastName: lastName,
       middleI: middleName,
       hourlyCost: hourlyCost,
-      inactive: inactiveEmployeeChecked,
-      username: username,
-      password: password,
-      role: 'employee'
+      inactive: inactiveEmployeeChecked
     };
   };
 
@@ -63,8 +58,6 @@ export default function NewEmployee() {
     setLastName('');
     setMiddleName('');
     setHourlyCost('');
-    username('');
-    password('');
   };
 
   return (
@@ -82,48 +75,16 @@ export default function NewEmployee() {
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
               />
-              <TextField
-                fullWidth
-                required
-                type='26'
-                max='100'
-                label='Last name'
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
-              />
-              <TextField
-                fullWidth
-                type='text'
-                max='15'
-                label='Middle name'
-                value={middleName}
-                onChange={e => setMiddleName(e.target.value)}
-              />
+              <TextField fullWidth required type='26' max='100' label='Last name' value={lastName} onChange={e => setLastName(e.target.value)} />
+              <TextField fullWidth type='text' max='15' label='Middle name' value={middleName} onChange={e => setMiddleName(e.target.value)} />
             </Stack>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
-              <TextField
-                required
-                type='text'
-                max='6'
-                label='Hourly Cost'
-                value={hourlyCost}
-                onChange={e => setHourlyCost(e.target.value)}
-              />
+              <TextField required type='text' max='6' label='Hourly Cost' value={hourlyCost} onChange={e => setHourlyCost(e.target.value)} />
             </Stack>
-            {/* Per requirement, only jim can change credentials, disabling credential update at this time until protected routes are coded. */}
-            {!location.state && (
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
-                <TextField required type='26' max='10' label='username' value={username} onChange={e => setUsername(e.target.value)} />
-                <TextField required type='26' max='10' label='password' value={password} onChange={e => setPassword(e.target.value)} />
-              </Stack>
-            )}
             <FormGroup>
               <FormControlLabel
                 control={
-                  <Checkbox
-                    checked={inactiveEmployeeChecked}
-                    onChange={e => setInactiveEmployeeChecked(e.target.inactiveEmployeeChecked)}
-                  />
+                  <Checkbox checked={inactiveEmployeeChecked} onChange={e => setInactiveEmployeeChecked(e.target.inactiveEmployeeChecked)} />
                 }
                 label='Inactive'
               />

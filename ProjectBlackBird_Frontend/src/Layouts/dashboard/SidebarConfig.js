@@ -48,7 +48,7 @@ const sidebarConfig = [
   },
   {
     title: 'Login',
-    path: '/login',
+    path: '/',
     icon: getIcon(printerFill)
   }
   // {

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Login from '../Pages/Login/Login';
 import DashboardLayout from '../Layouts/dashboard';
 import LogoOnlyLayout from '../Layouts/LogoOnlyLayout';
@@ -29,9 +29,10 @@ export default function Router() {
     <Routes>
       {/* <PublicOnlyRoute element={<NotFound />} path='404' /> */}
       <Route element={<LogoOnlyLayout />}>
-        <Route exact path='/' element={<Login />} />
+        {/* <Route exact path='/' element={<Login />} /> */}
+        <Route path='/' element={<Navigate to='/dashboard/clients' />} />
         <Route path='404' element={<NotFound />} />
-        <Route path='*' element={<NotFound />} />
+        <Route path='*' element={<Navigate to='/404' />} />
       </Route>
 
       <Route path='/dashboard' element={<DashboardLayout />}>

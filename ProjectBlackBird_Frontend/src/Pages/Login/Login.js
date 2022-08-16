@@ -1,5 +1,6 @@
+import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Card, Stack, Container, Typography } from '@mui/material';
+import { Card, Stack, Link, Container, Typography } from '@mui/material';
 import AuthLayout from '../../Layouts/AuthLayout';
 import Page from '../../Components/Page';
 import { MHidden } from '../../Components/@material-extend';
@@ -7,8 +8,8 @@ import LoginForm from './LoginForm';
 
 const RootStyle = styled(Page)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
-    display: 'flex'
-  }
+    display: 'flex',
+  },
 }));
 
 const SectionStyle = styled(Card)(({ theme }) => ({
@@ -17,7 +18,7 @@ const SectionStyle = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
+  margin: theme.spacing(2, 0, 2, 2),
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -27,7 +28,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
   minHeight: '100vh',
   flexDirection: 'column',
   justifyContent: 'center',
-  padding: theme.spacing(12, 0)
+  padding: theme.spacing(12, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -35,7 +36,12 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Login() {
   return (
     <RootStyle title='Login'>
-      <AuthLayout />
+      <AuthLayout>
+        Don’t have an account? &nbsp;
+        <Link underline='none' variant='subtitle2' component={RouterLink} to='/register'>
+          Get started
+        </Link>
+      </AuthLayout>
 
       <MHidden width='mdDown'>
         <SectionStyle>
@@ -55,6 +61,15 @@ export default function Login() {
           </Stack>
 
           <LoginForm />
+
+          <MHidden width='smUp'>
+            <Typography variant='body2' align='center' sx={{ mt: 3 }}>
+              Don’t have an account?&nbsp;
+              <Link variant='subtitle2' component={RouterLink} to='register'>
+                Get started
+              </Link>
+            </Typography>
+          </MHidden>
         </ContentStyle>
       </Container>
     </RootStyle>

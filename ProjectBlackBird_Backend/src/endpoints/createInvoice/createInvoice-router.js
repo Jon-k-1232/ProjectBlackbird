@@ -37,9 +37,7 @@ createInvoiceRouter.route('/createInvoices/readyToBill/:list/:invoiceRoughDraft/
   const separatedList = sanitizedData.list.split(',');
   const arrayOfIds = separatedList.map(item => Number(item));
 
-  const newInvoices = await Promise.all(
-    arrayOfIds.map((contactRecord, i) => createNewInvoice(contactRecord, i, roughDraft, createPdf, db))
-  );
+  const newInvoices = await createNewInvoice(arrayOfIds, roughDraft, createPdf, db);
 
   res.send({
     newInvoices,
