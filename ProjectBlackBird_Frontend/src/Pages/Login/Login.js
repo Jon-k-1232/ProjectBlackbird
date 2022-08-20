@@ -1,6 +1,6 @@
-import { Link as RouterLink } from 'react-router-dom';
+// import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Card, Stack, Link, Container, Typography } from '@mui/material';
+import { Card, Stack, Container, Typography } from '@mui/material';
 import AuthLayout from '../../Layouts/AuthLayout';
 import Page from '../../Components/Page';
 import { MHidden } from '../../Components/@material-extend';
@@ -33,15 +33,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function Login({ setUserLoginStatus }) {
+export default function Login({ setLoginUser }) {
   return (
     <RootStyle title='Login'>
-      <AuthLayout>
-        Don’t have an account? &nbsp;
-        <Link underline='none' variant='subtitle2' component={RouterLink} to='/register'>
-          Get started
-        </Link>
-      </AuthLayout>
+      <AuthLayout />
 
       <MHidden width='mdDown'>
         <SectionStyle>
@@ -60,16 +55,7 @@ export default function Login({ setUserLoginStatus }) {
             <Typography sx={{ color: 'text.secondary' }}>Enter your details below.</Typography>
           </Stack>
 
-          <LoginForm />
-
-          <MHidden width='smUp'>
-            <Typography variant='body2' align='center' sx={{ mt: 3 }}>
-              Don’t have an account?&nbsp;
-              <Link variant='subtitle2' component={RouterLink} to='register'>
-                Get started
-              </Link>
-            </Typography>
-          </MHidden>
+          <LoginForm setUser={user => setLoginUser(user)} />
         </ContentStyle>
       </Container>
     </RootStyle>
