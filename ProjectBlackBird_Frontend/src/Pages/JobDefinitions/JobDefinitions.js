@@ -23,9 +23,9 @@ export default function JobDefinitions() {
     <Page>
       <CardContent style={{ maxWidth: '1280px' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
-          <HeaderMenu handleOnClick={data => navigate(`/dashboard/${data}/`)} page={'Job Descriptions'} listOfButtons={button} />
+          <HeaderMenu handleOnClick={data => navigate(`/${data}/`)} page={'Job Descriptions'} listOfButtons={button} />
         </Stack>
-        <DataTable {...jobDescriptions} route='/dashboard/createNewJobDefinition/' />
+        <DataTable {...jobDescriptions} route='/createNewJobDefinition/' />
       </CardContent>
     </Page>
   );

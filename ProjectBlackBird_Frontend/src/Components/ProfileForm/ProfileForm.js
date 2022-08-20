@@ -27,7 +27,7 @@ export default function ProfileForm() {
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   });
 

@@ -1,5 +1,4 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useState } from 'react';
 import Login from '../Pages/Login/Login';
 import DashboardLayout from '../Layouts/dashboard';
 import LogoOnlyLayout from '../Layouts/LogoOnlyLayout';
@@ -22,25 +21,21 @@ import JobDefinitions from '../Pages/JobDefinitions/JobDefinitions';
 import NewTransactionsPage from '../Pages/Transactions/NewTransactionPage';
 import Deactivation from '../Pages/Clients/Deactivation';
 import EditAnInvoice from '../Pages/Invoices/EditAnInvoice';
-import PrivateRoute from './PrivateRoute';
 // import PublicOnlyRoute from './PublicOnlyRoute';
 
 export default function Router() {
-  const [user, setUser] = useState(false);
-  const [signedIn, setSignedIn] = useState(true);
-
   return (
     <Routes>
       {/* <PublicOnlyRoute element={<NotFound />} path='404' /> */}
       <Route element={<LogoOnlyLayout />}>
         <Route exact path='/login' element={<Login />} />
-        <Route path='/' element={<Navigate to='/dashboard/clients' />} />
+        <Route path='/' element={<Navigate to='/clients' />} />
         <Route path='404' element={<NotFound />} />
         <Route path='*' element={<Navigate to='/404' />} />
       </Route>
 
       {/* Any route that goes through DashboardLayout will be checked by Private Route */}
-      <Route path='/dashboard' element={<DashboardLayout />}>
+      <Route element={<DashboardLayout user={true} />}>
         <Route path='clients' element={<Clients />} />
         <Route path='clientDetails' element={<ClientDetails />} />
         <Route path='newClient' element={<NewClient />} />

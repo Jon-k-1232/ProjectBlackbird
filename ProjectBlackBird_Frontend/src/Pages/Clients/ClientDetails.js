@@ -59,15 +59,13 @@ export default function ClientDetails() {
         <HeaderMenu handleOnClick={data => setDataToShow(data)} page={'Client Details'} listOfButtons={button} />
         <ContactCard {...company} />
         {dataToShow === 'invoices' && (
-          <DataTable {...companyInvoices} route='/dashboard/invoiceDetails/' columnToSortAscOrDesc='Invoice Date' ascOrDesc='desc' />
+          <DataTable {...companyInvoices} route='/invoiceDetails/' columnToSortAscOrDesc='Invoice Date' ascOrDesc='desc' />
         )}
         {dataToShow === 'transactions' && <DataTable {...jobTransactions} columnToSortAscOrDesc='Transaction Date' ascOrDesc='desc' />}
         {dataToShow === 'newTransactions' && (
           <NewTransactionsPage passedCompany={company} updateContactCard={companyUpdates => setCompany(companyUpdates)} />
         )}
-        {dataToShow === 'jobs' && (
-          <DataTable {...companyJobs} route='/dashboard/jobDetails/' columnToSortAscOrDesc='Start Date' ascOrDesc='desc' />
-        )}
+        {dataToShow === 'jobs' && <DataTable {...companyJobs} route='/jobDetails/' columnToSortAscOrDesc='Start Date' ascOrDesc='desc' />}
         {dataToShow === 'newJob' && <NewJob passedCompany={company} />}
         {dataToShow === 'notes' && <ComingSoon />}
         {dataToShow === 'statistics' && <ComingSoon />}

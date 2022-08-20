@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Stack, TextField, Card, Button, Typography, CardContent, Autocomplete } from '@mui/material';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
-import AdapterDayjs from '@mui/lab/AdapterDayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { postTransactions } from '../../ApiCalls/PostApiCalls';
 import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 import PaymentOptions from '../../Components/TransactionFormOptions/PaymentOptions';

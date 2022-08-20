@@ -23,9 +23,9 @@ export default function Transactions() {
     <Page title='Transactions'>
       <Container style={{ maxWidth: '1280px' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
-          <HeaderMenu handleOnClick={data => navigate(`/dashboard/${data}/`)} page={'Transactions'} listOfButtons={button} />
+          <HeaderMenu handleOnClick={data => navigate(`/${data}/`)} page={'Transactions'} listOfButtons={button} />
         </Stack>
-        {/* If transaction detail needed pass a route below in DataTable - route='/dashboard/transactionDetails/' */}
+        {/* If transaction detail needed pass a route below in DataTable - route='/transactionDetails/' */}
         <DataTable name='Transactions' {...transactions} />
       </Container>
     </Page>

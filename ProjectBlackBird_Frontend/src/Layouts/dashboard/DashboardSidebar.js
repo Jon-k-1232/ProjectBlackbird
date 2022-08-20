@@ -54,13 +54,13 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
       }}
     >
       <Box sx={{ px: 2.5, py: 3 }}>
-        <Box component={RouterLink} to='/dashboard/clients' sx={{ display: 'inline-flex' }}>
+        <Box component={RouterLink} to='/clients' sx={{ display: 'inline-flex' }}>
           <Logo />
         </Box>
       </Box>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline='none' component={RouterLink} to='/dashboard/profile'>
+        <Link underline='none' component={RouterLink} to='/profile'>
           <AccountStyle>
             <Avatar src={account.photoURL} alt='photoURL' />
             <Box sx={{ ml: 2 }}>

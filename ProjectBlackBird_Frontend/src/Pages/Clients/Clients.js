@@ -35,7 +35,7 @@ export default function Clients() {
     <Page title='Clients'>
       <Container style={{ maxWidth: '1280px' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
-          <HeaderMenu handleOnClick={data => navigate(`/dashboard/${data}/`)} page={'Clients'} listOfButtons={button} />
+          <HeaderMenu handleOnClick={data => navigate(`/${data}/`)} page={'Clients'} listOfButtons={button} />
         </Stack>
         <Grid component='label' container alignItems='center' spacing={1}>
           <Grid item>Prior Clients</Grid>
@@ -44,7 +44,7 @@ export default function Clients() {
           </Grid>
           <Grid item>Active Clients</Grid>
         </Grid>
-        <DataTable {...allClients} route='/dashboard/clientDetails/' columnToSortAscOrDesc='Company Name' ascOrDesc='asc' />
+        <DataTable {...allClients} route='/clientDetails/' columnToSortAscOrDesc='Company Name' ascOrDesc='asc' />
       </Container>
     </Page>
   );

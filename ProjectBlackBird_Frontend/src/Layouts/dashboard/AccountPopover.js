@@ -17,7 +17,7 @@ const MENU_OPTIONS = [
   {
     label: 'Profile',
     icon: personFill,
-    linkTo: '/dashboard/profile'
+    linkTo: '/profile'
   }
 ];
 
