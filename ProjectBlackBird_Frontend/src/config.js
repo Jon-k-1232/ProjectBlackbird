@@ -4,7 +4,7 @@ export default {
   // API_ENDPOINT: `http://${process.env.REACT_APP_HOST_IP}:8000`,
   API_ENDPOINT: 'http://localhost:8000',
   FRONT_WEB: '*',
-  API_TOKEN: process.env.REACT_APP_API_TOKEN,
+  API_TOKEN: '',
   JWT_KEY: process.env.REACT_APP_JWT_TOKEN,
   USER_ID: ''
 };

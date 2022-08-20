@@ -45,16 +45,11 @@ const sidebarConfig = [
     title: 'Job Definitions',
     path: '/dashboard/jobDefinitions',
     icon: getIcon(bulbFill)
-  },
-  {
-    title: 'Login',
-    path: '/',
-    icon: getIcon(printerFill)
   }
   // {
-  //   title: 'register',
-  //   path: '/register',
-  //   icon: getIcon(personAddFill)
+  //   title: 'Login',
+  //   path: '/',
+  //   icon: getIcon(printerFill)
   // }
 ];
 
