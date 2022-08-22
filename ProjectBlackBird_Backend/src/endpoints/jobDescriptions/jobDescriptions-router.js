@@ -13,7 +13,7 @@ jobDescriptionsRouter.route('/all').get(async (req, res) => {
   jobDescriptionService.getAllJobDescriptions(db).then(allJobDescriptions => {
     res.send({
       allJobDescriptions,
-      status: 200,
+      status: 200
     });
   });
 });
@@ -28,7 +28,7 @@ jobDescriptionsRouter.route('/new/addNewDescription').post(jsonParser, async (re
   const cleanedFields = sanitizeFields({
     description,
     defaultTargetPrice,
-    billable,
+    billable
   });
 
   const descriptionInfo = convertToRequiredTypes(cleanedFields);
@@ -40,7 +40,7 @@ jobDescriptionsRouter.route('/new/addNewDescription').post(jsonParser, async (re
   jobDescriptionService.insertNewJobDescription(db, newJobDescription).then(() => {
     res.send({
       message: 'Job description added successfully.',
-      status: 200,
+      status: 200
     });
   });
 });
@@ -56,7 +56,7 @@ jobDescriptionsRouter.route('/update/jobDescription/:descriptionId').post(jsonPa
   const cleanedFields = sanitizeFields({
     description,
     defaultTargetPrice,
-    billable,
+    billable
   });
 
   const descriptionInfo = convertToRequiredTypes(cleanedFields);
@@ -64,7 +64,7 @@ jobDescriptionsRouter.route('/update/jobDescription/:descriptionId').post(jsonPa
   jobDescriptionService.updateJobDescription(db, descriptionInfo, Number(descriptionId)).then(() => {
     res.send({
       message: 'Job description updated',
-      status: 200,
+      status: 200
     });
   });
 });
@@ -79,6 +79,6 @@ const convertToRequiredTypes = jobDescription => {
   return {
     description: jobDescription.description,
     defaultTargetPrice: Number(jobDescription.defaultTargetPrice),
-    billable: Boolean(jobDescription.billable),
+    billable: Boolean(jobDescription.billable)
   };
 };

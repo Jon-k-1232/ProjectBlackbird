@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Stack, TextField, Card, Button, CardContent, Typography, Checkbox, FormGroup, FormControlLabel, Autocomplete } from '@mui/material';
-import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
-import AdapterDayjs from '@mui/lab/AdapterDayjs';
+import {
+  Stack,
+  TextField,
+  Card,
+  Button,
+  CardContent,
+  Typography,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  Autocomplete
+} from '@mui/material';
+import { LocalizationProvider, DesktopDatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { getAllCompanies, getAllJobDefinitions } from '../../ApiCalls/ApiCalls';
 import { createNewJob } from '../../ApiCalls/PostApiCalls';
 import dayjs from 'dayjs';
@@ -48,8 +59,8 @@ export default function NewJob({ passedCompany }) {
       startDate: selectedDate,
       contact: `${selectedCompany.firstName}, ${selectedCompany.lastName}`,
       contactPhone: selectedCompany.phoneNumber1,
-      description: selectedJobDescription.description,
-      defaultDescription: subDescription,
+      description: subDescription,
+      defaultDescription: selectedJobDescription.description,
       isComplete: false
     };
   };
@@ -118,7 +129,10 @@ export default function NewJob({ passedCompany }) {
                 />
               </Stack>
               <FormGroup>
-                <FormControlLabel control={<Checkbox checked={checked} onChange={e => setChecked(e.target.checked)} />} label='Not Billable' />
+                <FormControlLabel
+                  control={<Checkbox checked={checked} onChange={e => setChecked(e.target.checked)} />}
+                  label='Not Billable'
+                />
               </FormGroup>
               <Button type='submit' name='submit'>
                 Submit
