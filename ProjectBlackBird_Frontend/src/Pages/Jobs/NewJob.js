@@ -20,14 +20,13 @@ import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 
 export default function NewJob({ passedCompany }) {
   const [selectedCompany, setSelectedCompany] = useState(passedCompany ? passedCompany : null);
-  const [allCompanies, setAllCompanies] = useState(null);
+  const [allCompanies, setAllCompanies] = useState([]);
   const [selectedJobDescription, setJobDescription] = useState(null);
-  const [allJobDescriptions, setAllJobDescriptions] = useState(null);
+  const [allJobDescriptions, setAllJobDescriptions] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format());
   const [subDescription, setSubDescription] = useState('');
   const [checked, setChecked] = useState(false);
   const [postStatus, setPostStatus] = useState(null);
-
   const [selectedCompanyInputValue, setSelectedCompanyInputValue] = useState('');
   const [selectedJobInputValue, setSelectedJobInputValue] = useState('');
 
