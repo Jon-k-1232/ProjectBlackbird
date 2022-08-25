@@ -19,14 +19,17 @@ monthlyClientsRouter.route('/active').get(async (req, res) => {
 // Add a monthly client
 monthlyClientsRouter.route('/add').post(jsonParser, async (req, res) => {
   const db = req.app.get('db');
-  const { company, monthlyCharge, lastInvoiced, inactive } = req.body;
+  const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
 
-  const newClient = sanitizeFields({
+  const sanitizeNewClient = sanitizeFields({
     company,
+    companyName,
     monthlyCharge,
     lastInvoiced,
     inactive
   });
+
+  const newClient = convertToOriginalTypes(sanitizeNewClient);
 
   monthlyClientsService.addMonthlyClient(db, newClient).then(() => {
     res.send({ message: 'Monthly Client Added successfully.', status: 200 });
@@ -38,14 +41,17 @@ monthlyClientsRouter.route('/update/:contactId').post(jsonParser, async (req, re
   const db = req.app.get('db');
   const { contactId } = req.params;
   const id = Number(contactId);
-  const { company, monthlyCharge, lastInvoiced, inactive } = req.body;
+  const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
 
-  const updatedClient = sanitizeFields({
+  const sanitizeNewClient = sanitizeFields({
     company,
+    companyName,
     monthlyCharge,
     lastInvoiced,
     inactive
   });
+
+  const updatedClient = convertToOriginalTypes(sanitizeNewClient);
 
   monthlyClientsService.updateMonthlyClient(db, updatedClient, id).then(() => {
     res.send({ message: 'Monthly Client Added successfully.', status: 200 });
@@ -53,3 +59,18 @@ monthlyClientsRouter.route('/update/:contactId').post(jsonParser, async (req, re
 });
 
 module.exports = monthlyClientsRouter;
+
+/**
+ * Convert items to the correct values before db inserts.
+ * @param {*} client {}
+ * @returns {}
+ */
+const convertToOriginalTypes = client => {
+  return {
+    company: Number(client.company),
+    companyName: client.companyName,
+    monthlyCharge: Number(client.monthlyCharge),
+    lastInvoiced: client.lastInvoiced || null,
+    inactive: client.inactive || false
+  };
+};

@@ -23,6 +23,7 @@ import NewTransactionsPage from '../Pages/Transactions/NewTransactionPage';
 import Deactivation from '../Pages/Clients/Deactivation';
 import EditAnInvoice from '../Pages/Invoices/EditAnInvoice';
 import MonthlyClients from 'src/Pages/MonthlyClients/MonthlyClients';
+import NewMonthlyClient from 'src/Pages/MonthlyClients/NewMonthlyClient';
 // import PublicOnlyRoute from './PublicOnlyRoute';
 
 export default function Router() {
@@ -61,6 +62,7 @@ export default function Router() {
         <Route path='editAnInvoice' element={<EditAnInvoice />} />
         <Route path='deactivation' element={<Deactivation />} />
         <Route path='monthlyClients' element={<MonthlyClients />} />
+        <Route path='newMonthlyClient' element={<NewMonthlyClient />} />
       </Route>
     </Routes>
   );

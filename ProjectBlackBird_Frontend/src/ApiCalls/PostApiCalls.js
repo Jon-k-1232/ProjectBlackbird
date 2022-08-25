@@ -120,6 +120,21 @@ export const createJobDefinition = async jobDefinition => {
     .catch(error => error);
 };
 
+export const addClientToMonthlyList = async newClient => {
+  return fetch(`${config.API_ENDPOINT}/monthlyClients/add`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `${config.API_TOKEN}`
+      //   Origin: `${config.FRONT_WEB}`
+    },
+    body: JSON.stringify(newClient)
+  })
+    .then(res => res.json())
+    .then(res => res)
+    .catch(error => error);
+};
+
 export const createInvoices = async (invoiceIds, roughDraft, createPdf) => {
   return fetch(`${config.API_ENDPOINT}/create/createInvoices/readyToBill/${invoiceIds}/${roughDraft}/${createPdf}`, {
     method: 'POST',
