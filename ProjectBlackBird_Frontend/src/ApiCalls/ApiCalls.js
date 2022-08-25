@@ -281,6 +281,24 @@ export const getEmployee = employeeId => {
     });
 };
 
+export const getMonthlyClients = () => {
+  return fetch(`${config.API_ENDPOINT}/monthlyClients/active`, getHeader)
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.status);
+      }
+      return resp.json();
+    })
+    .then(data => {
+      const { clients } = data;
+      return clients.length > 0 ? tableAndLabelCreation(clients, 'oid', 'company') : noData;
+    })
+    .catch(error => {
+      console.log(error);
+      return error;
+    });
+};
+
 /**
  * Gets all invoices
  * @param {*} time Integer in days. How many days in past

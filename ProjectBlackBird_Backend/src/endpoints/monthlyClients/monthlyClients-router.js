@@ -5,7 +5,7 @@ const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 
 // Gets active monthly clients
-monthlyClientsRouter.route('/monthlyClients').get(async (req, res) => {
+monthlyClientsRouter.route('/active').get(async (req, res) => {
   const db = req.app.get('db');
 
   monthlyClientsService.getMonthlyClients(db).then(clients => {

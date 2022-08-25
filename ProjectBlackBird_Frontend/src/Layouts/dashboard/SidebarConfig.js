@@ -26,6 +26,11 @@ const sidebarConfig = [
     icon: getIcon(fileTextFill)
   },
   {
+    title: 'Monthly Clients',
+    path: '/monthlyClients',
+    icon: getIcon(peopleFill)
+  },
+  {
     title: 'Employees',
     path: '/employees',
     icon: getIcon(printerFill)

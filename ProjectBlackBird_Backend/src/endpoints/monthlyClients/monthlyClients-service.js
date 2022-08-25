@@ -1,14 +1,14 @@
 const monthlyClientsService = {
   getMonthlyClients(db) {
-    return db.select().table('monthlyClients').whereIn('inactive', [false]);
+    return db.select().table('monthlyclients').whereIn('inactive', [false]);
   },
 
   addMonthlyClient(db, newClient) {
-    return db.insert(newClient).into('monthlyClients').returning();
+    return db.insert(newClient).into('monthlyclients').returning();
   },
 
   updateMonthlyClient(db, updatedClient, contactId) {
-    return db.update(updatedClient).from('monthlyClients').where('oid', contactId).returning('*');
+    return db.update(updatedClient).from('monthlyclients').where('oid', contactId).returning('*');
   }
 };
 

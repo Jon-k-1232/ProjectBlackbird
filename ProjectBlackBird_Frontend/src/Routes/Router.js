@@ -22,6 +22,7 @@ import JobDefinitions from '../Pages/JobDefinitions/JobDefinitions';
 import NewTransactionsPage from '../Pages/Transactions/NewTransactionPage';
 import Deactivation from '../Pages/Clients/Deactivation';
 import EditAnInvoice from '../Pages/Invoices/EditAnInvoice';
+import MonthlyClients from 'src/Pages/MonthlyClients/MonthlyClients';
 // import PublicOnlyRoute from './PublicOnlyRoute';
 
 export default function Router() {
@@ -59,6 +60,7 @@ export default function Router() {
         <Route path='profile' element={<Profile />} />
         <Route path='editAnInvoice' element={<EditAnInvoice />} />
         <Route path='deactivation' element={<Deactivation />} />
+        <Route path='monthlyClients' element={<MonthlyClients />} />
       </Route>
     </Routes>
   );
