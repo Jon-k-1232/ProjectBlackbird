@@ -19,7 +19,9 @@ export default function DataTable(props) {
     paginationIncrement,
     chartHeight,
     columnToSortAscOrDesc,
-    ascOrDesc
+    ascOrDesc,
+    noRoute,
+    passRowData
   } = props;
 
   const responsive = 'vertical';
@@ -46,9 +48,13 @@ export default function DataTable(props) {
     tableBodyHeight,
     tableBodyMaxHeight,
     onRowClick: rowData => {
-      // Whole row of data will be stored in router state
-      // If 'route' is not present onClick will not fire.
-      route && navigate(`${route}`, { state: { rowData } });
+      if (noRoute) {
+        passRowData(rowData);
+      } else {
+        // Whole row of data will be stored in router state
+        // If 'route' is not present onClick will not fire.
+        route && navigate(`${route}`, { state: { rowData } });
+      }
     },
     onRowSelectionChange: (rowsSelected, allRows, selectedIndex) => {
       const data = rawData;

@@ -4,7 +4,7 @@ import { addClientToMonthlyList } from '../../ApiCalls/PostApiCalls';
 import { getActiveCompanies } from '../../ApiCalls/ApiCalls';
 import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 
-export default function NewMonthlyClient() {
+export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
   const [allCompanies, setAllCompanies] = useState([]);
   const [company, setCompany] = useState(null);
   const [companyInputValue, setCompanyInputValue] = useState('');
@@ -25,6 +25,7 @@ export default function NewMonthlyClient() {
     const objectToPost = formObjectForPost();
     const postedItem = await addClientToMonthlyList(objectToPost);
     setPostStatus(postedItem.status);
+    // setMonthlyClients(postedItem.monthlyClients)
     setTimeout(() => setPostStatus(null), 2000);
     resetContactUpdate();
   };
@@ -46,13 +47,12 @@ export default function NewMonthlyClient() {
     setFlatAmount('');
     setActiveChecked(false);
   };
-
   return (
     <Card style={{ marginTop: '25px' }}>
       <CardContent style={{ padding: '20px' }}>
         <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
+          <Stack direction={{ xs: 'row', sm: 'row' }} spacing={2}>
+            <Stack direction={{ xs: 'row', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
               <Autocomplete
                 value={company}
                 onChange={(event, newValue) => setCompany(newValue)}
@@ -74,7 +74,7 @@ export default function NewMonthlyClient() {
               />
             </Stack>
 
-            <FormGroup style={{ display: 'inline' }}>
+            <FormGroup style={{ justifyContent: 'center' }}>
               <FormControlLabel
                 control={<Checkbox checked={activeChecked} onChange={e => setActiveChecked(e.target.checked)} />}
                 label='inactive'

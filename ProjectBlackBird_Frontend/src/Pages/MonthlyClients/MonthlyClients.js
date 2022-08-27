@@ -1,34 +1,48 @@
 import { useEffect, useState } from 'react';
 import { Container, Stack } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import plusFill from '@iconify/icons-eva/plus-fill';
 import Page from '../../Components/Page';
 import DataTable from '../../Components/DataTable/DataTable';
 import HeaderMenu from '../../Components/HeaderMenu/HeaderMenu';
-import { getMonthlyClients } from '../../ApiCalls/ApiCalls';
+import { getMonthlyClients, getActiveCompanies } from '../../ApiCalls/ApiCalls';
+import NewMonthlyClient from './NewMonthlyClient';
 
 export default function MonthlyClients() {
-  const navigate = useNavigate();
   const [clients, setClients] = useState(null);
+  const [allCompanies, setAllCompanies] = useState([]);
+  const [companyToPass, setCompanyToPass] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const activeMonthlyClients = await getMonthlyClients();
       setClients(activeMonthlyClients);
+
+      const allCompanies = await getActiveCompanies();
+      setAllCompanies(allCompanies.rawData);
     };
     fetchData();
   }, []);
+
+  const findSelectedCompany = async data => {
+    const company = allCompanies.find(company => company.oid === data);
+    setCompanyToPass(company);
+  };
 
   return (
     <Page title='MonthlyClients'>
       <Container style={{ maxWidth: '1280px' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
-          <HeaderMenu handleOnClick={data => navigate(`/${data}/`)} page={'Monthly Clients'} listOfButtons={button} />
+          <HeaderMenu page={'Monthly Clients'} />
         </Stack>
-        <DataTable {...clients} />
+        <NewMonthlyClient passedCompany={companyToPass} />
+        <DataTable
+          {...clients}
+          tableSize={5}
+          paginationIncrement={[5, 10, 15]}
+          chartHeight='500'
+          noRoute={true}
+          passRowData={data => findSelectedCompany(Number(data[1]))}
+        />
       </Container>
     </Page>
   );
 }
-
-const button = [{ name: 'newMonthlyClient', variant: 'contained', icon: plusFill, htmlName: 'Add A Client To List' }];
