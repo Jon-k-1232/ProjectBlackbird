@@ -1,5 +1,4 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useState } from 'react';
 import Login from '../Pages/Login/Login';
 import DashboardLayout from '../Layouts/dashboard';
 import LogoOnlyLayout from '../Layouts/LogoOnlyLayout';
@@ -23,25 +22,20 @@ import NewTransactionsPage from '../Pages/Transactions/NewTransactionPage';
 import Deactivation from '../Pages/Clients/Deactivation';
 import EditAnInvoice from '../Pages/Invoices/EditAnInvoice';
 import MonthlyClients from 'src/Pages/MonthlyClients/MonthlyClients';
-// import PublicOnlyRoute from './PublicOnlyRoute';
 
 export default function Router() {
-  const [signInUser, setSignInUser] = useState(true);
-  // ToDO: the signInUser hook boolean controls login screen or enter to app. set to 'true' for dev.
-  // ToDO: need to add a token to local storage in order to allow reload to survive refresh.
-
   return (
     <Routes>
       {/* <PublicOnlyRoute element={<NotFound />} path='404' /> */}
       <Route element={<LogoOnlyLayout />}>
-        <Route exact path='/login' element={<Login setLoginUser={user => setSignInUser(user)} />} />
+        <Route exact path='/login' element={<Login />} />
         <Route path='/' element={<Navigate to='/clients' />} />
         <Route path='404' element={<NotFound />} />
         <Route path='*' element={<Navigate to='/404' />} />
       </Route>
 
       {/* Any route that goes through DashboardLayout will be checked by Private Route component */}
-      <Route element={<DashboardLayout user={signInUser} />}>
+      <Route element={<DashboardLayout />}>
         <Route path='clients' element={<Clients />} />
         <Route path='clientDetails' element={<ClientDetails />} />
         <Route path='newClient' element={<NewClient />} />

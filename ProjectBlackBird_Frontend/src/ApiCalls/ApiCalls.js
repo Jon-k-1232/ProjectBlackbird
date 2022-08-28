@@ -17,10 +17,7 @@ export const getAllCompanies = () => {
       const { allContactInfo } = data;
       return tableAndLabelCreation(allContactInfo, 'oid', 'company');
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -39,10 +36,7 @@ export const getActiveCompanies = () => {
       const { activeContacts } = data;
       return activeContacts.length > 0 ? tableAndLabelCreation(activeContacts, 'oid', 'company') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -61,10 +55,7 @@ export const getPriorCompanies = () => {
       const { priorContacts } = data;
       return priorContacts.length > 0 ? tableAndLabelCreation(priorContacts, 'oid', 'company') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -83,10 +74,7 @@ export const getCompanyInformation = companyId => {
     .then(data => {
       return data.companyContactInformation[0];
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -104,10 +92,7 @@ export const getCompanyTransactions = (companyId, time) => {
       const { sortedCompanyTransactions } = data;
       return sortedCompanyTransactions.length > 0 ? tableAndLabelCreation(sortedCompanyTransactions, 'oid', 'company') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
   return allCompanyTransactions;
 };
 
@@ -126,10 +111,7 @@ export const getCompanyInvoices = companyId => {
       const { invoicesWithNoDetail } = data;
       return invoicesWithNoDetail.length > 0 ? tableAndLabelCreation(invoicesWithNoDetail, 'oid', 'contactName') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -147,10 +129,7 @@ export const getAllTransactions = time => {
       const { allTransactions } = data;
       return allTransactions.length > 0 ? tableAndLabelCreation(allTransactions, 'oid', 'company') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -168,10 +147,7 @@ export const getJobTransactions = (companyId, jobId) => {
       const { jobTransactions } = data;
       return jobTransactions.length > 0 ? tableAndLabelCreation(jobTransactions, 'jobDefinition', 'description') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -189,10 +165,7 @@ export const getAllJobs = time => {
       const { allJobsWithinTimeframe } = data;
       return allJobsWithinTimeframe.length > 0 ? tableAndLabelCreation(allJobsWithinTimeframe, 'jobDefinition', 'description') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -210,10 +183,7 @@ export const getCompanyJobs = (companyId, time) => {
       const { jobs } = data;
       return jobs.length > 0 ? tableAndLabelCreation(jobs, 'jobDefinition', 'description') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -231,10 +201,7 @@ export const getAllJobDefinitions = () => {
       const { allJobDescriptions } = data;
       return allJobDescriptions.length > 0 ? tableAndLabelCreation(allJobDescriptions, 'oid', 'description') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -253,10 +220,7 @@ export const getAllEmployees = () => {
       const { employees } = data;
       return employees.length > 0 ? tableAndLabelCreation(employees, 'oid', 'firstName', 'lastName', 'employees') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -275,10 +239,7 @@ export const getEmployee = employeeId => {
       const { employee } = data;
       return employee[0];
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 export const getMonthlyClients = () => {
@@ -293,10 +254,7 @@ export const getMonthlyClients = () => {
       const { clients } = data;
       return clients.length > 0 ? tableAndLabelCreation(clients, 'oid', 'company') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -316,10 +274,7 @@ export const getAllInvoices = time => {
       const { invoices } = data;
       return invoices.length > 0 ? tableAndLabelCreation(invoices, 'oid', 'contactName') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -360,10 +315,7 @@ export const getAllReadyToBillInvoices = () => {
       const { readyToBillContacts } = data;
       return readyToBillContacts.length > 0 ? tableAndLabelCreation(readyToBillContacts, 'oid', 'firstName') : noData;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 /**
@@ -399,10 +351,7 @@ export const getOutstandingInvoiceForCompany = selectedCompany => {
       const { outstandingInvoices } = data;
       return outstandingInvoices.length ? tableAndLabelCreation(outstandingInvoices, 'oid', 'companyName') : null;
     })
-    .catch(error => {
-      console.log(error);
-      return error;
-    });
+    .catch(error => error);
 };
 
 export const rePrintInvoice = async invoiceId => {
@@ -431,10 +380,3 @@ const getHeader = {
     Origin: `${config.FRONT_WEB}`
   }
 };
-
-// method: 'GET',
-// headers: {
-//   'content-type': 'application/json',
-//   Authorization: `Bearer ${config.API_KEY2}`,
-//   Origin: `${config.FRONT_WEB}`
-// }

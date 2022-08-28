@@ -1,4 +1,3 @@
-// import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Card, Stack, Container, Typography } from '@mui/material';
 import AuthLayout from '../../Layouts/AuthLayout';
@@ -33,7 +32,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function Login({ setLoginUser }) {
+export default function Login() {
   return (
     <RootStyle title='Login'>
       <AuthLayout />
@@ -55,7 +54,7 @@ export default function Login({ setLoginUser }) {
             <Typography sx={{ color: 'text.secondary' }}>Enter your details below.</Typography>
           </Stack>
 
-          <LoginForm setUser={user => setLoginUser(user)} />
+          <LoginForm />
         </ContentStyle>
       </Container>
     </RootStyle>

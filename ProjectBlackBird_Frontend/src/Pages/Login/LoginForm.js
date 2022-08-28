@@ -7,26 +7,25 @@ import { Stack, TextField, IconButton, InputAdornment, Typography } from '@mui/m
 import { LoadingButton } from '@mui/lab';
 import { postLoginAuth } from '../../ApiCalls/PostApiCalls';
 import TokenService from '../../Services/TokenService';
-import UserService from '../../Services/UserService';
+import { useContext } from 'react';
+import { context } from '../../App';
 
-export default function LoginForm({ setUser }) {
+export default function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [incorrectCredential, setIncorrectCredential] = useState(false);
+  const { setLoginUser } = useContext(context);
 
   const handleSubmit = async () => {
     if (!incorrectCredential) setIncorrectCredential(false);
 
     const postLogin = await postLoginAuth(username, password);
     if (postLogin.status === 200) {
-      console.log('pass');
       TokenService.saveAuthToken(postLogin.authToken);
-      UserService.saveUserId(postLogin.dbUser.userid, postLogin.dbUser.firstName);
       navigate('/', { replace: true });
-      setUser(true);
-      console.log(postLogin);
+      setLoginUser(postLogin.dbUser);
     } else {
       setIncorrectCredential(true);
     }
@@ -65,9 +64,3 @@ export default function LoginForm({ setUser }) {
     </Stack>
   );
 }
-
-/**
- *       console.log(res);
-      TokenService.saveAuthToken(res.authToken);
-      UserService.saveUserId(res.dbUser.userid, res.dbUser.firstName);
- */
