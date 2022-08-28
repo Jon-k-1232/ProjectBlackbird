@@ -24,7 +24,7 @@ export default function LoginForm() {
     const postLogin = await postLoginAuth(username, password);
     if (postLogin.status === 200) {
       TokenService.saveAuthToken(postLogin.authToken);
-      navigate('/', { replace: true });
+      navigate('/');
       setLoginUser(postLogin.dbUser);
     } else {
       setIncorrectCredential(true);

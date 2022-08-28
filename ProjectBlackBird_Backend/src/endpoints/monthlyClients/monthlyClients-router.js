@@ -3,60 +3,70 @@ const monthlyClientsRouter = express.Router();
 const monthlyClientsService = require('./monthlyClients-service');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
+const { requireAuth } = require('../auth/jwt-auth');
 
 // Gets active monthly clients
-monthlyClientsRouter.route('/active').get(async (req, res) => {
-  const db = req.app.get('db');
+monthlyClientsRouter
+  .route('/active')
+  .all(requireAuth)
+  .get(async (req, res) => {
+    const db = req.app.get('db');
 
-  monthlyClientsService.getMonthlyClients(db).then(clients => {
-    res.send({
-      clients,
-      status: 200
+    monthlyClientsService.getMonthlyClients(db).then(clients => {
+      res.send({
+        clients,
+        status: 200
+      });
     });
   });
-});
 
 // Add a monthly client
-monthlyClientsRouter.route('/add').post(jsonParser, async (req, res) => {
-  const db = req.app.get('db');
-  const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
+monthlyClientsRouter
+  .route('/add')
+  .all(requireAuth)
+  .post(jsonParser, async (req, res) => {
+    const db = req.app.get('db');
+    const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
 
-  const sanitizeNewClient = sanitizeFields({
-    company,
-    companyName,
-    monthlyCharge,
-    lastInvoiced,
-    inactive
+    const sanitizeNewClient = sanitizeFields({
+      company,
+      companyName,
+      monthlyCharge,
+      lastInvoiced,
+      inactive
+    });
+
+    const newClient = convertToOriginalTypes(sanitizeNewClient);
+
+    monthlyClientsService.addMonthlyClient(db, newClient).then(() => {
+      res.send({ message: 'Monthly Client Added successfully.', status: 200 });
+    });
   });
-
-  const newClient = convertToOriginalTypes(sanitizeNewClient);
-
-  monthlyClientsService.addMonthlyClient(db, newClient).then(() => {
-    res.send({ message: 'Monthly Client Added successfully.', status: 200 });
-  });
-});
 
 // Update a monthly client
-monthlyClientsRouter.route('/update/:contactId').post(jsonParser, async (req, res) => {
-  const db = req.app.get('db');
-  const { contactId } = req.params;
-  const id = Number(contactId);
-  const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
+monthlyClientsRouter
+  .route('/update/:contactId')
+  .all(requireAuth)
+  .post(jsonParser, async (req, res) => {
+    const db = req.app.get('db');
+    const { contactId } = req.params;
+    const id = Number(contactId);
+    const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
 
-  const sanitizeNewClient = sanitizeFields({
-    company,
-    companyName,
-    monthlyCharge,
-    lastInvoiced,
-    inactive
+    const sanitizeNewClient = sanitizeFields({
+      company,
+      companyName,
+      monthlyCharge,
+      lastInvoiced,
+      inactive
+    });
+
+    const updatedClient = convertToOriginalTypes(sanitizeNewClient);
+
+    monthlyClientsService.updateMonthlyClient(db, updatedClient, id).then(() => {
+      res.send({ message: 'Monthly Client Added successfully.', status: 200 });
+    });
   });
-
-  const updatedClient = convertToOriginalTypes(sanitizeNewClient);
-
-  monthlyClientsService.updateMonthlyClient(db, updatedClient, id).then(() => {
-    res.send({ message: 'Monthly Client Added successfully.', status: 200 });
-  });
-});
 
 module.exports = monthlyClientsRouter;
 

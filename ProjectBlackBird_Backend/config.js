@@ -29,7 +29,7 @@ module.exports = {
   API_TOKEN: process.env.API_TOKEN,
   ACCESS_TOKEN: process.env.ACCESS_TOKEN,
   REFRESH_TOKEN: process.env.REFRESH_TOKEN,
-  JWT_EXPIRATION: '30m',
+  JWT_EXPIRATION: '10h',
   defaultDaysInPast: 730,
   // interest Calculation
   defaultInterestRate: 15 / 100,

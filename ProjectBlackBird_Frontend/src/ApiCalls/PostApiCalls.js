@@ -5,8 +5,9 @@ export const postTransactions = async transaction => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(transaction)
   })
@@ -20,8 +21,9 @@ export const updateContact = async (contact, companyId) => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(contact)
   })
@@ -35,8 +37,9 @@ export const createNewContact = async contact => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(contact)
   })
@@ -50,8 +53,9 @@ export const updateEmployee = async (employee, employeeId) => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(employee)
   })
@@ -65,8 +69,9 @@ export const createEmployee = async employee => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(employee)
   })
@@ -80,8 +85,9 @@ export const createNewJob = async job => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(job)
   })
@@ -95,8 +101,9 @@ export const updateJobDefinition = async (jobDefinition, definitionId) => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(jobDefinition)
   })
@@ -110,8 +117,9 @@ export const createJobDefinition = async jobDefinition => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(jobDefinition)
   })
@@ -125,8 +133,9 @@ export const addClientToMonthlyList = async newClient => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(newClient)
   })
@@ -140,8 +149,9 @@ export const createInvoices = async (invoiceIds, roughDraft, createPdf) => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(invoiceIds)
   })
@@ -155,8 +165,9 @@ export const postInvoiceUpdate = async invoice => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`
-      //   Origin: `${config.FRONT_WEB}`
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify(invoice)
   })
@@ -170,7 +181,8 @@ export const zeroAndDeactivateUserAccount = async companyIds => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`,
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
       Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify({ companyIds: [companyIds] })
@@ -185,7 +197,8 @@ export const zeroCompanyAccount = async companyIds => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`,
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
       Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify({ companyIds: [companyIds] })
@@ -200,7 +213,7 @@ export const postLoginAuth = async (username, password) => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `${config.API_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
       Origin: `${config.FRONT_WEB}`
     },
     body: JSON.stringify({ username, password })

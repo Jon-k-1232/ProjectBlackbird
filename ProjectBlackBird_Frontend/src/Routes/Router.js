@@ -26,7 +26,6 @@ import MonthlyClients from 'src/Pages/MonthlyClients/MonthlyClients';
 export default function Router() {
   return (
     <Routes>
-      {/* <PublicOnlyRoute element={<NotFound />} path='404' /> */}
       <Route element={<LogoOnlyLayout />}>
         <Route exact path='/login' element={<Login />} />
         <Route path='/' element={<Navigate to='/clients' />} />
@@ -59,6 +58,3 @@ export default function Router() {
     </Routes>
   );
 }
-
-// Authorization
-// https://stackblitz.com/github/remix-run/react-router/tree/main/examples/auth?file=src%2FApp.tsx

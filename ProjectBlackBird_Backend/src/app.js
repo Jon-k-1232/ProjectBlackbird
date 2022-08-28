@@ -34,7 +34,7 @@ app.use(
 app.use(
   (validateBearerToken = (req, res, next) => {
     const apiToken = config.API_TOKEN;
-    const authToken = req.get('Authorization');
+    const authToken = req.get('BearerAuthorization');
 
     if (!authToken || authToken !== apiToken) {
       return res.send({

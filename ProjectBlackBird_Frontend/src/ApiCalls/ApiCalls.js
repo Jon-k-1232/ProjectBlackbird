@@ -376,7 +376,8 @@ const getHeader = {
   method: 'GET',
   headers: {
     'content-type': 'application/json',
-    Authorization: `${config.API_TOKEN}`,
+    Authorization: `${config.JWT_TOKEN}`,
+    BearerAuthorization: `${config.API_TOKEN}`,
     Origin: `${config.FRONT_WEB}`
   }
 };
