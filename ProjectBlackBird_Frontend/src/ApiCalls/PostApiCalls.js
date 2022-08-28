@@ -194,3 +194,18 @@ export const zeroCompanyAccount = async companyIds => {
     .then(res => res)
     .catch(error => error);
 };
+
+export const postLoginAuth = async (username, password) => {
+  return fetch(`${config.API_ENDPOINT}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
+    },
+    body: JSON.stringify({ username, password })
+  })
+    .then(res => res.json())
+    .then(res => res)
+    .catch(error => error);
+};

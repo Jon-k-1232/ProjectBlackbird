@@ -1,16 +1,16 @@
 const express = require('express');
 const AuthService = require('./auth-service');
 const authentication = express.Router();
-const jsonBodyParser = express.json();
+const jsonParser = express.json();
 
 // JWT check for login.
-authentication.post('/login', jsonBodyParser, (req, res, next) => {
+authentication.post('/login', jsonParser, (req, res, next) => {
   const db = req.app.get('db');
   const { username, password } = req.body;
   const loginUser = { username, password };
 
   for (const [key, value] of Object.entries(loginUser))
-    if (value === null)
+    if (value === null || value === undefined)
       return res.status(400).json({
         error: `Missing '${key}' in request body`,
         status: 400
@@ -46,6 +46,7 @@ authentication.post('/login', jsonBodyParser, (req, res, next) => {
       const payload = { userid: dbUser.oid };
       // res.send({ message: 'hello' });
       res.send({
+        dbUser,
         authToken: AuthService.createJwt(sub, payload),
         status: 200
       });
