@@ -27,8 +27,6 @@ module.exports = {
   DATABASE_URL: 'jka_test',
   TEST_DATABASE_URL: process.env.TEST_DATABASE_URL || 'postgresql://@localhost/jka_test',
   API_TOKEN: process.env.API_TOKEN,
-  ACCESS_TOKEN: process.env.ACCESS_TOKEN,
-  REFRESH_TOKEN: process.env.REFRESH_TOKEN,
   JWT_EXPIRATION: '10h',
   defaultDaysInPast: 730,
   // interest Calculation
