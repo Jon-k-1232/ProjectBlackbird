@@ -6,8 +6,8 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { alpha } from '@mui/material/styles';
 import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@mui/material';
 import MenuPopover from '../../Components/MenuPopover';
-import account from '../../Mock/account';
 import TokenService from '../../Services/TokenService';
+import UserService from '../../Services/UserService';
 import { useContext } from 'react';
 import { context } from '../../App';
 
@@ -39,6 +39,7 @@ export default function AccountPopover() {
 
   const handleLogout = () => {
     TokenService.clearAuthToken();
+    UserService.clearUserId();
     navigate('/login');
   };
 
@@ -64,16 +65,16 @@ export default function AccountPopover() {
           })
         }}
       >
-        <Avatar src={account.photoURL} alt='photoURL' />
+        <Avatar alt='photoURL' />
       </IconButton>
 
       <MenuPopover open={open} onClose={handleClose} anchorEl={anchorRef.current} sx={{ width: 220 }}>
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant='subtitle1' noWrap>
-            {loginUser.displayname || account.displayName}
+            {loginUser.displayname}
           </Typography>
           <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
-            {loginUser.displayname || account.email}
+            {loginUser.role}
           </Typography>
         </Box>
 

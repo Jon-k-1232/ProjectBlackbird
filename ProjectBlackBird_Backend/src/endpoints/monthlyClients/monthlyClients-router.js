@@ -39,7 +39,13 @@ monthlyClientsRouter
     const newClient = convertToOriginalTypes(sanitizeNewClient);
 
     monthlyClientsService.addMonthlyClient(db, newClient).then(() => {
-      res.send({ message: 'Monthly Client Added successfully.', status: 200 });
+      monthlyClientsService.getMonthlyClients(db).then(monthlyClients => {
+        res.send({
+          monthlyClients,
+          message: 'Monthly Client Added successfully.',
+          status: 200
+        });
+      });
     });
   });
 
@@ -64,7 +70,13 @@ monthlyClientsRouter
     const updatedClient = convertToOriginalTypes(sanitizeNewClient);
 
     monthlyClientsService.updateMonthlyClient(db, updatedClient, id).then(() => {
-      res.send({ message: 'Monthly Client Added successfully.', status: 200 });
+      monthlyClientsService.getMonthlyClients(db).then(monthlyClients => {
+        res.send({
+          monthlyClients,
+          message: 'Monthly Client Added successfully.',
+          status: 200
+        });
+      });
     });
   });
 
@@ -76,6 +88,7 @@ module.exports = monthlyClientsRouter;
  * @returns {}
  */
 const convertToOriginalTypes = client => {
+  if (client.lastInvoiced === 'null') client.lastInvoiced = null;
   return {
     company: Number(client.company),
     companyName: client.companyName,

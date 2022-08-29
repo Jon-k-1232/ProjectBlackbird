@@ -3,6 +3,7 @@ import { Stack, TextField, Card, Button, Checkbox, FormGroup, CardContent, FormC
 import { addClientToMonthlyList } from '../../ApiCalls/PostApiCalls';
 import { getActiveCompanies } from '../../ApiCalls/ApiCalls';
 import AlertBanner from '../../Components/AlertBanner/AlertBanner';
+import { tableAndLabelCreation } from '../../ApiCalls/Adapters/AdapterHelperFunctions';
 
 export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
   const [allCompanies, setAllCompanies] = useState([]);
@@ -20,12 +21,20 @@ export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (passedCompany) {
+      const foundCompany = allCompanies.find(company => company.oid === Number(passedCompany[1]));
+      setCompany(foundCompany);
+    }
+  }, [passedCompany, allCompanies]);
+
   const handleSubmit = async e => {
     e.preventDefault();
     const objectToPost = formObjectForPost();
     const postedItem = await addClientToMonthlyList(objectToPost);
     setPostStatus(postedItem.status);
-    // setMonthlyClients(postedItem.monthlyClients)
+    const tableClients = tableAndLabelCreation(postedItem.monthlyClients, 'oid', 'company');
+    setMonthlyClients(tableClients);
     setTimeout(() => setPostStatus(null), 2000);
     resetContactUpdate();
   };
@@ -34,8 +43,8 @@ export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
     return {
       company: company.oid,
       companyName: company.companyName,
-      monthlyCharge: flatAmount,
-      lastInvoiced: null,
+      monthlyCharge: Number(flatAmount),
+      lastInvoiced: passedCompany[4] || null,
       inactive: activeChecked
     };
   };

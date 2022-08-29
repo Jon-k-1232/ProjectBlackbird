@@ -44,7 +44,7 @@ authentication.post('/login', jsonParser, (req, res, next) => {
       // Returns JWT token and user info to set front, so front end can then make another call for data
       const sub = dbUser.username;
       const payload = { userid: dbUser.oid };
-      // res.send({ message: 'hello' });
+
       res.send({
         dbUser,
         authToken: AuthService.createJwt(sub, payload),

@@ -8,5 +8,5 @@ export default {
   FRONT_WEB: '*',
   API_TOKEN: '',
   JWT_TOKEN: `bearer ${TokenService.getAuthToken()}`,
-  USER_ID: ''
+  DISPLAY_NAME: ''
 };

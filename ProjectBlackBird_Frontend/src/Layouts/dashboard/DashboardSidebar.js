@@ -8,7 +8,6 @@ import Scrollbar from '../../Components/Scrollbar';
 import NavSection from '../../Components/NavSection';
 import { MHidden } from '../../Components/@material-extend';
 import sidebarConfig from './SidebarConfig';
-import account from '../../Mock/account';
 import { useContext } from 'react';
 import { context } from '../../App';
 
@@ -65,13 +64,13 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline='none' component={RouterLink} to='/profile'>
           <AccountStyle>
-            <Avatar src={account.photoURL} alt='photoURL' />
+            <Avatar alt='photoURL' />
             <Box sx={{ ml: 2 }}>
               <Typography variant='subtitle2' sx={{ color: 'text.primary' }}>
-                {loginUser.displayname || account.displayName}
+                {loginUser.displayname}
               </Typography>
               <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                {loginUser.role || account.role}
+                {loginUser.role}
               </Typography>
             </Box>
           </AccountStyle>

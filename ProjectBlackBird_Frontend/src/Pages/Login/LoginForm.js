@@ -7,6 +7,7 @@ import { Stack, TextField, IconButton, InputAdornment, Typography } from '@mui/m
 import { LoadingButton } from '@mui/lab';
 import { postLoginAuth } from '../../ApiCalls/PostApiCalls';
 import TokenService from '../../Services/TokenService';
+import UserService from '../../Services/UserService';
 import { useContext } from 'react';
 import { context } from '../../App';
 
@@ -24,6 +25,7 @@ export default function LoginForm() {
     const postLogin = await postLoginAuth(username, password);
     if (postLogin.status === 200) {
       TokenService.saveAuthToken(postLogin.authToken);
+      UserService.saveUserId(postLogin.dbUser);
       navigate('/');
       setLoginUser(postLogin.dbUser);
     } else {
