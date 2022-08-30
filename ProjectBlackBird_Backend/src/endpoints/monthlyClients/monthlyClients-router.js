@@ -42,7 +42,7 @@ monthlyClientsRouter
       monthlyClientsService.getMonthlyClients(db).then(monthlyClients => {
         res.send({
           monthlyClients,
-          message: 'Monthly Client Added successfully.',
+          message: 'Monthly Client Added Successfully.',
           status: 200
         });
       });
@@ -51,12 +51,10 @@ monthlyClientsRouter
 
 // Update a monthly client
 monthlyClientsRouter
-  .route('/update/:contactId')
+  .route('/update')
   .all(requireAuth)
   .post(jsonParser, async (req, res) => {
     const db = req.app.get('db');
-    const { contactId } = req.params;
-    const id = Number(contactId);
     const { company, companyName, monthlyCharge, lastInvoiced, inactive } = req.body;
 
     const sanitizeNewClient = sanitizeFields({
@@ -69,11 +67,11 @@ monthlyClientsRouter
 
     const updatedClient = convertToOriginalTypes(sanitizeNewClient);
 
-    monthlyClientsService.updateMonthlyClient(db, updatedClient, id).then(() => {
+    monthlyClientsService.updateMonthlyClient(db, updatedClient).then(() => {
       monthlyClientsService.getMonthlyClients(db).then(monthlyClients => {
         res.send({
           monthlyClients,
-          message: 'Monthly Client Added successfully.',
+          message: 'Monthly Client Added Successfully.',
           status: 200
         });
       });
@@ -94,6 +92,6 @@ const convertToOriginalTypes = client => {
     companyName: client.companyName,
     monthlyCharge: Number(client.monthlyCharge),
     lastInvoiced: client.lastInvoiced || null,
-    inactive: client.inactive || false
+    inactive: Boolean(client.inactive) || false
   };
 };

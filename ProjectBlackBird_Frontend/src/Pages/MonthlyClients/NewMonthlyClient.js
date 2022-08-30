@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Stack, TextField, Card, Button, Checkbox, FormGroup, CardContent, FormControlLabel, Autocomplete } from '@mui/material';
-import { addClientToMonthlyList } from '../../ApiCalls/PostApiCalls';
+import {
+  Stack,
+  TextField,
+  Card,
+  Button,
+  Checkbox,
+  FormGroup,
+  CardContent,
+  FormControlLabel,
+  Autocomplete,
+  Typography
+} from '@mui/material';
+import { addClientToMonthlyList, updateClientOnMonthlyList } from '../../ApiCalls/PostApiCalls';
 import { getActiveCompanies } from '../../ApiCalls/ApiCalls';
 import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 import { tableAndLabelCreation } from '../../ApiCalls/Adapters/AdapterHelperFunctions';
@@ -31,9 +42,9 @@ export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
   const handleSubmit = async e => {
     e.preventDefault();
     const objectToPost = formObjectForPost();
-    const postedItem = await addClientToMonthlyList(objectToPost);
+    const postedItem = passedCompany ? await updateClientOnMonthlyList(objectToPost) : await addClientToMonthlyList(objectToPost);
     setPostStatus(postedItem.status);
-    const tableClients = tableAndLabelCreation(postedItem.monthlyClients, 'oid', 'company');
+    const tableClients = postedItem.monthlyClients.length ? tableAndLabelCreation(postedItem.monthlyClients, 'oid', 'company') : [];
     setMonthlyClients(tableClients);
     setTimeout(() => setPostStatus(null), 2000);
     resetContactUpdate();
@@ -43,8 +54,8 @@ export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
     return {
       company: company.oid,
       companyName: company.companyName,
-      monthlyCharge: Number(flatAmount),
-      lastInvoiced: passedCompany[4] || null,
+      monthlyCharge: passedCompany && !flatAmount ? passedCompany[3] : flatAmount,
+      lastInvoiced: passedCompany ? passedCompany[4] : null,
       inactive: activeChecked
     };
   };
@@ -59,6 +70,9 @@ export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
   return (
     <Card style={{ marginTop: '25px' }}>
       <CardContent style={{ padding: '20px' }}>
+        <Typography style={{ margin: '10px' }} variant='subtitle2'>
+          Add a client to the list or select a client from table to edit
+        </Typography>
         <form onSubmit={handleSubmit}>
           <Stack direction={{ xs: 'row', sm: 'row' }} spacing={2}>
             <Stack direction={{ xs: 'row', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
@@ -74,26 +88,20 @@ export default function NewMonthlyClient({ passedCompany, setMonthlyClients }) {
               />
             </Stack>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
-              <TextField
-                required
-                type='text'
-                value={flatAmount}
-                onChange={e => setFlatAmount(e.target.value)}
-                label='Flat Monthly Amount'
-              />
+              <TextField type='text' value={flatAmount} onChange={e => setFlatAmount(e.target.value)} label='Flat Monthly Amount' />
             </Stack>
 
             <FormGroup style={{ justifyContent: 'center' }}>
               <FormControlLabel
                 control={<Checkbox checked={activeChecked} onChange={e => setActiveChecked(e.target.checked)} />}
-                label='inactive'
+                label='Remove'
               />
             </FormGroup>
 
             <Button type='submit' name='submit'>
-              Submit
+              {passedCompany ? 'Update' : 'Submit'}
             </Button>
-            <AlertBanner postStatus={postStatus} type='Contact' />
+            <AlertBanner postStatus={postStatus} type='Monthly client updated/' />
           </Stack>
         </form>
       </CardContent>

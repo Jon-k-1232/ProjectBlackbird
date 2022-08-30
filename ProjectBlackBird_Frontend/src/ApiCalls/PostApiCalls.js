@@ -144,6 +144,22 @@ export const addClientToMonthlyList = async newClient => {
     .catch(error => error);
 };
 
+export const updateClientOnMonthlyList = async newClient => {
+  return fetch(`${config.API_ENDPOINT}/monthlyClients/update`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
+    },
+    body: JSON.stringify(newClient)
+  })
+    .then(res => res.json())
+    .then(res => res)
+    .catch(error => error);
+};
+
 export const createInvoices = async (invoiceIds, roughDraft, createPdf) => {
   return fetch(`${config.API_ENDPOINT}/create/createInvoices/readyToBill/${invoiceIds}/${roughDraft}/${createPdf}`, {
     method: 'POST',

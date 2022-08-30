@@ -7,8 +7,8 @@ const monthlyClientsService = {
     return db.insert(newClient).into('monthlyclients').returning();
   },
 
-  updateMonthlyClient(db, updatedClient, contactId) {
-    return db.update(updatedClient).from('monthlyclients').where('oid', contactId).returning('*');
+  updateMonthlyClient(db, updatedClient) {
+    return db.update(updatedClient).from('monthlyclients').where('company', updatedClient.company);
   }
 };
 
