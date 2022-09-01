@@ -26,8 +26,9 @@ export default function LoginForm() {
     if (postLogin.status === 200) {
       TokenService.saveAuthToken(postLogin.authToken);
       UserService.saveUserId(postLogin.dbUser);
-      navigate('/');
       setLoginUser(postLogin.dbUser);
+      navigate('/');
+      window.location.reload(true);
     } else {
       setIncorrectCredential(true);
     }
