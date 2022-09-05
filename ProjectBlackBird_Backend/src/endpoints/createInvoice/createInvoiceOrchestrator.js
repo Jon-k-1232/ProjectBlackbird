@@ -144,14 +144,13 @@ const insertInvoice = async (invoiceObject, nextInvoiceNumber, db) => {
  */
 const insertInvoiceDetails = (invoiceObject, invoiceNumber, db) => {
   invoiceObject.newChargesRecords.forEach(async transaction => {
-    const { transactionType, description, totalTransaction, discount } = transaction;
+    const { transactionType, description, totalTransaction } = transaction;
     const invoiceDetail = {
       invoice: invoiceNumber,
       detailDate: dayjs().format(),
       detailType: transactionType,
       jobDescription: description,
       charges: totalTransaction,
-      discount: discount,
       writeOff: transactionType === 'Write Off' ? totalTransaction : 0,
       net: totalTransaction,
       payment: transactionType === 'Payment' ? totalTransaction : 0
@@ -360,10 +359,8 @@ const calculateBillingInterest = outstandingCompanyInvoices => {
         unitOfMeasure: 'Each',
         unitTransaction: calculatedInterest(unPaidBalance),
         totalTransaction: calculatedInterest(unPaidBalance),
-        discount: 0,
         invoice: oid,
-        paymentApplied: false,
-        ignoreInAgeing: false
+        billable: true
       };
 
       return interestTransaction;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Stack, Container, TextField, Button, Typography, Alert, Collapse, IconButton } from '@mui/material';
+import { Stack, Container, TextField, Button, Typography, Alert, Collapse, IconButton, Checkbox, FormControlLabel } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import CloseIcon from '@mui/icons-material/Close';
 import dayjs from 'dayjs';
@@ -11,7 +11,9 @@ export default function TimeOptions({
   selectedQuantity,
   setSelectedQuantity,
   selectedEmployee,
-  setDisableSubmit
+  setDisableSubmit,
+  billable,
+  setBillable
 }) {
   const [calculationAlert, setCalculationAlert] = useState(false);
   const [minuteDuration, setMinuteDuration] = useState('');
@@ -70,9 +72,10 @@ export default function TimeOptions({
                     </IconButton>
                   }
                   severity='error'
-                  sx={{ mb: 2 }}>
-                  There is an Error. Please check that employee is selected, that start and end times are in am/pm chronological order, and that
-                  either minutes or the clock is used (not both).
+                  sx={{ mb: 2 }}
+                >
+                  There is an Error. Please check that employee is selected, that start and end times are in am/pm chronological order, and
+                  that either minutes or the clock is used (not both).
                 </Alert>
               </Collapse>
             </Stack>
@@ -85,6 +88,9 @@ export default function TimeOptions({
             <Typography style={{ color: '#92999f', alignSelf: 'center' }} variant='subtitle1'>
               Rate: {selectedAmount}
             </Typography>
+          </Stack>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
+            <FormControlLabel control={<Checkbox checked={billable} onChange={e => setBillable(e.target.checked)} />} label='Billable' />
           </Stack>
         </Stack>
       </Stack>

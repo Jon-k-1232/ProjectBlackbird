@@ -89,10 +89,8 @@ transactionsRouter
       unitOfMeasure,
       unitTransaction,
       totalTransaction,
-      discount,
       invoice,
-      paymentApplied,
-      ignoreInAgeing
+      billable
     } = req.body;
 
     const cleanedFields = sanitizeFields({
@@ -105,24 +103,30 @@ transactionsRouter
       unitOfMeasure,
       unitTransaction,
       totalTransaction,
-      discount,
       invoice,
-      paymentApplied,
-      ignoreInAgeing
+      billable
     });
 
     const newTransaction = convertToOriginalTypes(cleanedFields);
+    const nullValues = doesObjectContainNullValue(newTransaction);
 
-    // Orchestrator in transactionOrchestrator file.
-    const balanceResponse = await handleChargesAndPayments(db, newTransaction);
-    const updatedAccountInfo = await contactService.getContactInfo(db, newTransaction.company);
+    if (nullValues) {
+      res.send({
+        message: 'NOT SUCCESSFUL, not all fields are filled out. Please complete all fields and resubmit.',
+        status: 400
+      });
+    } else {
+      // Orchestrator in transactionOrchestrator file.
+      const balanceResponse = await handleChargesAndPayments(db, newTransaction);
+      const updatedAccountInfo = await contactService.getContactInfo(db, newTransaction.company);
 
-    res.send({
-      balanceResponse,
-      updatedAccountInfo,
-      message: 'Transaction and account updated successfully.',
-      status: 200
-    });
+      res.send({
+        balanceResponse,
+        updatedAccountInfo,
+        message: 'Transaction and account updated successfully.',
+        status: 200
+      });
+    }
   });
 
 module.exports = transactionsRouter;
@@ -138,9 +142,19 @@ const convertToOriginalTypes = newTransaction => {
     unitOfMeasure: newTransaction.unitOfMeasure,
     unitTransaction: Number(newTransaction.unitTransaction).toFixed(2),
     totalTransaction: Number(newTransaction.totalTransaction).toFixed(2),
-    discount: Number(newTransaction.discount),
     invoice: Number(newTransaction.invoice),
-    paymentApplied: Boolean(newTransaction.paymentApplied),
-    ignoreInAgeing: Boolean(newTransaction.ignoreInAgeing)
+    billable: Boolean(newTransaction.billable)
   };
+};
+
+const doesObjectContainNullValue = newTransaction => {
+  const transaction = Object.entries(newTransaction).map(item => {
+    const [key, value] = item;
+    if (key !== 'invoice' && (value === null || value === 'null' || value === '' || value === undefined)) {
+      return true;
+    }
+    return false;
+  });
+
+  return transaction.includes(true);
 };

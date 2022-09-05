@@ -32,6 +32,7 @@ export default function NewTransactions({
   const [postStatus, setPostStatus] = useState(null);
   const [invoice, setInvoice] = useState('');
   const [disableSubmit, setDisableSubmit] = useState(true);
+  const [billable, setBillable] = useState(true);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -53,10 +54,8 @@ export default function NewTransactions({
       unitOfMeasure: selectedTransaction.displayValue === 'Time' ? 'Hour' : 'Each',
       unitTransaction: selectedAmount,
       totalTransaction: totalTransaction,
-      discount: 0,
       invoice: invoice,
-      paymentApplied: false,
-      ignoreInAgeing: false
+      billable: billable
     };
     return postObj;
   };
@@ -72,7 +71,8 @@ export default function NewTransactions({
     setSelectedAmount('');
     setTotalTransaction(0);
     setInvoice('');
-    setTimeout(() => setPostStatus(null), 4000);
+    setBillable(true);
+    setTimeout(() => setPostStatus(null), 6000);
   };
 
   return (
@@ -124,6 +124,8 @@ export default function NewTransactions({
                   setSelectedAmount={amt => setSelectedAmount(amt)}
                   selectedType={selectedType}
                   setDisableSubmit={boolValue => setDisableSubmit(boolValue)}
+                  billable={billable}
+                  setBillable={item => setBillable(item)}
                 />
               )}
               {selectedTransaction && selectedTransaction.value === 'payment' && (
@@ -157,6 +159,8 @@ export default function NewTransactions({
                   setSelectedQuantity={quantity => setSelectedQuantity(quantity)}
                   selectedEmployee={selectedEmployee}
                   setDisableSubmit={setDisableSubmit}
+                  billable={billable}
+                  setBillable={item => setBillable(item)}
                 />
               )}
               {selectedTransaction && selectedTransaction.value === 'adjustment' && (

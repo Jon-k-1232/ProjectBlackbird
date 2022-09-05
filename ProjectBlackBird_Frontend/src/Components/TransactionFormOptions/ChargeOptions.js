@@ -1,4 +1,4 @@
-import { Container, Stack, TextField, Typography } from '@mui/material';
+import { Container, Stack, TextField, Typography, Checkbox, FormControlLabel } from '@mui/material';
 
 export default function ChargeOptions({
   selectedQuantity,
@@ -7,7 +7,9 @@ export default function ChargeOptions({
   selectedAmount,
   setSelectedAmount,
   selectedType,
-  setDisableSubmit
+  setDisableSubmit,
+  billable,
+  setBillable
 }) {
   return (
     <Container>
@@ -38,6 +40,9 @@ export default function ChargeOptions({
               setDisableSubmit(false);
             }}
           />
+        </Stack>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 8 }}>
+          <FormControlLabel control={<Checkbox checked={billable} onChange={e => setBillable(e.target.checked)} />} label='Billable' />
         </Stack>
       </Stack>
     </Container>
