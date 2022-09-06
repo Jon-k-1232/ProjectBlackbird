@@ -32,7 +32,8 @@ const createInvoiceService = {
       .innerJoin('job', 'transaction.job', '=', 'job.oid')
       .whereIn('transaction.company', [companyId])
       .where('transaction.transactionDate', '>=', lastInvoiceDataEndDate)
-      .where('transaction.transactionType', '!=', 'Payment');
+      .where('transaction.transactionType', '!=', 'Payment')
+      .where('transaction.billable', '=', true);
   },
 
   /**
@@ -56,7 +57,7 @@ const createInvoiceService = {
 
   getBillTo(db) {
     return db.select().from('setupdata');
-  },
+  }
 };
 
 module.exports = createInvoiceService;
