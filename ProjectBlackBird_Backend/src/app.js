@@ -15,6 +15,7 @@ const invoices = require('./endpoints/invoice/invoice-router');
 const createInvoices = require('./endpoints/createInvoice/createInvoice-router');
 const authentication = require('./endpoints/auth/auth-router');
 const monthlyClientsRouter = require('./endpoints/monthlyClients/monthlyClients-router');
+const ledgerRouter = require('./endpoints/ledger/ledger-router');
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 const config = require('../config');
 
@@ -54,6 +55,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authentication);
 app.use('/contacts', contactsRouter);
+app.use('/ledgers', ledgerRouter);
 app.use('/monthlyClients', monthlyClientsRouter);
 app.use('/contacts', contactsRouter);
 app.use('/jobs', company);
