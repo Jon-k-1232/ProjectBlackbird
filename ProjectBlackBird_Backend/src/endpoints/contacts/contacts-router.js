@@ -4,6 +4,7 @@ const contactService = require('./contacts-service');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { requireAuth } = require('../auth/jwt-auth');
+const ledgerService = require('../ledger/ledger-service');
 
 /**
  * Gets all contacts
@@ -209,24 +210,16 @@ contactsRouter
     });
   });
 
-/**
- * Take an array of integers, company oids, or an array with a single OID. Will zero the account, and deactivate.
- * http://localhost:8000/contacts/cleanAndDeactivate
- */
 contactsRouter
   .route('/zeroAndDeactivate')
   .all(requireAuth)
   .post(jsonParser, async (req, res) => {
     const db = req.app.get('db');
-    const { companyIds } = req.body;
+    const { companyId } = req.body;
 
-    const sanitizedData = sanitizeFields({ companyIds });
-    // Since sanitized, companyIds is one giant string, must be separated at commas then converted into ints
-    const stringedIds = sanitizedData.companyIds.split(',');
-    const arrayOfIntegerIds = stringedIds.map(id => Number(id));
-
-    const contact = await Promise.all(arrayOfIntegerIds.map(contactId => cleanup(contactId, db)));
-    const updatedContact = contact[0][0];
+    const sanitizedId = sanitizeFields({ companyId });
+    const contactId = Number(sanitizedId.companyId);
+    const updatedContact = await cleanup(contactId, db);
 
     res.send({
       updatedContact,
@@ -234,19 +227,16 @@ contactsRouter
     });
   });
 
-/**
- * http://localhost:8000/contacts/zeroOutCompany
- * Takes an array with integers (oid's).
- */
 contactsRouter
   .route('/zeroOutCompany')
   .all(requireAuth)
   .post(jsonParser, async (req, res) => {
     const db = req.app.get('db');
-    const { companyIds } = req.body;
+    const { companyId } = req.body;
 
-    const contact = await Promise.all(companyIds.map(contactId => zeroContact(contactId, db)));
-    const updatedContact = contact[0][0];
+    const sanitizedId = sanitizeFields({ companyId });
+    const contactId = Number(sanitizedId.companyId);
+    const updatedContact = await zeroContact(contactId, db);
 
     res.send({
       updatedContact,
@@ -289,33 +279,58 @@ const convertToRequiredTypes = contactItem => {
 const cleanup = async (contactId, db) => {
   const update = {
     statementBalance: 0,
-    currentBalance: 0,
-    beginningBalance: 0,
-    originalCurrentBalance: 0,
-    inactive: true,
-    notBillable: true,
+    currentAccountBalance: 0,
+    beginningAccountBalance: 0,
+    advancedPayment: 0,
     newBalance: false,
-    balanceChanged: false
+    inactive: true,
+    notBillable: true
   };
 
-  // const contact = await contactService.getContactInfo(db, contactId);
-  const updateContact = await contactService.companyCleanupForDeactivation(db, contactId, update);
-
-  return updateContact;
+  await contactService.companyCleanupForDeactivation(db, contactId, update);
+  await ledgerService.zeroOutLedger(db, contactId, update);
+  const updateContact = await contactService.companyRecordAndBalance(db, contactId);
+  const contact = updateContact[0];
+  return createObject(contact);
 };
 
 const zeroContact = async (contactId, db) => {
   const update = {
     statementBalance: 0,
-    currentBalance: 0,
-    beginningBalance: 0,
-    originalCurrentBalance: 0,
-    newBalance: false,
-    balanceChanged: false
+    currentAccountBalance: 0,
+    beginningAccountBalance: 0,
+    advancedPayment: 0,
+    newBalance: false
   };
 
-  // const contact = await contactService.getContactInfo(db, contactId);
-  const updateContact = await contactService.companyZeroOut(db, contactId, update);
+  await contactService.companyZeroOut(db, contactId, update);
+  await ledgerService.zeroOutLedger(db, contactId, update);
+  const updateContact = await contactService.companyRecordAndBalance(db, contactId);
+  const contact = updateContact[0];
+  return createObject(contact);
+};
 
-  return updateContact;
+const createObject = contact => {
+  return {
+    oid: contact.company,
+    newBalance: contact.newBalance,
+    companyName: contact.companyName,
+    firstName: contact.firstName,
+    lastName: contact.lastName,
+    middleI: contact.middleI,
+    address1: contact.address1,
+    address2: contact.address2,
+    city: contact.city,
+    state: contact.state,
+    zip: contact.zip,
+    country: contact.country,
+    phoneNumber1: contact.phoneNumber1,
+    mobilePhone: contact.mobilePhone,
+    currentBalance: contact.currentAccountBalance,
+    beginningBalance: contact.beginningAccountBalance,
+    statementBalance: contact.statementBalance,
+    advancedPayment: contact.advancedPayment,
+    inactive: contact.inactive,
+    notBillable: contact.notBillable
+  };
 };

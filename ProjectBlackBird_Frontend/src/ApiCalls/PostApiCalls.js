@@ -192,7 +192,7 @@ export const postInvoiceUpdate = async invoice => {
     .catch(error => error);
 };
 
-export const zeroAndDeactivateUserAccount = async companyIds => {
+export const zeroAndDeactivateUserAccount = async companyId => {
   return fetch(`${config.API_ENDPOINT}/contacts/zeroAndDeactivate`, {
     method: 'POST',
     headers: {
@@ -201,14 +201,14 @@ export const zeroAndDeactivateUserAccount = async companyIds => {
       BearerAuthorization: `${config.API_TOKEN}`,
       Origin: `${config.FRONT_WEB}`
     },
-    body: JSON.stringify({ companyIds: [companyIds] })
+    body: JSON.stringify({ companyId })
   })
     .then(res => res.json())
     .then(res => res)
     .catch(error => error);
 };
 
-export const zeroCompanyAccount = async companyIds => {
+export const zeroCompanyAccount = async companyId => {
   return fetch(`${config.API_ENDPOINT}/contacts/zeroOutCompany`, {
     method: 'POST',
     headers: {
@@ -217,7 +217,7 @@ export const zeroCompanyAccount = async companyIds => {
       BearerAuthorization: `${config.API_TOKEN}`,
       Origin: `${config.FRONT_WEB}`
     },
-    body: JSON.stringify({ companyIds: [companyIds] })
+    body: JSON.stringify({ companyId })
   })
     .then(res => res.json())
     .then(res => res)
