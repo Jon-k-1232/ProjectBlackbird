@@ -71,9 +71,7 @@ export const getCompanyInformation = companyId => {
       }
       return resp.json();
     })
-    .then(data => {
-      return data.companyContactInformation[0];
-    })
+    .then(data => data.companyContactInformation)
     .catch(error => error);
 };
 

@@ -33,7 +33,11 @@ contactsRouter
     const db = req.app.get('db');
     const companyId = Number(req.params.companyId);
 
-    contactService.getContactInfo(db, companyId).then(companyContactInformation => {
+    const ledgers = await ledgerService.getCompanyLedger(db, Number(companyId));
+
+    contactService.getContactInfo(db, companyId).then(company => {
+      const companyContactInformation = formContactAndLedger(company[0], ledgers[0]);
+
       res.send({
         companyContactInformation,
         status: 200
@@ -245,6 +249,30 @@ contactsRouter
   });
 
 module.exports = contactsRouter;
+
+const formContactAndLedger = (contactItem, ledger) => {
+  return {
+    newBalance: ledger.newBalance,
+    companyName: contactItem.companyName,
+    firstName: contactItem.firstName,
+    lastName: contactItem.lastName,
+    middleI: contactItem.middleI,
+    address1: contactItem.address1,
+    address2: contactItem.address2,
+    city: contactItem.city,
+    state: contactItem.state,
+    zip: contactItem.zip,
+    country: contactItem.country,
+    phoneNumber1: contactItem.phoneNumber1,
+    mobilePhone: contactItem.mobilePhone,
+    advancedPayment: ledger.advancedPayment,
+    currentBalance: ledger.currentAccountBalance,
+    beginningBalance: ledger.beginningAccountBalance,
+    statementBalance: ledger.statementBalance,
+    inactive: contactItem.inactive,
+    notBillable: contactItem.notBillable
+  };
+};
 
 /**
  * Takes params and converts required items to correct type for db insert.
