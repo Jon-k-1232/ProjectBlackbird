@@ -32,8 +32,6 @@ export default function NewClient({ passedCompany, updateContactCard }) {
 
   const formObjectForPost = () => {
     return {
-      newBalance: passedCompany ? passedCompany.newBalance : false,
-      balanceChanged: passedCompany ? passedCompany.balanceChanged : false,
       companyName: companyName,
       firstName: firstName,
       lastName: lastName,
@@ -46,12 +44,13 @@ export default function NewClient({ passedCompany, updateContactCard }) {
       country: country || null,
       phoneNumber1: phone,
       mobilePhone: mobilePhone || null,
-      currentBalance: passedCompany ? passedCompany.currentBalance : 0.0,
-      beginningBalance: passedCompany ? passedCompany.beginningBalance : 0.0,
-      statementBalance: passedCompany ? passedCompany.statementBalance : 0.0,
       inactive: !activeChecked,
-      originalCurrentBalance: passedCompany ? passedCompany.originalCurrentBalance : 0.0,
-      notBillable: !billableChecked
+      notBillable: !billableChecked,
+      newBalance: passedCompany ? passedCompany.newBalance : false,
+      advancedPayment: passedCompany ? passedCompany.advancedPayment : 0.0,
+      currentAccountBalance: passedCompany ? passedCompany.currentAccountBalance : 0.0,
+      beginningAccountBalance: passedCompany ? passedCompany.beginningAccountBalance : 0.0,
+      statementBalance: passedCompany ? passedCompany.statementBalance : 0.0
     };
   };
 

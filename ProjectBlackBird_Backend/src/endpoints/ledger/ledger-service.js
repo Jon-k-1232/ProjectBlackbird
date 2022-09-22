@@ -33,6 +33,10 @@ const ledgerService = {
       .update('advancedPayment', advancedPayment)
       .from('balance')
       .where('company', oid);
+  },
+
+  getLastLedgerOidInDB(db) {
+    return db.from('balance').max('oid');
   }
 };
 

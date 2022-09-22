@@ -37,7 +37,6 @@ contactsRouter
 
     contactService.getContactInfo(db, companyId).then(company => {
       const companyContactInformation = formContactAndLedger(company[0], ledgers[0]);
-
       res.send({
         companyContactInformation,
         status: 200
@@ -88,8 +87,6 @@ contactsRouter
   .post(jsonParser, async (req, res) => {
     const db = req.app.get('db');
     const {
-      newBalance,
-      balanceChanged,
       companyName,
       firstName,
       lastName,
@@ -102,17 +99,17 @@ contactsRouter
       country,
       phoneNumber1,
       mobilePhone,
-      currentBalance,
-      beginningBalance,
-      statementBalance,
       inactive,
-      originalCurrentBalance,
-      notBillable
+      notBillable,
+      newBalance,
+      company,
+      advancedPayment,
+      currentAccountBalance,
+      beginningAccountBalance,
+      statementBalance
     } = req.body;
 
     const cleanedFields = sanitizeFields({
-      newBalance,
-      balanceChanged,
       companyName,
       firstName,
       lastName,
@@ -125,26 +122,41 @@ contactsRouter
       country,
       phoneNumber1,
       mobilePhone,
-      currentBalance,
-      beginningBalance,
-      statementBalance,
       inactive,
-      originalCurrentBalance,
-      notBillable
+      notBillable,
+      newBalance,
+      company,
+      advancedPayment,
+      currentAccountBalance,
+      beginningAccountBalance,
+      statementBalance
     });
 
+    // Insert into contact
     const contactInfo = convertToRequiredTypes(cleanedFields);
-    const lastOid = await contactService.getLastContactOidInDB(db);
-    const oid = Number(lastOid[0].max) + 1;
-    const newContact = { ...contactInfo, oid };
+    const lastContactOid = await contactService.getLastContactOidInDB(db);
+    const contactOid = Number(lastContactOid[0].max) + 1;
+    const newCompany = await contactService.insertNewContact(db, contactInfo, contactOid);
 
-    contactService.insertNewContact(db, newContact).then(updatedContact => {
+    // Insert new record for balance
+    const ledgerInfo = convertToRequiredLedgerTypes(cleanedFields, contactOid);
+    const newCompanyLedger = await ledgerService.insertNewCompanyLedger(db, ledgerInfo);
+
+    // Create new object to return
+    const newInsertedContact = formContactAndLedger(newCompany[0], newCompanyLedger[0]);
+
+    if (newCompany.length === 0 || newCompanyLedger.length === 0) {
       res.send({
-        updatedContact,
+        message: 'Error',
+        status: 400
+      });
+    } else {
+      res.send({
+        newInsertedContact,
         message: 'Contact added successfully.',
         status: 200
       });
-    });
+    }
   });
 
 /**
@@ -158,8 +170,6 @@ contactsRouter
     const { contactId } = req.params;
     const id = Number(contactId);
     const {
-      newBalance,
-      balanceChanged,
       companyName,
       firstName,
       lastName,
@@ -172,17 +182,11 @@ contactsRouter
       country,
       phoneNumber1,
       mobilePhone,
-      currentBalance,
-      beginningBalance,
-      statementBalance,
       inactive,
-      originalCurrentBalance,
       notBillable
     } = req.body;
 
     const cleanedFields = sanitizeFields({
-      newBalance,
-      balanceChanged,
       companyName,
       firstName,
       lastName,
@@ -195,11 +199,7 @@ contactsRouter
       country,
       phoneNumber1,
       mobilePhone,
-      currentBalance,
-      beginningBalance,
-      statementBalance,
       inactive,
-      originalCurrentBalance,
       notBillable
     });
 
@@ -250,57 +250,64 @@ contactsRouter
 
 module.exports = contactsRouter;
 
-const formContactAndLedger = (contactItem, ledger) => {
-  return {
-    newBalance: ledger.newBalance,
-    companyName: contactItem.companyName,
-    firstName: contactItem.firstName,
-    lastName: contactItem.lastName,
-    middleI: contactItem.middleI,
-    address1: contactItem.address1,
-    address2: contactItem.address2,
-    city: contactItem.city,
-    state: contactItem.state,
-    zip: contactItem.zip,
-    country: contactItem.country,
-    phoneNumber1: contactItem.phoneNumber1,
-    mobilePhone: contactItem.mobilePhone,
-    advancedPayment: ledger.advancedPayment,
-    currentBalance: ledger.currentAccountBalance,
-    beginningBalance: ledger.beginningAccountBalance,
-    statementBalance: ledger.statementBalance,
-    inactive: contactItem.inactive,
-    notBillable: contactItem.notBillable
-  };
-};
+const formContactAndLedger = (contactItem, ledger) => ({
+  oid: contactItem.oid,
+  newBalance: ledger.newBalance,
+  companyName: contactItem.companyName,
+  firstName: contactItem.firstName,
+  lastName: contactItem.lastName,
+  middleI: contactItem.middleI,
+  address1: contactItem.address1,
+  address2: contactItem.address2,
+  city: contactItem.city,
+  state: contactItem.state,
+  zip: contactItem.zip,
+  country: contactItem.country,
+  phoneNumber1: contactItem.phoneNumber1,
+  mobilePhone: contactItem.mobilePhone,
+  advancedPayment: ledger.advancedPayment,
+  currentBalance: ledger.currentAccountBalance,
+  beginningBalance: ledger.beginningAccountBalance,
+  statementBalance: ledger.statementBalance,
+  inactive: contactItem.inactive,
+  notBillable: contactItem.notBillable
+});
 
 /**
  * Takes params and converts required items to correct type for db insert.
  * @param {*} contactItem
  * @returns
  */
-const convertToRequiredTypes = contactItem => {
+const convertToRequiredTypes = contactItem => ({
+  companyName: contactItem.companyName,
+  firstName: contactItem.firstName,
+  lastName: contactItem.lastName,
+  middleI: contactItem.middleI,
+  address1: contactItem.address1,
+  address2: contactItem.address2,
+  city: contactItem.city,
+  state: contactItem.state,
+  zip: contactItem.zip,
+  country: contactItem.country,
+  phoneNumber1: contactItem.phoneNumber1,
+  mobilePhone: contactItem.mobilePhone,
+  inactive: Boolean(contactItem.inactive),
+  notBillable: Boolean(contactItem.notBillable)
+});
+
+/**
+ * For Ledgers
+ * @param {*} ledger
+ * @returns
+ */
+const convertToRequiredLedgerTypes = (ledger, newCompanyId) => {
   return {
-    newBalance: Boolean(contactItem.newBalance),
-    balanceChanged: Boolean(contactItem.balanceChanged),
-    companyName: contactItem.companyName,
-    firstName: contactItem.firstName,
-    lastName: contactItem.lastName,
-    middleI: contactItem.middleI,
-    address1: contactItem.address1,
-    address2: contactItem.address2,
-    city: contactItem.city,
-    state: contactItem.state,
-    zip: contactItem.zip,
-    country: contactItem.country,
-    phoneNumber1: contactItem.phoneNumber1,
-    mobilePhone: contactItem.mobilePhone,
-    currentBalance: Number(contactItem.currentBalance),
-    beginningBalance: Number(contactItem.beginningBalance),
-    statementBalance: Number(contactItem.statementBalance),
-    inactive: Boolean(contactItem.inactive),
-    originalCurrentBalance: Number(contactItem.originalCurrentBalance),
-    notBillable: Boolean(contactItem.notBillable)
+    newBalance: Number(ledger.newBalance),
+    company: Number(newCompanyId),
+    advancedPayment: Number(ledger.advancedPayment),
+    currentAccountBalance: Number(ledger.currentAccountBalance),
+    beginningAccountBalance: Number(ledger.beginningAccountBalance),
+    statementBalance: Number(ledger.statementBalance)
   };
 };
 

@@ -10,7 +10,7 @@ export default function ContactCard(props) {
   const {
     address1,
     address2,
-    balanceChanged,
+    advancedPayment,
     beginningBalance,
     city,
     companyName,
@@ -28,6 +28,7 @@ export default function ContactCard(props) {
     statementBalance,
     zip
   } = props;
+  console.log(props);
 
   // used for editing client info
   // const [edit, setEdit] = useState(false);
@@ -42,7 +43,6 @@ export default function ContactCard(props) {
         <Typography variant='h4'>{companyName}</Typography>
         <Typography variant='subtitle1'>{inactive ? 'Inactive' : 'Active'}</Typography>
         <Typography variant='subtitle1'>Client: {oid}</Typography>
-        {/* <EllipsisMenu edit={setEdit} menuOptions={['Edit']} /> */}
       </CardContent>
       <CardContent style={styles.tableBody} className='contactTables'>
         <table className='contactColumnOne'>
@@ -81,6 +81,10 @@ export default function ContactCard(props) {
         <table className='contactColumnTwo'>
           <tbody>
             <tr>
+              <th>Prepay Balance:</th>
+              <td>{advancedPayment || 0.0}</td>
+            </tr>
+            <tr>
               <th>Beginning Balance:</th>
               <td>{beginningBalance}</td>
             </tr>
@@ -95,10 +99,6 @@ export default function ContactCard(props) {
             <tr>
               <th>New Balance:</th>
               {conditionalCheckboxs(newBalance)}
-            </tr>
-            <tr>
-              <th>Balance Changed Since Last Statement:</th>
-              {conditionalCheckboxs(balanceChanged)}
             </tr>
             <tr>
               <th>Billable:</th>

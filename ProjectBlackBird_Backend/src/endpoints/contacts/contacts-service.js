@@ -15,8 +15,9 @@ const contactService = {
     return db.select().from('company').whereIn('oid', [id]);
   },
 
-  insertNewContact(db, newContact) {
-    return db.insert(newContact).into('company').returning();
+  insertNewContact(db, newContact, oid) {
+    const contact = { ...newContact, oid };
+    return db.insert(contact).into('company').returning('*');
   },
 
   getLastContactOidInDB(db) {
