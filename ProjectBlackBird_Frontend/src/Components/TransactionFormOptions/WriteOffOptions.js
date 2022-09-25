@@ -46,7 +46,7 @@ export default function WriteOffOptions({
             value={selectedAmount}
             onChange={e => {
               e.target.value >= 0 && setSelectedAmount(e.target.value);
-              !disable && setDisableSubmit(false);
+              setDisableSubmit(false);
               setTotalTransaction(-Math.abs(e.target.value * selectedQuantity).toFixed(2));
             }}
             helperText='* Amount will reflect as negative in total amount. This credits the account/job.'
