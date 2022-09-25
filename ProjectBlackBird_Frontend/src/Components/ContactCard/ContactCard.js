@@ -28,7 +28,6 @@ export default function ContactCard(props) {
     statementBalance,
     zip
   } = props;
-  console.log(props);
 
   // used for editing client info
   // const [edit, setEdit] = useState(false);

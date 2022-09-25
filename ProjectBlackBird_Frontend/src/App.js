@@ -7,7 +7,7 @@ import UserService from './Services/UserService';
 let context = createContext();
 
 export default function App() {
-  // Hook for Context
+  // Hook for Context, holds user info once logged in.
   let [loginUser, setLoginUser] = useState(
     {
       oid: UserService.getUserId(),

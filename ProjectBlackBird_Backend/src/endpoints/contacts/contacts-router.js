@@ -1,6 +1,7 @@
 const express = require('express');
 const contactsRouter = express.Router();
 const contactService = require('./contacts-service');
+const contactObjects = require('./contactObjects');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { requireAuth } = require('../auth/jwt-auth');
@@ -36,7 +37,7 @@ contactsRouter
     const ledgers = await ledgerService.getCompanyLedger(db, Number(companyId));
 
     contactService.getContactInfo(db, companyId).then(company => {
-      const companyContactInformation = formContactAndLedger(company[0], ledgers[0]);
+      const companyContactInformation = contactObjects.mergeContactAndLedger(company[0], ledgers[0]);
       res.send({
         companyContactInformation,
         status: 200
@@ -133,17 +134,17 @@ contactsRouter
     });
 
     // Insert into contact
-    const contactInfo = convertToRequiredTypes(cleanedFields);
+    const contactInfo = contactObjects.convertToRequiredTypes(cleanedFields);
     const lastContactOid = await contactService.getLastContactOidInDB(db);
     const contactOid = Number(lastContactOid[0].max) + 1;
     const newCompany = await contactService.insertNewContact(db, contactInfo, contactOid);
 
     // Insert new record for balance
-    const ledgerInfo = convertToRequiredLedgerTypes(cleanedFields, contactOid);
+    const ledgerInfo = contactObjects.convertToRequiredLedgerTypes(cleanedFields, contactOid);
     const newCompanyLedger = await ledgerService.insertNewCompanyLedger(db, ledgerInfo);
 
     // Create new object to return
-    const newInsertedContact = formContactAndLedger(newCompany[0], newCompanyLedger[0]);
+    const newInsertedContact = contactObjects.mergeContactAndLedger(newCompany[0], newCompanyLedger[0]);
 
     if (newCompany.length === 0 || newCompanyLedger.length === 0) {
       res.send({
@@ -203,7 +204,7 @@ contactsRouter
       notBillable
     });
 
-    const updatedContact = convertToRequiredTypes(cleanedFields);
+    const updatedContact = contactObjects.convertToRequiredTypes(cleanedFields);
 
     contactService.updateContact(db, id, updatedContact).then(updatedContact => {
       res.send({
@@ -250,67 +251,12 @@ contactsRouter
 
 module.exports = contactsRouter;
 
-const formContactAndLedger = (contactItem, ledger) => ({
-  oid: contactItem.oid,
-  newBalance: ledger.newBalance,
-  companyName: contactItem.companyName,
-  firstName: contactItem.firstName,
-  lastName: contactItem.lastName,
-  middleI: contactItem.middleI,
-  address1: contactItem.address1,
-  address2: contactItem.address2,
-  city: contactItem.city,
-  state: contactItem.state,
-  zip: contactItem.zip,
-  country: contactItem.country,
-  phoneNumber1: contactItem.phoneNumber1,
-  mobilePhone: contactItem.mobilePhone,
-  advancedPayment: ledger.advancedPayment,
-  currentBalance: ledger.currentAccountBalance,
-  beginningBalance: ledger.beginningAccountBalance,
-  statementBalance: ledger.statementBalance,
-  inactive: contactItem.inactive,
-  notBillable: contactItem.notBillable
-});
-
 /**
- * Takes params and converts required items to correct type for db insert.
- * @param {*} contactItem
+ *
+ * @param {*} contactId
+ * @param {*} db
  * @returns
  */
-const convertToRequiredTypes = contactItem => ({
-  companyName: contactItem.companyName,
-  firstName: contactItem.firstName,
-  lastName: contactItem.lastName,
-  middleI: contactItem.middleI,
-  address1: contactItem.address1,
-  address2: contactItem.address2,
-  city: contactItem.city,
-  state: contactItem.state,
-  zip: contactItem.zip,
-  country: contactItem.country,
-  phoneNumber1: contactItem.phoneNumber1,
-  mobilePhone: contactItem.mobilePhone,
-  inactive: Boolean(contactItem.inactive),
-  notBillable: Boolean(contactItem.notBillable)
-});
-
-/**
- * For Ledgers
- * @param {*} ledger
- * @returns
- */
-const convertToRequiredLedgerTypes = (ledger, newCompanyId) => {
-  return {
-    newBalance: Number(ledger.newBalance),
-    company: Number(newCompanyId),
-    advancedPayment: Number(ledger.advancedPayment),
-    currentAccountBalance: Number(ledger.currentAccountBalance),
-    beginningAccountBalance: Number(ledger.beginningAccountBalance),
-    statementBalance: Number(ledger.statementBalance)
-  };
-};
-
 const cleanup = async (contactId, db) => {
   const update = {
     statementBalance: 0,
@@ -326,9 +272,15 @@ const cleanup = async (contactId, db) => {
   await ledgerService.zeroOutLedger(db, contactId, update);
   const updateContact = await contactService.companyRecordAndBalance(db, contactId);
   const contact = updateContact[0];
-  return createObject(contact);
+  return contactObjects.contactObject(contact);
 };
 
+/**
+ *
+ * @param {*} contactId
+ * @param {*} db
+ * @returns
+ */
 const zeroContact = async (contactId, db) => {
   const update = {
     statementBalance: 0,
@@ -342,30 +294,5 @@ const zeroContact = async (contactId, db) => {
   await ledgerService.zeroOutLedger(db, contactId, update);
   const updateContact = await contactService.companyRecordAndBalance(db, contactId);
   const contact = updateContact[0];
-  return createObject(contact);
-};
-
-const createObject = contact => {
-  return {
-    oid: contact.company,
-    newBalance: contact.newBalance,
-    companyName: contact.companyName,
-    firstName: contact.firstName,
-    lastName: contact.lastName,
-    middleI: contact.middleI,
-    address1: contact.address1,
-    address2: contact.address2,
-    city: contact.city,
-    state: contact.state,
-    zip: contact.zip,
-    country: contact.country,
-    phoneNumber1: contact.phoneNumber1,
-    mobilePhone: contact.mobilePhone,
-    currentBalance: contact.currentAccountBalance,
-    beginningBalance: contact.beginningAccountBalance,
-    statementBalance: contact.statementBalance,
-    advancedPayment: contact.advancedPayment,
-    inactive: contact.inactive,
-    notBillable: contact.notBillable
-  };
+  return contactObjects.contactObject(contact);
 };

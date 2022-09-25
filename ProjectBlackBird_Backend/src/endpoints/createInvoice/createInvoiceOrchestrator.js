@@ -2,6 +2,7 @@ const createInvoiceService = require('./createInvoice-service');
 const invoiceService = require('../invoice/invoice-service');
 const transactionService = require('../transactions/transactions-service');
 const contactService = require('../contacts/contacts-service');
+const ledgerService = require('../ledger/ledger-service');
 const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
 const dayjs = require('dayjs');
 const { defaultInterestRate, defaultInterestMonthsInYear } = require('../../../config');
@@ -96,16 +97,15 @@ module.exports = createNewInvoice;
  * @returns
  */
 const updateContact = async (contactRecord, invoiceObject, db) => {
-  const contact = {
-    ...contactRecord,
+  const updatedLedger = {
     newBalance: false,
-    balanceChanged: false,
-    currentBalance: Number(invoiceObject.endingBalance),
-    beginningBalance: Number(invoiceObject.beginningBalance),
-    statementBalance: Number(invoiceObject.endingBalance),
-    originalCurrentBalance: Number(invoiceObject.originalCurrentBalance)
+    company: contactRecord.oid,
+    advancedPayment: invoiceObject.advancedPayment || 0,
+    currentAccountBalance: Number(invoiceObject.endingBalance),
+    beginningAccountBalance: Number(invoiceObject.beginningBalance),
+    statementBalance: Number(invoiceObject.endingBalance)
   };
-  return contactService.updateContact(db, contactRecord.oid, contact);
+  return ledgerService.updateCompanyLedger(db, updatedLedger);
 };
 
 /**

@@ -14,7 +14,13 @@ const createInvoiceService = {
    * @returns  [{},{}] array of objects. Each object is a 'company' record
    */
   getReadyToBill(db) {
-    return db.select().from('company').whereNotIn('currentBalance', [0]).whereIn('inactive', [false]).whereIn('notBillable', [false]);
+    return db
+      .select()
+      .from('balance')
+      .whereNotIn('balance.currentAccountBalance', [0])
+      .innerJoin('company', 'balance.company', '=', 'company.oid')
+      .whereIn('company.inactive', [false])
+      .whereIn('company.notBillable', [false]);
   },
 
   /**

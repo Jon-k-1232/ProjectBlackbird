@@ -1,6 +1,7 @@
 const express = require('express');
 const createInvoiceRouter = express.Router();
 const createInvoiceService = require('./createInvoice-service');
+const contactObjects = require('../contacts/contactObjects');
 const invoiceService = require('./../invoice/invoice-service');
 const transactionService = require('./../transactions/transactions-service');
 const createNewInvoice = require('./createInvoiceOrchestrator');
@@ -19,7 +20,8 @@ createInvoiceRouter
   .get(async (req, res) => {
     const db = req.app.get('db');
 
-    const readyToBillContacts = await createInvoiceService.getReadyToBill(db);
+    const readyToBill = await createInvoiceService.getReadyToBill(db);
+    const readyToBillContacts = readyToBill.map(contact => contactObjects.contactObject(contact));
     res.send({
       readyToBillContacts,
       status: 200
