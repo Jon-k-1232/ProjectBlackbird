@@ -20,11 +20,12 @@ authentication.post('/login', jsonParser, (req, res, next) => {
   AuthService.getUserWithUserName(db, loginUser.username)
     .then(user => {
       const dbUser = user[0];
-      if (!dbUser)
+      if (!dbUser) {
         return res.status(400).json({
           error: 'Incorrect username',
           status: 401
         });
+      }
 
       if (loginUser.password !== dbUser.password) {
         return res.status(400).json({

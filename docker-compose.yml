@@ -31,6 +31,8 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - data:/var/lib/postgresql
+    ports:
+      - '5432:5432'
     networks:
       customnetwork:
         ipv4_address: 172.16.0.3
@@ -84,7 +86,7 @@ networks:
   customnetwork:
     ipam:
       config:
-        - subnet: 172.16.0.0/10
+        - subnet: 172.16.0.0/20
 
 volumes:
   data:

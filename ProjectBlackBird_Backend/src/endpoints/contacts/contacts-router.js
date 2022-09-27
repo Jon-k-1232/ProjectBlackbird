@@ -2,10 +2,10 @@ const express = require('express');
 const contactsRouter = express.Router();
 const contactService = require('./contacts-service');
 const contactObjects = require('./contactObjects');
+const ledgerService = require('../ledger/ledger-service');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { requireAuth } = require('../auth/jwt-auth');
-const ledgerService = require('../ledger/ledger-service');
 
 /**
  * Gets all contacts

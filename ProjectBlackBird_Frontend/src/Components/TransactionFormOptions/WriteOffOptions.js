@@ -11,7 +11,6 @@ export default function WriteOffOptions({
   setDisableSubmit,
   setInvoice
 }) {
-  const [disable, setDisable] = useState(true);
   const [selectedCyclePeriod, setSelectedCyclePeriod] = useState('');
   const [selectedCycleInputValue, setSelectedCycleInputValue] = useState('');
 
@@ -33,7 +32,7 @@ export default function WriteOffOptions({
         {selectedCyclePeriod.value === 'writeOffInvoiced' && (
           <InvoiceConfirmation
             outstandingInvoices={outstandingInvoices}
-            setDisableSubmit={boolValue => setDisable(boolValue)}
+            setDisableSubmit={boolValue => setDisableSubmit(boolValue)}
             setInvoice={invoiceNumber => setInvoice(invoiceNumber)}
           />
         )}
