@@ -17,7 +17,7 @@ module.exports = {
   defaultInterestRate: 15 / 100,
   defaultInterestMonthsInYear: 12,
   // PDF Creation,
-  defaultPdfSaveLocation: `/Users/jonkimmel/time_and_billing/invoices/${dayjs().format('YYYY-MM-DD')}`
+  defaultPdfSaveLocation: `${__dirname}/invoices`
 };
 
 // Local Dev
@@ -41,5 +41,8 @@ module.exports = {
 //   defaultInterestRate: 15 / 100,
 //   defaultInterestMonthsInYear: 12,
 //   // PDF Creation,
-//   defaultPdfSaveLocation: `/Users/jonkimmel/time_and_billing/invoices/${dayjs().format('YYYY-MM-DD')}`
+//   defaultPdfSaveLocation: `${__dirname}/invoices`
 // };
+
+// old path
+// defaultPdfSaveLocation: `/Users/jonkimmel/time_and_billing/invoices/${dayjs().format('YYYY-MM-DD')}`

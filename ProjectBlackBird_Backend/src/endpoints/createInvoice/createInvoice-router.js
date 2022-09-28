@@ -10,6 +10,8 @@ const { defaultPdfSaveLocation } = require('../../../config');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { requireAuth } = require('../auth/jwt-auth');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * List of invoice ready to bill. User to select which invoices to create
@@ -70,6 +72,16 @@ createInvoiceRouter
     res.set('Content-Type', 'application/octet-stream');
     res.set('Content-Disposition', `attachment; filename=${file_after_download}`);
     res.download(`${defaultPdfSaveLocation}/output.zip`);
+
+    // Deletes the contents of the pdf directory to ensure the directory does not exponentially grow
+    fs.readdir(defaultPdfSaveLocation, (err, files) => {
+      if (err) throw err;
+      files.forEach(file => {
+        fs.unlink(path.join(defaultPdfSaveLocation, file), err => {
+          if (err) throw err;
+        });
+      });
+    });
   });
 
 /**
