@@ -2,6 +2,7 @@ const invoiceService = require('../invoice/invoice-service');
 const ledgerService = require('../ledger/ledger-service');
 const dayjs = require('dayjs');
 const { defaultInterestRate, defaultInterestMonthsInYear } = require('../../../config');
+const transactionService = require('../transactions/transactions-service');
 
 /**
  * Finds matching job transactions within company transactions, groups and adds together into new object.
@@ -222,7 +223,7 @@ const calculateInvoiceObject = async (contactRecord, aggregatedAndSortedTotals, 
  * @param {*} db
  * @returns
  */
-const updateContact = async (contactRecord, invoiceObject, db) => {
+const updateLedger = async (contactRecord, invoiceObject, db) => {
   const updatedLedger = {
     newBalance: false,
     company: contactRecord.oid,
@@ -285,12 +286,23 @@ const insertInvoiceDetails = (invoiceObject, invoiceNumber, db) => {
   });
 };
 
+/**
+ * Updates each transaction that is a billed amount (time,charge) with an invoice number
+ * @param {*} transactionsToUpdate [{},{}]
+ * @param {*} invoiceNumber Int
+ * @param {*} db
+ */
+const updateTransactions = (transactionsToUpdate, invoiceNumber, db) => {
+  transactionsToUpdate.forEach(async trans => await transactionService.updateTransactionWithInvoice(db, trans.oid, invoiceNumber));
+};
+
 module.exports = {
   aggregateTransactionTotalsByJob,
   aggregateAndSortRemainingTotals,
   calculateBillingInterest,
   calculateInvoiceObject,
-  updateContact,
+  updateLedger,
   insertInvoice,
-  insertInvoiceDetails
+  insertInvoiceDetails,
+  updateTransactions
 };

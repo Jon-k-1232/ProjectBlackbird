@@ -78,8 +78,11 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) =>
         // invoice inserts
         invoicingLibrary.insertInvoiceDetails(invoiceObject, nextInvoiceNumber, db);
         invoicingLibrary.insertInvoice(invoiceObject, nextInvoiceNumber, db);
-        invoicingLibrary.updateContact(contactRecord, invoiceObject, db);
+        invoicingLibrary.updateLedger(contactRecord, invoiceObject, db);
+        const transactionsToUpdate = [...newCompanyCharges, ...interestTransactionsWithoutNulls];
+        invoicingLibrary.updateTransactions(transactionsToUpdate, nextInvoiceNumber, db);
       }
+
       if (createPdf) {
         const payTo = await createInvoiceService.getBillTo(db);
         await pdfAndZipFunctions.pdfCreate(invoiceObject, payTo[0]);

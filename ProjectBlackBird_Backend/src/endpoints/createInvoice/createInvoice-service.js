@@ -32,16 +32,17 @@ const createInvoiceService = {
    * @returns
    */
   getCompanyTransactionsAfterLastInvoice(db, lastInvoiceDataEndDate, companyId) {
+    // Joining with job table in order to get job description and default description
+    // May need to add a condition for billable true/false/null. Removed condition as it was not inclusive of all intended transactions.
+    //.join('job', 'transaction.job', '=', 'job.oid') <- changed 9/28/22, changed to job table to get the oid of transactions
     return db
       .select()
-      .from('transaction')
-      .innerJoin('job', 'transaction.job', '=', 'job.oid')
+      .from('job')
+      .join('transaction', 'job.oid', '=', 'transaction.job')
       .whereIn('transaction.company', [companyId])
       .where('transaction.transactionDate', '>=', lastInvoiceDataEndDate)
-      .where('transaction.transactionType', '!=', 'Payment')
-      .where('transaction.billable', '=', true);
+      .where('transaction.transactionType', '!=', 'Payment');
   },
-
   /**
    *
    * @param {*} db

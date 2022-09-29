@@ -61,6 +61,10 @@ const transactionService = {
   getInvoiceTransactions(db, invoiceLineOid) {
     return db.select().from('transaction').where('invoice', invoiceLineOid).innerJoin('job', 'transaction.job', '=', 'job.oid');
   },
+
+  updateTransactionWithInvoice(db, transactionOid, invoiceNumber) {
+    return db.update('invoice', invoiceNumber).from('transaction').where('oid', transactionOid);
+  }
 };
 
 module.exports = transactionService;
