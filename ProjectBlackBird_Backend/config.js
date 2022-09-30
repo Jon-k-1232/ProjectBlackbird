@@ -1,5 +1,3 @@
-const dayjs = require('dayjs');
-
 // Docker Prod - runs DB off localhost - Confirmed working with db, but not login
 // module.exports = {
 //   PORT: 8000,

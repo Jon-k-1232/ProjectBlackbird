@@ -79,8 +79,7 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) =>
         invoicingLibrary.insertInvoiceDetails(invoiceObject, nextInvoiceNumber, db);
         invoicingLibrary.insertInvoice(invoiceObject, nextInvoiceNumber, db);
         invoicingLibrary.updateLedger(contactRecord, invoiceObject, db);
-        const transactionsToUpdate = [...newCompanyCharges, ...interestTransactionsWithoutNulls];
-        invoicingLibrary.updateTransactions(transactionsToUpdate, nextInvoiceNumber, db);
+        invoicingLibrary.updateTransactions(newCompanyTransactions, nextInvoiceNumber, db);
       }
 
       if (createPdf) {

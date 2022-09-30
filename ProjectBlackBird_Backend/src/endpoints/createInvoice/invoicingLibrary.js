@@ -287,13 +287,18 @@ const insertInvoiceDetails = (invoiceObject, invoiceNumber, db) => {
 };
 
 /**
- * Updates each transaction that is a billed amount (time,charge) with an invoice number
+ * Updates each transaction where the invoice number is 0 with an invoice number. This will show the transaction appearing on a given invoice.
  * @param {*} transactionsToUpdate [{},{}]
  * @param {*} invoiceNumber Int
  * @param {*} db
  */
 const updateTransactions = (transactionsToUpdate, invoiceNumber, db) => {
-  transactionsToUpdate.forEach(async trans => await transactionService.updateTransactionWithInvoice(db, trans.oid, invoiceNumber));
+  transactionsToUpdate.forEach(async trans => {
+    if (trans.invoice === 0 || !trans.invoice) {
+      await transactionService.updateTransactionWithInvoice(db, trans.oid, invoiceNumber);
+    }
+    return trans;
+  });
 };
 
 module.exports = {
