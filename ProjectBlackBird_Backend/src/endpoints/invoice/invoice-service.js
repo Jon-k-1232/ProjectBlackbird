@@ -81,8 +81,8 @@ const invoiceService = {
   },
 
   updateCompanyInvoice(db, invoiceRecord) {
-    const { oid, unPaidBalance, invoiceNumber } = invoiceRecord;
-    return db.update('unPaidBalance', unPaidBalance).from('invoice').where('oid', oid).where('invoiceNumber', invoiceNumber);
+    const { oid, unPaidBalance } = invoiceRecord;
+    return db.update('unPaidBalance', unPaidBalance).from('invoice').where('oid', oid);
   },
 
   updateWholeCompanyInvoice(db, invoiceNumber, invoiceData) {
@@ -103,7 +103,7 @@ const invoiceService = {
 
   getMostRecentCompanyInvoice(db, oid, invoiceNumber) {
     return db.select().from('invoice').whereIn('invoiceNumber', [invoiceNumber]).whereIn('company', [oid]);
-  },
+  }
 };
 
 module.exports = invoiceService;

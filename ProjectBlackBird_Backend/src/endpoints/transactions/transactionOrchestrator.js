@@ -41,14 +41,15 @@ const handleChargesAndPayments = async (db, newTransaction) => {
 module.exports = handleChargesAndPayments;
 
 const updateInvoice = (invoiceRecord, newTransaction) => {
-  const unPaidBalance = (Number(invoiceRecord.unPaidBalance) + Number(newTransaction.totalTransaction)).toFixed(2);
+  const unPaidBalance = Number(invoiceRecord.unPaidBalance) + Number(newTransaction.totalTransaction);
   return { ...invoiceRecord, unPaidBalance };
 };
 
 const updateCompanyTotal = (ledgerRecord, newTransaction) => {
-  const newBalance = (Number(ledgerRecord.currentAccountBalance) + Number(newTransaction.totalTransaction)).toFixed(2);
+  const newBalance = Number(ledgerRecord.currentAccountBalance) + Number(newTransaction.totalTransaction);
+
   const updateProperties = {
-    currentAccountBalance: Number(newBalance),
+    currentAccountBalance: Number(newBalance.toFixed(2)),
     newBalance: newBalance === 0 ? false : true
   };
 

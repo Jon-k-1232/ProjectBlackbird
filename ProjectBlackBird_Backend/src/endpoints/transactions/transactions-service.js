@@ -38,7 +38,7 @@ const transactionService = {
    * @returns [{},{}]
    */
   insertNewTransaction(db, newTransaction) {
-    return db.insert(newTransaction).returning('*').into('transaction');
+    return db.insert(newTransaction).into('transaction').returning('*');
   },
 
   getCompanyTransactionTypeAfterGivenDate(db, companyId, dateInPast, type) {

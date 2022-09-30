@@ -17,11 +17,12 @@ const ledgerService = {
 
   updateCompanyCurrentBalance(db, updatedBalance) {
     const { company, newBalance, currentAccountBalance } = updatedBalance;
+
     return db
       .update('newBalance', newBalance)
       .update('currentAccountBalance', currentAccountBalance)
       .from('balance')
-      .where('company', company);
+      .where('company', '=', company);
   },
 
   zeroOutLedger(db, oid, update) {

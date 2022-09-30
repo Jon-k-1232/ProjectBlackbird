@@ -5,7 +5,9 @@ const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { defaultDaysInPast } = require('../../../config');
 const transactionService = require('./transactions-service');
+const ledgerService = require('../ledger/ledger-service');
 const contactService = require('../contacts/contacts-service');
+const contactObjects = require('../contacts/contactObjects');
 const handleChargesAndPayments = require('./transactionOrchestrator');
 const { requireAuth } = require('../auth/jwt-auth');
 
@@ -118,11 +120,13 @@ transactionsRouter
     } else {
       // Orchestrator in transactionOrchestrator file.
       const balanceResponse = await handleChargesAndPayments(db, newTransaction);
-      const updatedAccountInfo = await contactService.getContactInfo(db, newTransaction.company);
+      const contactInfo = await contactService.getContactInfo(db, newTransaction.company);
+      const companyLedger = await ledgerService.getCompanyLedger(db, newTransaction.company);
+      const updatedAccountInfo = contactObjects.mergeContactAndLedger(contactInfo[0], companyLedger[0]);
 
       res.send({
         balanceResponse,
-        updatedAccountInfo,
+        updatedAccountInfo: [updatedAccountInfo],
         message: 'Transaction and account updated successfully.',
         status: 200
       });
@@ -138,10 +142,10 @@ const convertToOriginalTypes = newTransaction => {
     employee: Number(newTransaction.employee),
     transactionType: newTransaction.transactionType,
     transactionDate: newTransaction.transactionDate,
-    quantity: Number(newTransaction.quantity).toFixed(1),
+    quantity: Number(newTransaction.quantity),
     unitOfMeasure: newTransaction.unitOfMeasure,
-    unitTransaction: Number(newTransaction.unitTransaction).toFixed(2),
-    totalTransaction: Number(newTransaction.totalTransaction).toFixed(2),
+    unitTransaction: Number(newTransaction.unitTransaction),
+    totalTransaction: Number(newTransaction.totalTransaction),
     invoice: Number(newTransaction.invoice),
     billable: Boolean(newTransaction.billable)
   };
