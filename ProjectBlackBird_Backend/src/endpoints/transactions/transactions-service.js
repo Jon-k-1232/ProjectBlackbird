@@ -7,7 +7,12 @@ const transactionService = {
    * @returns [{},{}]
    */
   getTransactions(db, currDate, prevDate) {
-    return db.select().from('transaction').whereBetween('transactionDate', [prevDate, currDate]);
+    return db
+      .select()
+      .from('transaction')
+      .innerJoin('company', 'transaction.company', '=', 'company.oid')
+      .innerJoin('job', 'transaction.job', '=', 'job.oid')
+      .whereBetween('transaction.transactionDate', [prevDate, currDate]);
   },
 
   /**
@@ -19,7 +24,13 @@ const transactionService = {
    * @returns [{},{}]
    */
   getCompanyTransactions(db, company, currDate, prevDate) {
-    return db.select().from('transaction').whereIn('company', [company]).whereBetween('transactionDate', [prevDate, currDate]);
+    return db
+      .select()
+      .from('transaction')
+      .whereIn('transaction.company', [company])
+      .whereBetween('transaction.transactionDate', [prevDate, currDate])
+      .innerJoin('company', 'transaction.company', '=', 'company.oid')
+      .innerJoin('job', 'transaction.job', '=', 'job.oid');
   },
 
   /**

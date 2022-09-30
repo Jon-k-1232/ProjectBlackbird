@@ -23,11 +23,12 @@ transactionsRouter
     const time = Number(req.params.time) ? Number(req.params.time) : defaultDaysInPast;
     const timeBetween = helperFunctions.timeSubtractionFromTodayCalculator(time);
 
-    transactionService.getTransactions(db, timeBetween.currDate, timeBetween.prevDate).then(allTransactions => {
-      res.send({
-        allTransactions,
-        status: 200
-      });
+    const transactions = await transactionService.getTransactions(db, timeBetween.currDate, timeBetween.prevDate);
+    const allTransactions = transactions.map(transaction => transactionObject(transaction));
+
+    res.send({
+      allTransactions,
+      status: 200
     });
   });
 
@@ -46,11 +47,12 @@ transactionsRouter
     const company = Number(req.params.company);
     const timeBetween = helperFunctions.timeSubtractionFromTodayCalculator(time);
 
-    transactionService.getCompanyTransactions(db, company, timeBetween.currDate, timeBetween.prevDate).then(sortedCompanyTransactions => {
-      res.send({
-        sortedCompanyTransactions,
-        status: 200
-      });
+    const companyTransactions = await transactionService.getCompanyTransactions(db, company, timeBetween.currDate, timeBetween.prevDate);
+    const sortedCompanyTransactions = companyTransactions.map(transaction => transactionObject(transaction));
+
+    res.send({
+      sortedCompanyTransactions,
+      status: 200
     });
   });
 
@@ -161,4 +163,21 @@ const doesObjectContainNullValue = newTransaction => {
   });
 
   return transaction.includes(true);
+};
+
+const transactionObject = transactions => {
+  return {
+    oid: transactions.oid,
+    company: transactions.companyName,
+    job: transactions.description,
+    employee: transactions.employee,
+    transactionType: transactions.transactionType,
+    transactionDate: transactions.transactionDate,
+    quantity: transactions.quantity,
+    unitOfMeasure: transactions.unitOfMeasure,
+    unitTransaction: transactions.unitTransaction,
+    totalTransaction: transactions.totalTransaction,
+    invoice: transactions.invoice,
+    billable: transactions.billable
+  };
 };
