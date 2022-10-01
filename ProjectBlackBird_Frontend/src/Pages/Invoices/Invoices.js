@@ -24,12 +24,10 @@ export default function Invoices() {
     <Page title='Invoices'>
       <Container style={{ maxWidth: '1280px' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
-          <HeaderMenu handleOnClick={data => navigate(`/${data}/`)} page={'Invoices'} listOfButtons={button} />
+          <HeaderMenu page={'Invoices'} />
         </Stack>
         <DataTable {...invoices} route='/invoiceDetails/' columnToSortAscOrDesc='Invoice Date' ascOrDesc='desc' />
       </Container>
     </Page>
   );
 }
-
-const button = [{ name: 'newInvoice', variant: 'contained', icon: plusFill, htmlName: 'Create New Invoices' }];

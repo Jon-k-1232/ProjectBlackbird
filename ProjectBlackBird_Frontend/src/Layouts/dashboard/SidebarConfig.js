@@ -26,6 +26,11 @@ const sidebarConfig = [
     icon: getIcon(fileTextFill)
   },
   {
+    title: 'Create New Invoices',
+    path: '/newInvoice',
+    icon: getIcon(fileTextFill)
+  },
+  {
     title: 'Monthly Clients',
     path: '/monthlyClients',
     icon: getIcon(peopleFill)
