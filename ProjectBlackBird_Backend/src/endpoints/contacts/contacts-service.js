@@ -35,11 +35,6 @@ const contactService = {
   companyCleanupForDeactivation(db, oid, update) {
     const { inactive, notBillable } = update;
     return db.update('inactive', inactive).update('notBillable', notBillable).from('company').where('oid', oid);
-  },
-
-  companyZeroOut(db, oid, update) {
-    const { newBalance } = update;
-    return db.update('newBalance', newBalance).from('company').where('oid', oid);
   }
 };
 

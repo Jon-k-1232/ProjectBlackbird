@@ -290,7 +290,6 @@ const zeroContact = async (contactId, db) => {
     newBalance: false
   };
 
-  await contactService.companyZeroOut(db, contactId, update);
   await ledgerService.zeroOutLedger(db, contactId, update);
   const updateContact = await contactService.companyRecordAndBalance(db, contactId);
   const contact = updateContact[0];
