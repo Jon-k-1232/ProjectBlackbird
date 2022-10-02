@@ -210,6 +210,11 @@ const pdfAndZipFunctions = {
             .text(`${dayjs(paymentRecord.transactionDate).format('MM/DD/YYYY')}`, 25, height);
           paymentRecord.invoice != 0 && doc.font(normalFont).fontSize(12).text(`${paymentRecord.invoice}`, 200, height);
           paymentRecord.invoice === 0 && doc.font(normalFont).fontSize(12).text(`${invoiceNumber}`, 200, height);
+          paymentRecord.transactionType === 'Payment' &&
+            doc
+              .font(normalFont)
+              .fontSize(8)
+              .text('Payment - Thank You, Applied to beginning balance', 300, height + 2);
           paymentRecord.transactionType === 'Write Off' &&
             doc
               .font(normalFont)
@@ -316,6 +321,11 @@ const pdfAndZipFunctions = {
         .font(boldFont)
         .fontSize(14)
         .text(`${endingBalance.toFixed(2)}`, 700, height + 85);
+
+      doc
+        .font(normalFont)
+        .fontSize(14)
+        .text('* Please reference the invoice number on payment. Thanks!', 20, height + 130);
 
       // Interest statement
       doc.font(normalFont).fontSize(10).text(`${setupData.statementText}`, 250, 1100);

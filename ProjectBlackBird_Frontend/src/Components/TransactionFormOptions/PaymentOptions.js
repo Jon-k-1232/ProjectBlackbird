@@ -60,7 +60,7 @@ export default function PaymentOptions({
             helperText='* Minus ( - ) already applied. Minus indicates payment/ credit'
           />
         </Stack>
-        <Stack>{overPaymentAlert && <Alert severity='error'>Input Amount Exceeds Invoice Balance</Alert>}</Stack>
+        <Stack>{overPaymentAlert && <Alert severity='error'>Amount Exceeds Invoice Balance</Alert>}</Stack>
       </Stack>
     </Container>
   );

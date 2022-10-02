@@ -182,11 +182,15 @@ const calculateInvoiceObject = async (contactRecord, aggregatedAndSortedTotals, 
   const chargeItemRecords = aggregatedAndSortedTotals.filter(
     item => item.totalAdjustments || item.totalCharges || item.totalTime || item.totalInterest
   );
-  // Checking to see if a payment has already been applied to the unpaid amount to show on bill. Needed to avoid double payment calculation.
-  const outstandingPaymentCheck = paymentRecords.length && paymentRecords.some(item => item.invoice);
-  const endingBalanceTotal = outstandingPaymentCheck
-    ? (Number(outstandingCharges) + Number(charges)).toFixed(2)
-    : (Number(outstandingCharges) + Number(payments) + Number(charges)).toFixed(2);
+  // If the invoice does not have an invoice number, add to new array to calculate. This is used so payments are not double applied. Also this is needed for 'write offs' that are in current cycle that have not been invoiced.
+  const writeOffsNotApplied = paymentRecords.filter(record => {
+    if (record?.invoice <= 0) return record;
+  });
+  // Calculate write off's that have not been invoiced.
+  const notInvoicedWriteOffs = writeOffsNotApplied ? calculateGroupedJobTotals(writeOffsNotApplied, 'totalTransaction') : 0;
+  const endingBalanceTotal = writeOffsNotApplied
+    ? Number(outstandingCharges) + Number(charges) + Number(notInvoicedWriteOffs)
+    : Number(outstandingCharges) + Number(payments) + Number(notInvoicedWriteOffs) + Number(charges);
   const unpaidTotal = Number(charges).toFixed(2);
   const today = new Date();
   const endOfCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);

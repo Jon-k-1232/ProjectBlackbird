@@ -75,7 +75,7 @@ export default function WriteOffOptions({
             helperText='* Amount will reflect as negative in total amount. This credits the account/job.'
           />
         </Stack>
-        <Stack>{overPaymentAlert && <Alert severity='error'>Input Amount Exceeds Invoice Balance</Alert>}</Stack>
+        <Stack>{overPaymentAlert && <Alert severity='error'>Amount Exceeds Invoice Balance</Alert>}</Stack>
       </Stack>
     </Container>
   );
