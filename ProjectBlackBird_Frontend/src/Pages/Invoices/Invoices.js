@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Container, Stack } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import plusFill from '@iconify/icons-eva/plus-fill';
 import Page from '../../Components/Page';
 import DataTable from '../../Components/DataTable/DataTable';
 import HeaderMenu from '../../Components/HeaderMenu/HeaderMenu';
 import { getAllInvoices } from '../../ApiCalls/ApiCalls';
 
 export default function Invoices() {
-  const navigate = useNavigate();
   const [invoices, setInvoices] = useState(null);
 
   useEffect(() => {
