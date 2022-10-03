@@ -210,11 +210,24 @@ const pdfAndZipFunctions = {
             .text(`${dayjs(paymentRecord.transactionDate).format('MM/DD/YYYY')}`, 25, height);
           paymentRecord.invoice != 0 && doc.font(normalFont).fontSize(12).text(`${paymentRecord.invoice}`, 200, height);
           paymentRecord.invoice === 0 && doc.font(normalFont).fontSize(12).text(`${invoiceNumber}`, 200, height);
-          paymentRecord.transactionType === 'Payment' &&
+
+          const matchingOutstandingInvoice = outstandingInvoiceRecords.find(
+            outstandingRecord => Number(outstandingRecord.invoiceNumber) === Number(paymentRecord.invoice)
+          );
+
+          if (matchingOutstandingInvoice && paymentRecord.transactionType === 'Payment') {
             doc
               .font(normalFont)
               .fontSize(8)
-              .text('Payment - Thank You, Applied to beginning balance', 300, height + 2);
+              .text('Partial Payment - Applied to beginning balance', 300, height + 2);
+          } else if (matchingOutstandingInvoice === undefined && paymentRecord.transactionType === 'Payment') {
+            doc
+              .font(normalFont)
+              .fontSize(8)
+              .text('Payment - Invoice paid in full', 300, height + 2);
+          }
+
+          // TODO
           paymentRecord.transactionType === 'Write Off' &&
             doc
               .font(normalFont)
