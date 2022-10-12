@@ -71,13 +71,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - '80:80'
-      # - '443:443'
+      - '443:443'
     networks:
       customnetwork:
         ipv4_address: 172.16.0.6
-    # volumes:
-    #   - ./Nginx/Server_ssl/192.168.12.209.crt:/etc/nginx/192.168.12.209.crt
-    #   - ./Nginx/Server_ssl/192.168.12.209.key:/etc/nginx/192.168.12.209.key
+    volumes:
+      - ./Nginx/Server_ssl/192.168.12.209.crt:/etc/nginx/192.168.12.209.crt
+      - ./Nginx/Server_ssl/192.168.12.209.key:/etc/nginx/192.168.12.209.key
     restart: always
 
 # https://www.howtogeek.com/devops/how-to-assign-a-static-ip-to-a-docker-container/

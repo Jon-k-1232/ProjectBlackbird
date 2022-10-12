@@ -3,6 +3,7 @@ const PDFDocument = require('./pdfkit-tables');
 const AdmZip = require('adm-zip');
 const { defaultPdfSaveLocation } = require('../../config');
 const dayjs = require('dayjs');
+const { getCompanyTransactionsAfterLastInvoice } = require('../endpoints/createInvoice/createInvoice-service');
 
 //www.youtube.com/watch?v=fKewAlUwRPk     ---- stream ---- does not save on server
 
@@ -13,7 +14,7 @@ const dayjs = require('dayjs');
 // https://thecodebarbarian.com/working-with-zip-files-in-node-js.html
 
 const pdfAndZipFunctions = {
-  pdfCreate: async (arrayOfDataToCreate, setupData) => {
+  pdfCreate: async (invoiceDetails, arrayOfDataToCreate, setupData) => {
     const folderPath = defaultPdfSaveLocation;
 
     // Makes directory if it does not exist
@@ -25,29 +26,15 @@ const pdfAndZipFunctions = {
     const convertToArray = [arrayOfDataToCreate];
 
     convertToArray.map(invoice => {
-      const {
-        invoiceNumber,
-        contactName,
-        address1,
-        address2,
-        address3,
-        address4,
-        address5,
-        beginningBalance,
-        outstandingInvoiceRecords,
-        totalPayments,
-        paymentRecords,
-        totalNewCharges,
-        newChargesRecords,
-        endingBalance,
-        invoiceDate,
-        paymentDueDate
-      } = invoice;
+      const { beginningBalanceTotaledAndGrouped, paymentsTotaledAndGrouped, transactionsTotaledAndGrouped } = invoiceDetails;
+      const { invoiceNumber, contactName, address1, address3, address4, endingBalance, invoiceDate, paymentDueDate } = invoice;
 
       // removes any slashes from name and any '/' will escape and code will think additional file path.
+      const testContactNameForBlanks = contactName.replace(/\s+/g, '');
+      const selectContactName = testContactNameForBlanks.length ? contactName : address1;
       const cleanContactName =
-        contactName.charAt(0).toUpperCase() +
-        contactName
+        selectContactName.charAt(0).toUpperCase() +
+        selectContactName
           .slice(1)
           .match(/[A-Z]?[a-z]+|[0-9]+|[A-Z]+(?![a-z])/g)
           .join()
@@ -75,9 +62,8 @@ const pdfAndZipFunctions = {
 
       contactName && doc.font(normalFont).fontSize(12).text(`${contactName}`, 75, 235);
       address1 && doc.font(normalFont).fontSize(12).text(`${address1}`, 75, 255);
-      address2 && doc.font(normalFont).fontSize(12).text(`${address2}`, 75, 275);
-      address3 && doc.font(normalFont).fontSize(12).text(`${address3}`, 75, 295);
-      address4 && doc.font(normalFont).fontSize(12).text(`${address4}`, 75, 315);
+      address3 && doc.font(normalFont).fontSize(12).text(`${address3}`, 75, 275);
+      address4 && doc.font(normalFont).fontSize(12).text(`${address4}`, 75, 295);
 
       // Statement dates and starting amount ----------------------------------------------------------
       doc.font(normalFont).fontSize(12).text(`Statement Date:`, 590, 235);
@@ -122,30 +108,24 @@ const pdfAndZipFunctions = {
 
       height = height + 30;
 
-      if (outstandingInvoiceRecords.length) {
-        outstandingInvoiceRecords.forEach(outstandingRecord => {
-          // This only is for display on the bill only, does not effect DB. Only helps with readability of invoice
-          displayOfUnpaid = paymentRecords.reduce((prev, curr) => {
-            if (Number(outstandingRecord.invoiceNumber) === Number(curr.invoice)) {
-              return (prev = Number(prev) + Number(Math.abs(curr.totalTransaction)));
-            }
-            return outstandingRecord.unPaidBalance;
-          }, outstandingRecord.unPaidBalance);
+      if (Object.keys(beginningBalanceTotaledAndGrouped.groupedInvoices)) {
+        Object.entries(beginningBalanceTotaledAndGrouped.groupedInvoices).forEach(outstandingRecord => {
+          const [key, value] = outstandingRecord;
 
           height = height + 20;
           doc
             .font(normalFont)
             .fontSize(12)
-            .text(`${dayjs(outstandingRecord.invoiceDate).format('MM/DD/YYYY')}`, 25, height);
-          doc.font(normalFont).fontSize(12).text(`${outstandingRecord.invoiceNumber}`, 200, height);
+            .text(`${dayjs(value.invoiceDate).format('MM/DD/YYYY')}`, 25, height);
+          doc.font(normalFont).fontSize(12).text(`${value.invoice}`, 200, height);
           doc
             .font(normalFont)
             .fontSize(12)
-            .text(`${outstandingRecord.totalNewCharges.toFixed(2)}`, 400, height);
+            .text(`${value.invoiceTotal.toFixed(2)}`, 400, height);
           doc
             .font(normalFont)
             .fontSize(12)
-            .text(`${displayOfUnpaid.toFixed(2)}`, 700, height);
+            .text(`${value.invoiceTotal.toFixed(2)}`, 700, height);
         });
       }
 
@@ -160,19 +140,10 @@ const pdfAndZipFunctions = {
         .fontSize(12)
         .text(`Beginning Balance:`, 574, height + 45);
 
-      // Displays total for ease of bill reading.
-      const unpaidDisplayTotal = paymentRecords.reduce((prev, curr) => {
-        const match = outstandingInvoiceRecords.find(outstandingRecord => Number(outstandingRecord.invoiceNumber) === Number(curr.invoice));
-        if (match) {
-          return (prev = Number(prev) + Number(Math.abs(curr.totalTransaction)));
-        }
-        return beginningBalance;
-      }, beginningBalance);
-
       doc
         .font(normalFont)
         .fontSize(12)
-        .text(`${unpaidDisplayTotal.toFixed(2)}`, 700, height + 45);
+        .text(`${beginningBalanceTotaledAndGrouped.subTotal.toFixed(2)}`, 700, height + 45);
 
       // Payments ---------------------------------------------------------------------------------
       height = height + 80;
@@ -201,34 +172,26 @@ const pdfAndZipFunctions = {
 
       height = height + 30;
 
-      if (paymentRecords.length) {
-        paymentRecords.forEach(paymentRecord => {
+      if (Object.keys(paymentsTotaledAndGrouped.groupedPayments)) {
+        Object.entries(paymentsTotaledAndGrouped.groupedPayments).forEach(paymentRecord => {
+          const [key, value] = paymentRecord;
+
           height = height + 20;
+
           doc
             .font(normalFont)
             .fontSize(12)
-            .text(`${dayjs(paymentRecord.transactionDate).format('MM/DD/YYYY')}`, 25, height);
-          paymentRecord.invoice != 0 && doc.font(normalFont).fontSize(12).text(`${paymentRecord.invoice}`, 200, height);
-          paymentRecord.invoice === 0 && doc.font(normalFont).fontSize(12).text(`${invoiceNumber}`, 200, height);
+            .text(`${dayjs(value.transactionDate).format('MM/DD/YYYY')}`, 25, height);
 
-          const matchingOutstandingInvoice = outstandingInvoiceRecords.find(
-            outstandingRecord => Number(outstandingRecord.invoiceNumber) === Number(paymentRecord.invoice)
-          );
+          value.invoice != 0 && doc.font(normalFont).fontSize(12).text(`${value.invoice}`, 200, height);
+          value.invoice === 0 && doc.font(normalFont).fontSize(12).text(`${invoiceNumber}`, 200, height);
 
-          if (matchingOutstandingInvoice && paymentRecord.transactionType === 'Payment') {
-            doc
-              .font(normalFont)
-              .fontSize(8)
-              .text('Partial Payment - Applied to beginning balance', 300, height + 2);
-          } else if (matchingOutstandingInvoice === undefined && paymentRecord.transactionType === 'Payment') {
-            doc
-              .font(normalFont)
-              .fontSize(8)
-              .text('Payment - Invoice paid in full', 300, height + 2);
-          }
+          doc
+            .font(normalFont)
+            .fontSize(8)
+            .text('Payment - Thank You', 300, height + 2);
 
-          // TODO
-          paymentRecord.transactionType === 'Write Off' &&
+          value.transactionType === 'Write Off' &&
             doc
               .font(normalFont)
               .fontSize(8)
@@ -236,7 +199,7 @@ const pdfAndZipFunctions = {
           doc
             .font(normalFont)
             .fontSize(12)
-            .text((paymentRecord.totalTransaction && `${paymentRecord.totalTransaction.toFixed(2)}`) || '0.00', 700, height);
+            .text(value.invoiceTotal.toFixed(2) || '0.00', 700, height);
         });
       }
 
@@ -254,7 +217,7 @@ const pdfAndZipFunctions = {
       doc
         .font(normalFont)
         .fontSize(12)
-        .text((totalPayments && `${totalPayments.toFixed(2)}`) || '0.00', 700, height + 45);
+        .text(`${paymentsTotaledAndGrouped.subTotal.toFixed(2)}` || '0.00', 700, height + 45);
 
       // Charges ------------------------------------------------------------------------------------------
       height = height + 10;
@@ -288,24 +251,14 @@ const pdfAndZipFunctions = {
 
       height = height + 105;
 
-      if (newChargesRecords.length && newChargesRecords.totalCharges !== 0) {
-        newChargesRecords.forEach(chargeRecord => {
-          const totalAmount = (
-            Number(chargeRecord.totalCharges) +
-            Number(chargeRecord.totalAdjustments) +
-            Number(chargeRecord.totalTime) +
-            Number(chargeRecord.totalInterest)
-          ).toFixed(2);
-
-          const { totalTransaction } = chargeRecord;
+      if (Object.keys(transactionsTotaledAndGrouped.groupedTransactions)) {
+        Object.entries(transactionsTotaledAndGrouped.groupedTransactions).forEach(chargeRecord => {
+          const [key, value] = chargeRecord;
 
           height = height + 20;
-          doc.font(normalFont).fontSize(12).text(`${chargeRecord.job}`, 25, height);
-          doc.font(normalFont).fontSize(12).text(`${chargeRecord.description}`, 90, height);
-          doc
-            .font(normalFont)
-            .fontSize(12)
-            .text(`${totalTransaction || totalAmount}`, 595, height);
+          doc.font(normalFont).fontSize(12).text(`${value.job}`, 25, height);
+          doc.font(normalFont).fontSize(12).text(`${value.description}`, 90, height);
+          doc.font(normalFont).fontSize(12).text(value.jobTotal, 595, height);
         });
       }
 
@@ -323,13 +276,14 @@ const pdfAndZipFunctions = {
       doc
         .font(normalFont)
         .fontSize(12)
-        .text(`${totalNewCharges.toFixed(2)}`, 700, height + 55);
+        .text(`${transactionsTotaledAndGrouped.subTotal.toFixed(2)}`, 700, height + 55);
 
       // Total
       doc
         .font(normalFont)
         .fontSize(12)
         .text('Ending Balance:', 590, height + 85);
+
       doc
         .font(boldFont)
         .fontSize(14)
