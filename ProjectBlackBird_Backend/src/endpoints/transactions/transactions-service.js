@@ -73,8 +73,17 @@ const transactionService = {
     return db.select().from('transaction').where('invoice', invoiceLineOid).innerJoin('job', 'transaction.job', '=', 'job.oid');
   },
 
-  updateTransactionWithInvoice(db, transactionOid, invoiceNumber) {
-    return db.update('invoice', invoiceNumber).from('transaction').where('oid', transactionOid);
+  updateTransactionWithInvoice(db, transaction, invoiceNumber) {
+    const { company, employee, transactionType, transactionDate, totalTransaction, invoice } = transaction;
+    return db
+      .update('invoice', invoiceNumber)
+      .from('transaction')
+      .where('company', company)
+      .where('employee', employee)
+      .where('transactionType', transactionType)
+      .where('transactionDate', transactionDate)
+      .where('totalTransaction', totalTransaction)
+      .where('invoice', invoice);
   }
 };
 

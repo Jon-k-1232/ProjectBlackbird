@@ -3,7 +3,6 @@ const PDFDocument = require('./pdfkit-tables');
 const AdmZip = require('adm-zip');
 const { defaultPdfSaveLocation } = require('../../config');
 const dayjs = require('dayjs');
-const { getCompanyTransactionsAfterLastInvoice } = require('../endpoints/createInvoice/createInvoice-service');
 
 //www.youtube.com/watch?v=fKewAlUwRPk     ---- stream ---- does not save on server
 
@@ -14,7 +13,7 @@ const { getCompanyTransactionsAfterLastInvoice } = require('../endpoints/createI
 // https://thecodebarbarian.com/working-with-zip-files-in-node-js.html
 
 const pdfAndZipFunctions = {
-  pdfCreate: async (invoiceDetails, arrayOfDataToCreate, setupData) => {
+  pdfCreate: async (invoiceDetails, numberOfInvoicesArray, setupData) => {
     const folderPath = defaultPdfSaveLocation;
 
     // Makes directory if it does not exist
@@ -22,16 +21,27 @@ const pdfAndZipFunctions = {
       fs.mkdirSync(folderPath);
     }
 
+    // Array that data gets pushed to. This gets returned
     const pdfArr = [];
-    const convertToArray = [arrayOfDataToCreate];
 
-    convertToArray.map(invoice => {
-      const { beginningBalanceTotaledAndGrouped, paymentsTotaledAndGrouped, transactionsTotaledAndGrouped } = invoiceDetails;
-      const { invoiceNumber, contactName, address1, address3, address4, endingBalance, invoiceDate, paymentDueDate } = invoice;
+    numberOfInvoicesArray.map(countNotUsing => {
+      const {
+        beginningBalanceTotaledAndGrouped,
+        paymentsTotaledAndGrouped,
+        transactionsTotaledAndGrouped,
+        invoiceDate,
+        paymentDueDate,
+        endingBalance,
+        invoiceNumber,
+        contact
+      } = invoiceDetails;
+      const { firstName, lastName, companyName, address1, city, state, zip } = contact;
+      const contactName = `${firstName} ${lastName}`;
+      const address2 = `${city || ''}, ${state || ''} ${zip || ''}`;
 
       // removes any slashes from name and any '/' will escape and code will think additional file path.
       const testContactNameForBlanks = contactName.replace(/\s+/g, '');
-      const selectContactName = testContactNameForBlanks.length ? contactName : address1;
+      const selectContactName = testContactNameForBlanks.length ? contactName : companyName;
       const cleanContactName =
         selectContactName.charAt(0).toUpperCase() +
         selectContactName
@@ -61,9 +71,9 @@ const pdfAndZipFunctions = {
       doc.font(normalFont).fontSize(12).text(`Bill To:`, 20, 235);
 
       contactName && doc.font(normalFont).fontSize(12).text(`${contactName}`, 75, 235);
-      address1 && doc.font(normalFont).fontSize(12).text(`${address1}`, 75, 255);
-      address3 && doc.font(normalFont).fontSize(12).text(`${address3}`, 75, 275);
-      address4 && doc.font(normalFont).fontSize(12).text(`${address4}`, 75, 295);
+      companyName && doc.font(normalFont).fontSize(12).text(`${companyName}`, 75, 255);
+      address1 && doc.font(normalFont).fontSize(12).text(`${address1}`, 75, 275);
+      address2 && doc.font(normalFont).fontSize(12).text(`${address2}`, 75, 295);
 
       // Statement dates and starting amount ----------------------------------------------------------
       doc.font(normalFont).fontSize(12).text(`Statement Date:`, 590, 235);
@@ -256,9 +266,9 @@ const pdfAndZipFunctions = {
           const [key, value] = chargeRecord;
 
           height = height + 20;
-          doc.font(normalFont).fontSize(12).text(`${value.job}`, 25, height);
-          doc.font(normalFont).fontSize(12).text(`${value.description}`, 90, height);
-          doc.font(normalFont).fontSize(12).text(value.jobTotal, 595, height);
+          doc.font(normalFont).fontSize(12).text(value.job, 25, height);
+          doc.font(normalFont).fontSize(12).text(value.description, 90, height);
+          doc.font(normalFont).fontSize(12).text(value.jobTotal.toFixed(2), 595, height);
         });
       }
 
