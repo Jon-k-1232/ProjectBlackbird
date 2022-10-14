@@ -31,6 +31,7 @@ const createInvoiceService = {
    * @param {*} companyId
    * @returns
    */
+
   getCompanyTransactionsAfterLastInvoice(db, lastInvoiceDataEndDate, companyId) {
     // Joining with job table in order to get job description and default description
     // May need to add a condition for billable true/false/null. Removed condition as it was not inclusive of all intended transactions.
@@ -42,6 +43,7 @@ const createInvoiceService = {
       .where('transaction.transactionDate', '>=', lastInvoiceDataEndDate)
       .where('transaction.transactionType', '!=', 'Payment');
   },
+
   /**
    *
    * @param {*} db

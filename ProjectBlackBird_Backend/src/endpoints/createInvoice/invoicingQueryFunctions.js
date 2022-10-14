@@ -42,7 +42,24 @@ const fetchInitialData = async (db, id, i) => {
   return Promise.all([nextInvoiceNumber, contactRecord, lastInvoiceDataEndDate, payTo]);
 };
 
+/**
+ * Update invoiceDetails, insert invoice,update ledger, and update each transaction with invoice number
+ * @param {*} db
+ * @param {*} invoiceObject
+ * @param {*} nextInvoiceNumber
+ * @param {*} contactRecord
+ * @param {*} newCompanyCharges
+ */
+const postInvoiceDataToDB = async (db, invoiceObject, nextInvoiceNumber, contactRecord, newCompanyCharges) => {
+  await invoicingLibrary.insertInvoiceDetails(invoiceObject, nextInvoiceNumber, db);
+  // Creates object for invoice insert
+  const invoiceInsert = await invoicingLibrary.createInvoiceInsertObject(invoiceObject, db);
+  await invoicingLibrary.updateLedger(contactRecord, invoiceInsert, db);
+  await invoicingLibrary.updateTransactions(newCompanyCharges, nextInvoiceNumber, db);
+};
+
 module.exports = {
+  postInvoiceDataToDB,
   fetchInitialData,
   fetchInvoiceTransactionsAndInvoices
 };
