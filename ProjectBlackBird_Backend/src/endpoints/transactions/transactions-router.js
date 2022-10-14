@@ -137,6 +137,11 @@ transactionsRouter
 
 module.exports = transactionsRouter;
 
+/**
+ * Insure that the types being insert into db are the correct types.
+ * @param {*} newTransaction
+ * @returns
+ */
 const convertToOriginalTypes = newTransaction => {
   return {
     company: Number(newTransaction.company),
@@ -153,6 +158,11 @@ const convertToOriginalTypes = newTransaction => {
   };
 };
 
+/**
+ * Check for null values in a object
+ * @param {*} newTransaction
+ * @returns
+ */
 const doesObjectContainNullValue = newTransaction => {
   const transaction = Object.entries(newTransaction).map(item => {
     const [key, value] = item;
@@ -165,6 +175,11 @@ const doesObjectContainNullValue = newTransaction => {
   return transaction.includes(true);
 };
 
+/**
+ * Form the object for transactions
+ * @param {*} transactions
+ * @returns
+ */
 const transactionObject = transactions => {
   return {
     oid: transactions.oid,

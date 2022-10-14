@@ -19,7 +19,6 @@ const handleChargesAndPayments = async (db, newTransaction) => {
   }
 
   if (newTransaction.transactionType === 'Payment' || newTransaction.transactionType === 'Write Off') {
-    // ToDo need check for if invoice or not.
     // Insures that all Payments and WriteOffs are negative
     if (newTransaction.totalTransaction >= 0) newTransaction.totalTransaction = -Math.abs(newTransaction.totalTransaction);
     const ledgerRecordPaymentChange = updateCompanyTotal(ledgerRecord, newTransaction);
