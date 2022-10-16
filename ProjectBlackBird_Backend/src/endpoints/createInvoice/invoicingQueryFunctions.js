@@ -16,9 +16,7 @@ const dayjs = require('dayjs');
 const fetchInvoiceTransactionsAndInvoices = async (db, id, lastInvoiceDataEndDate) => {
   const newCompanyCharges = await createInvoiceService.getCompanyTransactionsAfterLastInvoice(db, lastInvoiceDataEndDate, id);
   const newPayments = await transactionService.getCompanyTransactionTypeAfterGivenDate(db, id, lastInvoiceDataEndDate, 'Payment');
-  const outstandingCompanyInvoices = await invoiceService.getOutstandingCompanyInvoice(db, id);
-  const beginningBalanceInvoices = await invoicingLibrary.getBeginningBalanceInvoices(db, newPayments, outstandingCompanyInvoices);
-  return Promise.all([newCompanyCharges, newPayments, beginningBalanceInvoices]);
+  return Promise.all([newCompanyCharges, newPayments]);
 };
 
 /**

@@ -97,6 +97,16 @@ const invoiceService = {
     return db.select().from('invoice').where('invoiceNumber', record.invoice);
   },
 
+  getOutstandingInvoicesArray(db, idArray, oid) {
+    return db
+      .select()
+      .from('invoice')
+      .where('company', oid)
+      .where(builder => builder.whereIn('invoiceNumber', idArray))
+      .orWhere('unPaidBalance', '>', 0)
+      .where('company', oid);
+  },
+
   getCreditedCompanyAmounts(db, oid) {
     return db.select().from('invoice').where('company', oid).where('unPaidBalance', '<', 0);
   },

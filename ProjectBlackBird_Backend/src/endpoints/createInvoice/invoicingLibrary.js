@@ -4,36 +4,57 @@ const transactionService = require('../transactions/transactions-service');
 const dayjs = require('dayjs');
 
 /**
- * Gets invoices that have zero balance for which payments zero'd out, as well as outstanding invoices.
+ * Get outstanding invoices. Update those invoices that have payments on them.
  * @param {*} db
  * @param {*} newPayments
  * @param {*} outstandingCompanyInvoices
  * @returns [{},{}] Array of Objects. Each Object is an invoice.
  */
-const getBeginningBalanceInvoices = async (db, newPayments, outstandingCompanyInvoices) => {
-  const findInvoice = payment =>
-    outstandingCompanyInvoices.find(outstandingInvoice => Number(outstandingInvoice.invoiceNumber) === Number(payment.invoice));
+const getBeginningBalanceInvoices = async (db, id, paymentsTotaledAndGrouped) => {
+  const newPayments = Object.entries(paymentsTotaledAndGrouped.groupedPayments);
+  const invoiceIds = Object.keys(paymentsTotaledAndGrouped.groupedPayments).map(item => Number(item));
 
-  const additionalInvoice = async payment => invoiceService.getOutstandingInvoice(db, payment);
+  const beginningInvoicesFromDB = await invoiceService.getOutstandingInvoicesArray(db, invoiceIds, id);
+  const beginningBalanceInvoices = [...beginningInvoicesFromDB];
 
-  const allApplicableInvoices = newPayments.map(async payment => {
-    const foundInvoice = findInvoice(payment);
+  let beginningBalanceArray = [];
 
-    if (foundInvoice === undefined) {
-      const pulledInvoiceDB = await additionalInvoice(payment);
-      const pulledInvoice = pulledInvoiceDB[0];
-      // If a payment was made, since invoice reflect payment already applied the math would not read well on invoice. Not changing the DB, this is for invoice display only.
-      pulledInvoice.unPaidBalance = pulledInvoice.unPaidBalance + Math.abs(payment.totalTransaction);
-      return pulledInvoice;
+  /*
+  Finding payments that match with invoices. This is needed for readability of the bill. Since the unpaid amt is handled real time when payments are made,
+  We have to find the payment that matches the outstanding invoice and add that amount back only on the bill, Not the db so the client of the company can see the break down of the bill. 
+   */
+  beginningBalanceInvoices.forEach(outstandingInvoice => {
+    // Returns true/false
+    const duplicateSearch = beginningBalanceArray.includes(grr => Number(grr.invoiceNumber) === Number(outstandingInvoice.invoiceNumber));
+
+    // If a duplicate outstanding invoices exists then do not push to end array.
+    if (duplicateSearch) {
+      console.log('hit');
+      return outstandingInvoice;
     }
 
-    // If a payment was made, since invoice reflect payment already applied the math would not read well on invoice. Not changing the DB, this is for invoice display only.
-    foundInvoice.unPaidBalance = foundInvoice.unPaidBalance + Math.abs(payment.totalTransaction);
-    return foundInvoice;
+    // If payments exist
+    if (Object.keys(newPayments).length) {
+      // Match this is where the matching of invoices occurs in this loop.
+      newPayments.forEach(payment => {
+        const [paymentInvoiceNumber, paymentInvoiceValue] = payment;
+        // If a match is found than update the match for the bill.
+        if (Number(paymentInvoiceNumber) === Number(outstandingInvoice.invoiceNumber)) {
+          outstandingInvoice.unPaidBalance = outstandingInvoice.unPaidBalance + Math.abs(paymentInvoiceValue.invoiceTotal);
+          beginningBalanceArray.push(outstandingInvoice);
+          return payment;
+        } else {
+          beginningBalanceArray.push(outstandingInvoice);
+          return payment;
+        }
+      });
+    } else {
+      // If no payments just push the outstanding invoice to the new array.
+      beginningBalanceArray.push(outstandingInvoice);
+    }
+    return outstandingInvoice;
   });
 
-  // If no new payments received, than return any outstanding invoices.
-  const beginningBalanceArray = newPayments.length ? await Promise.all(allApplicableInvoices) : outstandingCompanyInvoices;
   return beginningBalanceArray;
 };
 

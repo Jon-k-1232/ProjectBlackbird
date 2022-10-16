@@ -13,17 +13,22 @@ const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
 const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
   const invoiceCreation = arrayOfIds.map(async (id, i) => {
     const [nextInvoiceNumber, contactRecord, lastInvoiceDataEndDate, payTo] = await invoicingQueryFunctions.fetchInitialData(db, id, i);
-    const [newCompanyCharges, newPayments, beginningBalanceInvoices] = await invoicingQueryFunctions.fetchInvoiceTransactionsAndInvoices(
+    const [newCompanyCharges, newPayments] = await invoicingQueryFunctions.fetchInvoiceTransactionsAndInvoices(
       db,
       id,
       lastInvoiceDataEndDate
     );
 
+    /* 
+    DO NOT CHANGE ORDER OF FETCH NOR GROUPINGS.
+    Grouping of payments must come before getting the outstanding invoices. Outstanding invoices is dependant on it.
+    */
+    const paymentsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewPayments(newPayments, 'invoice');
+    const beginningBalanceInvoices = await invoicingLibrary.getBeginningBalanceInvoices(db, id, paymentsTotaledAndGrouped);
     const beginningBalanceTotaledAndGrouped = invoicingCalculations.groupAndTotalBeginningBalance(
       beginningBalanceInvoices,
       'invoiceNumber'
     );
-    const paymentsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewPayments(newPayments, 'invoice');
     const transactionsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewTransactions(newCompanyCharges, 'job');
 
     // Invoice created to send to pdf creation
