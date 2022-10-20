@@ -1,28 +1,21 @@
 import React from 'react';
 import { Typography, Card, CardContent, Container } from '@mui/material';
 
-export default function JobCard({ selectedJob, company }) {
+export default function JobCard({ selectedJob, company, statistics }) {
   const { companyName, oid, inactive } = company || '';
-  const { defaultDescription, description, defaultTargetPrice, isComplete } = selectedJob || '';
+  const { defaultDescription, description } = selectedJob || '';
+  const { totalCharges, totalTime, chargesOnly, writeOffsOnly, adjustmentsOnly, totalTimeCharge } = statistics || '';
 
   const jobDetail = () => (
     <table style={{ textAlign: 'justify' }}>
       <tbody>
         <tr>
           <th>Job Name:</th>
-          <td>{defaultDescription}</td>
-        </tr>
-        <tr>
-          <th>Additional Detail:</th>
           <td>{description}</td>
         </tr>
         <tr>
-          <th>Target Price:</th>
-          <td>{defaultTargetPrice}</td>
-        </tr>
-        <tr>
-          <th>Job Status:</th>
-          <td>{isComplete ? 'Completed' : 'Active'}</td>
+          <th>Additional Detail:</th>
+          <td>{defaultDescription}</td>
         </tr>
       </tbody>
     </table>
@@ -32,20 +25,28 @@ export default function JobCard({ selectedJob, company }) {
     <table style={{ textAlign: 'justify' }}>
       <tbody>
         <tr>
-          <th>Due on Account:</th>
-          <td>Placeholder Text</td>
+          <th>Charges + Time + Adjustments:</th>
+          <td>${totalCharges}</td>
         </tr>
         <tr>
-          <th>Amount Due on Job:</th>
-          <td>Placeholder Text</td>
+          <th>Breakdown of Time Cost:</th>
+          <td>${totalTimeCharge}</td>
         </tr>
         <tr>
-          <th> Write Off:</th>
-          <td>Placeholder Text</td>
+          <th>Breakdown of Charges:</th>
+          <td>${chargesOnly}</td>
         </tr>
         <tr>
-          <th> Average Time:</th>
-          <td>Placeholder Text</td>
+          <th>Breakdown of Write Offs:</th>
+          <td>${writeOffsOnly}</td>
+        </tr>
+        <tr>
+          <th>Breakdown of Adjustments:</th>
+          <td>${adjustmentsOnly}</td>
+        </tr>
+        <tr>
+          <th>Breakdown of Time:</th>
+          <td>{totalTime} Billable Hours</td>
         </tr>
       </tbody>
     </table>

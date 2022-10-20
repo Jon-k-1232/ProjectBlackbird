@@ -13,6 +13,7 @@ export default function JobDetails() {
   const [company, setCompany] = useState(null);
   const [jobTransactions, setJobTransactions] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [jobFinancials, setJobFinancials] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,17 +32,41 @@ export default function JobDetails() {
 
       const jobTransactions = await getJobTransactions(companyId, jobNumber);
       setJobTransactions(jobTransactions);
+
+      const transactionCalculations = calculateJobFinancials(jobTransactions);
+      setJobFinancials(transactionCalculations);
     };
     fetchData();
     // eslint-disable-next-line
   }, []);
 
+  const calculateJobFinancials = jobTransactions => {
+    const filterBySingle = transactionType => jobTransactions.rawData.filter(item => item.transactionType === transactionType);
+    const jobTransactionsPaymentsRemoved = jobTransactions.rawData.filter(
+      item => item.transactionType !== 'Payment' && item.transactionType !== 'Write Off'
+    );
+    const addAmounts = (array, property) => array.reduce((prev, curr) => prev + curr[property], 0);
+
+    const jobTransactionsTimeOnly = filterBySingle('Time');
+    const jobTransactionChargeOnly = filterBySingle('Charge');
+    const jobTransactionsWriteOffOnly = filterBySingle('WriteOff');
+    const jobTransactionsAdjustmentsOnly = filterBySingle('Adjustment');
+
+    const totalCharges = addAmounts(jobTransactionsPaymentsRemoved, 'totalTransaction');
+    const chargesOnly = addAmounts(jobTransactionChargeOnly, 'totalTransaction');
+    const writeOffsOnly = addAmounts(jobTransactionsWriteOffOnly, 'totalTransaction');
+    const adjustmentsOnly = addAmounts(jobTransactionsAdjustmentsOnly, 'totalTransaction');
+    const totalTimeCharge = addAmounts(jobTransactionsTimeOnly, 'totalTransaction');
+    const totalTime = addAmounts(jobTransactionsTimeOnly, 'quantity');
+
+    return { totalTime, totalCharges, chargesOnly, writeOffsOnly, adjustmentsOnly, totalTimeCharge };
+  };
+
   return (
     <Page title='Client Details'>
       <Container style={{ maxWidth: '1280px' }}>
         <HeaderMenu page={'Job Details'} />
-        {/* <HeaderMenu handleOnClick={data => setDataToShow(data)} page={'Client Details'} listOfButtons={button} /> */}
-        <JobCard selectedJob={selectedJob} company={company} />
+        <JobCard selectedJob={selectedJob} company={company} statistics={jobFinancials} />
         <DataTable {...jobTransactions} />
       </Container>
     </Page>
