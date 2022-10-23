@@ -5,6 +5,7 @@ const createInvoiceService = require('./createInvoice-service');
 const contactService = require('../contacts/contacts-service');
 const invoicingLibrary = require('./invoicingLibrary');
 const dayjs = require('dayjs');
+const advancedPaymentService = require('../advancedPayment/advancedPayment-service');
 
 /**
  * Fetches transactional data, payments, outstanding bills. Fetches additional outstanding bills that payments have been made on if not originally included.
@@ -16,7 +17,8 @@ const dayjs = require('dayjs');
 const fetchInvoiceTransactionsAndInvoices = async (db, id, lastInvoiceDataEndDate) => {
   const newCompanyCharges = await createInvoiceService.getCompanyTransactionsAfterLastInvoice(db, lastInvoiceDataEndDate, id);
   const newPayments = await transactionService.getCompanyTransactionTypeAfterGivenDate(db, id, lastInvoiceDataEndDate, 'Payment');
-  return Promise.all([newCompanyCharges, newPayments]);
+  const advancedPayments = await advancedPaymentService.getCompanyAdvancedPaymentsGreaterThanZero(db, id);
+  return Promise.all([newCompanyCharges, newPayments, advancedPayments]);
 };
 
 /**

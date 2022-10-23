@@ -105,8 +105,30 @@ const groupAndTotalNewTransactions = (transactions, property) => {
   return newObject;
 };
 
+/**
+ * Group and total the available advanced payments
+ * @param {*} advancedPaymentRecords
+ * @param {*} property
+ * @returns Object {} - { originalAmount: int, availableTotal: int, transactionType: string, transactionsGroupedByJob: [{},{}] }
+ */
+const groupAndTotalAdvancedPayments = advancedPaymentRecords =>
+  advancedPaymentRecords.reduce(
+    (acc, obj) => {
+      const availableAmount = acc.availableTotal + obj.availableAmount;
+      const originalAmount = acc.originalAmount + obj.originalAmount;
+
+      acc.transactionType = 'Advanced Payment/ Retainer';
+      acc.originalAmount = originalAmount;
+      acc.availableTotal = availableAmount;
+      acc.advancedPayments.push(obj);
+      return acc;
+    },
+    { originalAmount: 0, availableTotal: 0, transactionType: '', advancedPayments: [] }
+  );
+
 module.exports = {
   groupAndTotalNewTransactions,
   groupAndTotalNewPayments,
-  groupAndTotalBeginningBalance
+  groupAndTotalBeginningBalance,
+  groupAndTotalAdvancedPayments
 };

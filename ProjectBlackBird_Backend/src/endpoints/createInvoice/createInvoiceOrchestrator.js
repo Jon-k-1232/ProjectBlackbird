@@ -13,7 +13,7 @@ const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
 const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
   const invoiceCreation = arrayOfIds.map(async (id, i) => {
     const [nextInvoiceNumber, contactRecord, lastInvoiceDataEndDate, payTo] = await invoicingQueryFunctions.fetchInitialData(db, id, i);
-    const [newCompanyCharges, newPayments] = await invoicingQueryFunctions.fetchInvoiceTransactionsAndInvoices(
+    const [newCompanyCharges, newPayments, advancedPayments] = await invoicingQueryFunctions.fetchInvoiceTransactionsAndInvoices(
       db,
       id,
       lastInvoiceDataEndDate
@@ -30,6 +30,10 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       'invoiceNumber'
     );
     const transactionsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewTransactions(newCompanyCharges, 'job');
+    const advancedPaymentsTotaledAndGrouped = invoicingCalculations.groupAndTotalAdvancedPayments(advancedPayments);
+
+    const test = invoicingLibrary.adjustSubtotaledTransactions(transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped);
+    console.log(test);
 
     // Invoice created to send to pdf creation
     const invoiceObject = invoicingLibrary.createInvoice(
@@ -37,7 +41,8 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       nextInvoiceNumber,
       beginningBalanceTotaledAndGrouped,
       paymentsTotaledAndGrouped,
-      transactionsTotaledAndGrouped
+      transactionsTotaledAndGrouped,
+      advancedPaymentsTotaledAndGrouped
     );
 
     if (!roughDraft) {
@@ -49,7 +54,9 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       await pdfAndZipFunctions.pdfCreate(invoiceObject, [1], payTo[0]);
     }
 
-    return invoiceObject;
+    // return invoiceObject;
+    return advancedPaymentsTotaledAndGrouped;
+    // return transactionsTotaledAndGrouped;
   });
 
   return Promise.all(invoiceCreation);

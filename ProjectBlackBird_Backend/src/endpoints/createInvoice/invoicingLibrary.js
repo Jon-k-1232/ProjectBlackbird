@@ -59,6 +59,45 @@ const getBeginningBalanceInvoices = async (db, id, paymentsTotaledAndGrouped) =>
 };
 
 /**
+ *
+ * @param {*} transactionsTotaledAndGrouped
+ * @param {*} advancedPaymentsTotaledAndGrouped
+ * @returns
+ */
+const adjustSubtotaledTransactions = (transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped) => {
+  let advancedPaymentAmountAvailable = advancedPaymentsTotaledAndGrouped.availableTotal;
+  let adjustedAdvancedPayments = [];
+  let transactionsAmountRemaining = transactionsTotaledAndGrouped['subTotal'];
+  const advancedPaymentRecords = advancedPaymentsTotaledAndGrouped.advancedPayments;
+  const groupedTransactionJobs = Object.entries(transactionsTotaledAndGrouped.groupedTransactions)[0];
+
+  if (advancedPaymentAmountAvailable > 0 && groupedTransactionJobs.length > 0) {
+    const adjustedRecords = advancedPaymentRecords.map(record => {
+      if (record.availableAmount >= transactionsAmountRemaining && transactionsAmountRemaining !== 0) {
+        console.log('condition 1');
+        advancedPaymentAmountAvailable = record.availableAmount - transactionsAmountRemaining;
+        transactionsAmountRemaining = 0;
+        record.availableAmount = record.availableAmount - transactionsAmountRemaining;
+        return record;
+      } else if (record.availableAmount >= transactionsAmountRemaining && transactionsAmountRemaining === 0) {
+        console.log('condition 2');
+        advancedPaymentAmountAvailable = advancedPaymentAmountAvailable + record.availableAmount;
+        return record;
+      } else {
+        console.log('condition 3');
+        advancedPaymentAmountAvailable = advancedPaymentAmountAvailable - record.availableAmount;
+        transactionsAmountRemaining = transactionsAmountRemaining - record.availableAmount;
+        record.availableAmount = 0;
+        return record;
+      }
+    });
+    adjustedAdvancedPayments.push(adjustedRecords);
+  }
+
+  return { advancedPaymentAmountAvailable, adjustedAdvancedPayments, transactionsAmountRemaining };
+};
+
+/**
  * Creates new invoice to create PDF.
  * @param {*} contact
  * @param {*} invoiceNumber
@@ -72,11 +111,17 @@ const createInvoice = (
   invoiceNumber,
   beginningBalanceTotaledAndGrouped,
   paymentsTotaledAndGrouped,
-  transactionsTotaledAndGrouped
+  transactionsTotaledAndGrouped,
+  advancedPaymentsTotaledAndGrouped
 ) => {
   const today = new Date();
   const endOfCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const now = dayjs(today.toLocaleString()).format('YYYY-MM-DD HH:mm:ss');
+
+  // If an advanced payment is on record there should be no beginning balance records.
+  // const adjustForAdvancedPayment = adjustSubtotaledTransactions(transactionsTotaledAndGrouped,advancedPaymentsTotaledAndGrouped);
+  // const test = adjustSubtotaledTransactions(transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped);
+  // console.log(test);
 
   return {
     contact,
@@ -229,5 +274,6 @@ module.exports = {
   createInvoice,
   updateLedger,
   insertInvoiceDetails,
-  updateTransactions
+  updateTransactions,
+  adjustSubtotaledTransactions
 };
