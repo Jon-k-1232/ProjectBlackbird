@@ -59,34 +59,35 @@ const getBeginningBalanceInvoices = async (db, id, paymentsTotaledAndGrouped) =>
 };
 
 /**
- *
+ * Calculates the advanced payments from the current billing cycle transactions.
  * @param {*} transactionsTotaledAndGrouped
  * @param {*} advancedPaymentsTotaledAndGrouped
- * @returns
+ * @returns {} { advancedPaymentAmountAvailable: int, adjustedAdvancedPayments:[], transactionsAmountRemaining: int }
  */
-const adjustSubtotaledTransactions = (transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped) => {
-  let advancedPaymentAmountAvailable = advancedPaymentsTotaledAndGrouped.availableTotal;
+const adjustSubTotaledTransactions = (transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped) => {
+  let advancedPaymentsAvailableTotal = advancedPaymentsTotaledAndGrouped.availableTotal;
   let adjustedAdvancedPayments = [];
-  let transactionsAmountRemaining = transactionsTotaledAndGrouped['subTotal'];
+  let transactionsSubTotal = transactionsTotaledAndGrouped['subTotal'];
   const advancedPaymentRecords = advancedPaymentsTotaledAndGrouped.advancedPayments;
   const groupedTransactionJobs = Object.entries(transactionsTotaledAndGrouped.groupedTransactions)[0];
 
-  if (advancedPaymentAmountAvailable > 0 && groupedTransactionJobs.length > 0) {
+  // If there are advanced payments and current cycle transactions.
+  if (advancedPaymentsAvailableTotal > 0 && groupedTransactionJobs.length > 0) {
     const adjustedRecords = advancedPaymentRecords.map(record => {
-      if (record.availableAmount >= transactionsAmountRemaining && transactionsAmountRemaining !== 0) {
-        console.log('condition 1');
-        advancedPaymentAmountAvailable = record.availableAmount - transactionsAmountRemaining;
-        transactionsAmountRemaining = 0;
-        record.availableAmount = record.availableAmount - transactionsAmountRemaining;
+      // Condition for if the advanced payment record is greater than all the jobs sub total
+      if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal !== 0) {
+        advancedPaymentsAvailableTotal = record.availableAmount - transactionsSubTotal;
+        record.availableAmount = record.availableAmount - transactionsSubTotal;
+        transactionsSubTotal = 0;
         return record;
-      } else if (record.availableAmount >= transactionsAmountRemaining && transactionsAmountRemaining === 0) {
-        console.log('condition 2');
-        advancedPaymentAmountAvailable = advancedPaymentAmountAvailable + record.availableAmount;
+        // Condition for if the advanced payment record is greater than all the jobs sub total, but the jobs have been paid
+      } else if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal === 0) {
+        advancedPaymentsAvailableTotal = advancedPaymentsAvailableTotal + record.availableAmount;
         return record;
       } else {
-        console.log('condition 3');
-        advancedPaymentAmountAvailable = advancedPaymentAmountAvailable - record.availableAmount;
-        transactionsAmountRemaining = transactionsAmountRemaining - record.availableAmount;
+        // Condition for when the advanced payment record is less than the sub totalled jobs.
+        advancedPaymentsAvailableTotal = advancedPaymentsAvailableTotal - record.availableAmount;
+        transactionsSubTotal = transactionsSubTotal - record.availableAmount;
         record.availableAmount = 0;
         return record;
       }
@@ -94,7 +95,7 @@ const adjustSubtotaledTransactions = (transactionsTotaledAndGrouped, advancedPay
     adjustedAdvancedPayments.push(adjustedRecords);
   }
 
-  return { advancedPaymentAmountAvailable, adjustedAdvancedPayments, transactionsAmountRemaining };
+  return { advancedPaymentsAvailableTotal, adjustedAdvancedPayments, transactionsSubTotal };
 };
 
 /**
@@ -112,16 +113,15 @@ const createInvoice = (
   beginningBalanceTotaledAndGrouped,
   paymentsTotaledAndGrouped,
   transactionsTotaledAndGrouped,
-  advancedPaymentsTotaledAndGrouped
+  advancedPaymentsAppliedToTransactions
 ) => {
   const today = new Date();
   const endOfCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const now = dayjs(today.toLocaleString()).format('YYYY-MM-DD HH:mm:ss');
-
-  // If an advanced payment is on record there should be no beginning balance records.
-  // const adjustForAdvancedPayment = adjustSubtotaledTransactions(transactionsTotaledAndGrouped,advancedPaymentsTotaledAndGrouped);
-  // const test = adjustSubtotaledTransactions(transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped);
-  // console.log(test);
+  const newEndingBalance =
+    beginningBalanceTotaledAndGrouped.subTotal +
+    paymentsTotaledAndGrouped.subTotal +
+    advancedPaymentsAppliedToTransactions.transactionsSubTotal;
 
   return {
     contact,
@@ -129,10 +129,11 @@ const createInvoice = (
     beginningBalanceTotaledAndGrouped,
     paymentsTotaledAndGrouped,
     transactionsTotaledAndGrouped,
-    endingBalance: beginningBalanceTotaledAndGrouped.subTotal + paymentsTotaledAndGrouped.subTotal + transactionsTotaledAndGrouped.subTotal,
-    unPaidBalance: transactionsTotaledAndGrouped.subTotal,
+    endingBalance: newEndingBalance,
+    unPaidBalance: advancedPaymentsAppliedToTransactions.transactionsSubTotal,
     invoiceDate: now,
-    paymentDueDate: endOfCurrentMonth
+    paymentDueDate: endOfCurrentMonth,
+    advancedPaymentsAppliedToTransactions
   };
 };
 
@@ -275,5 +276,5 @@ module.exports = {
   updateLedger,
   insertInvoiceDetails,
   updateTransactions,
-  adjustSubtotaledTransactions
+  adjustSubTotaledTransactions
 };

@@ -107,8 +107,7 @@ const groupAndTotalNewTransactions = (transactions, property) => {
 
 /**
  * Group and total the available advanced payments
- * @param {*} advancedPaymentRecords
- * @param {*} property
+ * @param {*} advancedPaymentRecords []
  * @returns Object {} - { originalAmount: int, availableTotal: int, transactionType: string, transactionsGroupedByJob: [{},{}] }
  */
 const groupAndTotalAdvancedPayments = advancedPaymentRecords =>
