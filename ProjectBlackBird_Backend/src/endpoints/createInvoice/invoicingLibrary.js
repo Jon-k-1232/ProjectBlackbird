@@ -29,7 +29,6 @@ const getBeginningBalanceInvoices = async (db, id, paymentsTotaledAndGrouped) =>
 
     // If a duplicate outstanding invoices exists then do not push to end array.
     if (duplicateSearch) {
-      console.log('hit');
       return outstandingInvoice;
     }
 

@@ -135,24 +135,31 @@ const adjustSubTotaledTransactions = (transactionsTotaledAndGrouped, advancedPay
   let advancedPaymentsAvailableTotal = advancedPaymentsTotaledAndGrouped.availableTotal;
   let adjustedAdvancedPayments = [];
   let transactionsSubTotal = transactionsTotaledAndGrouped['subTotal'];
+  const advancedPaymentSubtotal = advancedPaymentsTotaledAndGrouped.availableTotal;
+  const transactionsTotal = transactionsTotaledAndGrouped['subTotal'];
   const advancedPaymentRecords = advancedPaymentsTotaledAndGrouped.advancedPayments;
   const groupedTransactionJobs = Object.entries(transactionsTotaledAndGrouped.groupedTransactions)[0];
+  const transactionToAdvancedAggregate = transactionsTotal - advancedPaymentsTotaledAndGrouped.availableTotal;
+  const remainingRetainerAmount = transactionToAdvancedAggregate >= 0 ? transactionToAdvancedAggregate : 0;
 
   // If there are advanced payments and current cycle transactions.
   if (advancedPaymentsAvailableTotal > 0 && groupedTransactionJobs.length > 0) {
     const adjustedRecords = advancedPaymentRecords.map(record => {
       // Condition for if the advanced payment record is greater than all the jobs sub total
       if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal !== 0) {
+        record.startingCycleAmountAvailable = record.availableAmount;
         advancedPaymentsAvailableTotal = record.availableAmount - transactionsSubTotal;
         record.availableAmount = record.availableAmount - transactionsSubTotal;
         transactionsSubTotal = 0;
         return record;
         // Condition for if the advanced payment record is greater than all the jobs sub total, but the jobs have been paid
       } else if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal === 0) {
+        record.startingCycleAmountAvailable = record.availableAmount;
         advancedPaymentsAvailableTotal = advancedPaymentsAvailableTotal + record.availableAmount;
         return record;
       } else {
         // Condition for when the advanced payment record is less than the sub totalled jobs.
+        record.startingCycleAmountAvailable = record.availableAmount;
         advancedPaymentsAvailableTotal = advancedPaymentsAvailableTotal - record.availableAmount;
         transactionsSubTotal = transactionsSubTotal - record.availableAmount;
         record.availableAmount = 0;
@@ -163,7 +170,13 @@ const adjustSubTotaledTransactions = (transactionsTotaledAndGrouped, advancedPay
   }
   adjustedAdvancedPayments = adjustedAdvancedPayments.flat();
 
-  return { advancedPaymentsAvailableTotal, adjustedAdvancedPayments, transactionsSubTotal };
+  return {
+    advancedPaymentsAvailableTotal,
+    adjustedAdvancedPayments,
+    transactionsSubTotal,
+    advancedPaymentSubtotal,
+    remainingRetainerAmount
+  };
 };
 
 module.exports = {

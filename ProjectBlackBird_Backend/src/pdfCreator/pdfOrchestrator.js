@@ -69,6 +69,7 @@ const pdfAndZipFunctions = {
       doc.lineCap('butt').lineWidth(4).moveTo(10, 210).lineTo(770, 210).stroke();
 
       // Bill To --------------------------------------------------------------------------------------
+
       doc.font(normalFont).fontSize(12).text(`Bill To:`, 20, 235);
 
       contactName && doc.font(normalFont).fontSize(12).text(`${contactName}`, 75, 235);
@@ -77,6 +78,7 @@ const pdfAndZipFunctions = {
       address2 && doc.font(normalFont).fontSize(12).text(`${address2}`, 75, 295);
 
       // Statement dates and starting amount ----------------------------------------------------------
+
       doc.font(normalFont).fontSize(12).text(`Statement Date:`, 590, 235);
       doc.font(normalFont).fontSize(12).text(`Payment Due Date:`, 573, 255);
 
@@ -90,6 +92,7 @@ const pdfAndZipFunctions = {
         .text(`${dayjs(paymentDueDate).format('MM/DD/YYYY')}`, 700, 255);
 
       // Outstanding Charges -------------------------------------------------------------------------
+
       let height = 385;
 
       doc.font(boldFont).fontSize(14).text('Beginning Balance', 10, height);
@@ -157,6 +160,7 @@ const pdfAndZipFunctions = {
         .text(`${beginningBalanceTotaledAndGrouped.subTotal.toFixed(2)}`, 700, height + 45);
 
       // Payments ---------------------------------------------------------------------------------
+
       height = height + 80;
 
       //Payments (x,y) (width from left, height from top)
@@ -229,69 +233,70 @@ const pdfAndZipFunctions = {
         .font(normalFont)
         .fontSize(12)
         .text(`${paymentsTotaledAndGrouped.subTotal.toFixed(2)}` || '0.00', 700, height + 45);
+
       // Retainers ----------------------------------------------------------------------------------------
-      height = height + 10;
-
-      doc
-        .font(boldFont)
-        .fontSize(14)
-        .text('Reatainer / Pre-Payment', 10, height + 65);
-      doc
-        .font(normalFont)
-        .fontSize(12)
-        .text('Date', 25, height + 90);
-      doc
-        .font(normalFont)
-        .fontSize(12)
-        .text('Applied On Invoices', 200, height + 90);
-      doc
-        .font(normalFont)
-        .fontSize(12)
-        .text('Original Amount', 400, height + 90);
-      doc
-        .font(normalFont)
-        .fontSize(12)
-        .text('Remaining', 700, height + 90);
-      doc
-        .lineCap('butt')
-        .lineWidth(1)
-        .moveTo(10, height + 110)
-        .lineTo(770, height + 110)
-        .stroke();
-
-      height = height + 110;
 
       if (advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.length) {
-        console.log(advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments);
+        height = height + 10;
+        doc
+          .font(boldFont)
+          .fontSize(14)
+          .text('Reatainer / Pre-Payment', 10, height + 65);
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text('Date', 25, height + 90);
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text('Applied On Invoices', 200, height + 90);
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text('Original Amount', 400, height + 90);
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text('Remaining', 700, height + 90);
+        doc
+          .lineCap('butt')
+          .lineWidth(1)
+          .moveTo(10, height + 110)
+          .lineTo(770, height + 110)
+          .stroke();
+
+        height = height + 110;
+
+        // Loops through records to print each record on the invoice
         advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(advancedPaymentRecord => {
-          const { appliedOnInvoices, availableAmount, createdDate, originalAmount } = advancedPaymentRecord;
-          // appliedOnInvoices.map(inv => inv);
+          const { appliedOnInvoices, createdDate, originalAmount, startingCycleAmountAvailable } = advancedPaymentRecord;
+          const invoiceList = appliedOnInvoices.map(inv => inv);
 
           height = height + 15;
           doc.font(normalFont).fontSize(12).text(dayjs(createdDate).format('MM/DD/YYYY'), 25, height);
-          doc.font(normalFont).fontSize(12).text(originalAmount.toFixed(2), 200, height);
+          doc.font(normalFont).fontSize(12).text(invoiceList, 200, height);
           doc.font(normalFont).fontSize(12).text(originalAmount.toFixed(2), 400, height);
-          doc.font(normalFont).fontSize(12).text(availableAmount.toFixed(2), 700, height);
+          doc.font(normalFont).fontSize(12).text(startingCycleAmountAvailable.toFixed(2), 700, height);
         });
+
+        doc
+          .lineCap('butt')
+          .lineWidth(1)
+          .moveTo(10, height + 20)
+          .lineTo(770, height + 20)
+          .stroke();
+
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text('Total Pre-Payment:', 575, height + 45);
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text(`${advancedPaymentsAppliedToTransactions.advancedPaymentSubtotal.toFixed(2)}`, 700, height + 45);
       }
-
-      doc
-        .lineCap('butt')
-        .lineWidth(1)
-        .moveTo(10, height + 20)
-        .lineTo(770, height + 20)
-        .stroke();
-
-      doc
-        .font(normalFont)
-        .fontSize(12)
-        .text('Total Pre-Payment:', 575, height + 45);
-      doc
-        .font(normalFont)
-        .fontSize(12)
-        .text(`${advancedPaymentsAppliedToTransactions.transactionsSubTotal.toFixed(2)}`, 700, height + 45);
-
       // Charges ------------------------------------------------------------------------------------------
+
       height = height + 10;
 
       doc
@@ -351,22 +356,33 @@ const pdfAndZipFunctions = {
         .text(`${advancedPaymentsAppliedToTransactions.transactionsSubTotal.toFixed(2)}`, 700, height + 55);
 
       // Total ------------------------------------------------------------------------------------------
+
       height = height;
 
       doc
         .font(normalFont)
         .fontSize(12)
-        .text('Ending Balance:', 590, height + 85);
-
+        .text('Balance Due:', 605, height + 85);
       doc
         .font(boldFont)
         .fontSize(14)
         .text(`${endingBalance.toFixed(2)}`, 700, height + 85);
 
+      if (advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.length) {
+        doc
+          .font(normalFont)
+          .fontSize(12)
+          .text('Remaining Retainer/ Pre-Payment Balance:', 445, height + 115);
+
+        doc
+          .font(boldFont)
+          .fontSize(14)
+          .text(`${advancedPaymentsAppliedToTransactions.advancedPaymentsAvailableTotal.toFixed(2)}`, 700, height + 115);
+      }
       doc
         .font(normalFont)
         .fontSize(14)
-        .text('* Please reference the invoice number on payment. Thanks!', 20, height + 130);
+        .text('* Please reference the invoice number on payment. Thanks!', 20, height + 150);
 
       // Interest statement
       doc.font(normalFont).fontSize(10).text(`${setupData.statementText}`, 250, 1100);
