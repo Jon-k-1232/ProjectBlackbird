@@ -24,11 +24,12 @@ const pdfAndZipFunctions = {
     // Array that data gets pushed to. This gets returned
     const pdfArr = [];
 
-    numberOfInvoicesArray.map(countNotUsing => {
+    numberOfInvoicesArray.map(notUsingCount => {
       const {
         beginningBalanceTotaledAndGrouped,
         paymentsTotaledAndGrouped,
         transactionsTotaledAndGrouped,
+        advancedPaymentsAppliedToTransactions,
         invoiceDate,
         paymentDueDate,
         endingBalance,
@@ -228,6 +229,67 @@ const pdfAndZipFunctions = {
         .font(normalFont)
         .fontSize(12)
         .text(`${paymentsTotaledAndGrouped.subTotal.toFixed(2)}` || '0.00', 700, height + 45);
+      // Retainers ----------------------------------------------------------------------------------------
+      height = height + 10;
+
+      doc
+        .font(boldFont)
+        .fontSize(14)
+        .text('Reatainer / Pre-Payment', 10, height + 65);
+      doc
+        .font(normalFont)
+        .fontSize(12)
+        .text('Date', 25, height + 90);
+      doc
+        .font(normalFont)
+        .fontSize(12)
+        .text('Applied On Invoices', 200, height + 90);
+      doc
+        .font(normalFont)
+        .fontSize(12)
+        .text('Original Amount', 400, height + 90);
+      doc
+        .font(normalFont)
+        .fontSize(12)
+        .text('Remaining', 700, height + 90);
+      doc
+        .lineCap('butt')
+        .lineWidth(1)
+        .moveTo(10, height + 110)
+        .lineTo(770, height + 110)
+        .stroke();
+
+      height = height + 110;
+
+      if (advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.length) {
+        console.log(advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments);
+        advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(advancedPaymentRecord => {
+          const { appliedOnInvoices, availableAmount, createdDate, originalAmount } = advancedPaymentRecord;
+          // appliedOnInvoices.map(inv => inv);
+
+          height = height + 15;
+          doc.font(normalFont).fontSize(12).text(dayjs(createdDate).format('MM/DD/YYYY'), 25, height);
+          doc.font(normalFont).fontSize(12).text(originalAmount.toFixed(2), 200, height);
+          doc.font(normalFont).fontSize(12).text(originalAmount.toFixed(2), 400, height);
+          doc.font(normalFont).fontSize(12).text(availableAmount.toFixed(2), 700, height);
+        });
+      }
+
+      doc
+        .lineCap('butt')
+        .lineWidth(1)
+        .moveTo(10, height + 20)
+        .lineTo(770, height + 20)
+        .stroke();
+
+      doc
+        .font(normalFont)
+        .fontSize(12)
+        .text('Total Pre-Payment:', 575, height + 45);
+      doc
+        .font(normalFont)
+        .fontSize(12)
+        .text(`${advancedPaymentsAppliedToTransactions.transactionsSubTotal.toFixed(2)}`, 700, height + 45);
 
       // Charges ------------------------------------------------------------------------------------------
       height = height + 10;
@@ -286,9 +348,11 @@ const pdfAndZipFunctions = {
       doc
         .font(normalFont)
         .fontSize(12)
-        .text(`${transactionsTotaledAndGrouped.subTotal.toFixed(2)}`, 700, height + 55);
+        .text(`${advancedPaymentsAppliedToTransactions.transactionsSubTotal.toFixed(2)}`, 700, height + 55);
 
-      // Total
+      // Total ------------------------------------------------------------------------------------------
+      height = height;
+
       doc
         .font(normalFont)
         .fontSize(12)

@@ -125,9 +125,51 @@ const groupAndTotalAdvancedPayments = advancedPaymentRecords =>
     { originalAmount: 0, availableTotal: 0, transactionType: '', advancedPayments: [] }
   );
 
+/**
+ * Calculates the advanced payments from the current billing cycle transactions.
+ * @param {*} transactionsTotaledAndGrouped
+ * @param {*} advancedPaymentsTotaledAndGrouped
+ * @returns {} { advancedPaymentAmountAvailable: int, adjustedAdvancedPayments:[], transactionsAmountRemaining: int }
+ */
+const adjustSubTotaledTransactions = (transactionsTotaledAndGrouped, advancedPaymentsTotaledAndGrouped) => {
+  let advancedPaymentsAvailableTotal = advancedPaymentsTotaledAndGrouped.availableTotal;
+  let adjustedAdvancedPayments = [];
+  let transactionsSubTotal = transactionsTotaledAndGrouped['subTotal'];
+  const advancedPaymentRecords = advancedPaymentsTotaledAndGrouped.advancedPayments;
+  const groupedTransactionJobs = Object.entries(transactionsTotaledAndGrouped.groupedTransactions)[0];
+
+  // If there are advanced payments and current cycle transactions.
+  if (advancedPaymentsAvailableTotal > 0 && groupedTransactionJobs.length > 0) {
+    const adjustedRecords = advancedPaymentRecords.map(record => {
+      // Condition for if the advanced payment record is greater than all the jobs sub total
+      if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal !== 0) {
+        advancedPaymentsAvailableTotal = record.availableAmount - transactionsSubTotal;
+        record.availableAmount = record.availableAmount - transactionsSubTotal;
+        transactionsSubTotal = 0;
+        return record;
+        // Condition for if the advanced payment record is greater than all the jobs sub total, but the jobs have been paid
+      } else if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal === 0) {
+        advancedPaymentsAvailableTotal = advancedPaymentsAvailableTotal + record.availableAmount;
+        return record;
+      } else {
+        // Condition for when the advanced payment record is less than the sub totalled jobs.
+        advancedPaymentsAvailableTotal = advancedPaymentsAvailableTotal - record.availableAmount;
+        transactionsSubTotal = transactionsSubTotal - record.availableAmount;
+        record.availableAmount = 0;
+        return record;
+      }
+    });
+    adjustedAdvancedPayments.push(adjustedRecords);
+  }
+  adjustedAdvancedPayments = adjustedAdvancedPayments.flat();
+
+  return { advancedPaymentsAvailableTotal, adjustedAdvancedPayments, transactionsSubTotal };
+};
+
 module.exports = {
   groupAndTotalNewTransactions,
   groupAndTotalNewPayments,
   groupAndTotalBeginningBalance,
-  groupAndTotalAdvancedPayments
+  groupAndTotalAdvancedPayments,
+  adjustSubTotaledTransactions
 };

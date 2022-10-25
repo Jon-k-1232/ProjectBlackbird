@@ -32,11 +32,10 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
     const transactionsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewTransactions(newCompanyCharges, 'job');
     const advancedPaymentsTotaledAndGrouped = invoicingCalculations.groupAndTotalAdvancedPayments(advancedPayments);
     //
-    const advancedPaymentsAppliedToTransactions = adjustSubTotaledTransactions(
+    const advancedPaymentsAppliedToTransactions = invoicingCalculations.adjustSubTotaledTransactions(
       transactionsTotaledAndGrouped,
       advancedPaymentsTotaledAndGrouped
     );
-    console.log(advancedPaymentsAppliedToTransactions);
 
     // Invoice created to send to pdf creation
     const invoiceObject = invoicingLibrary.createInvoice(
