@@ -50,7 +50,14 @@ const fetchInitialData = async (db, id, i) => {
  * @param {*} contactRecord
  * @param {*} newCompanyCharges
  */
-const postInvoiceDataToDB = async (db, invoiceObject, nextInvoiceNumber, contactRecord, newCompanyCharges) => {
+const postInvoiceDataToDB = async (
+  db,
+  invoiceObject,
+  nextInvoiceNumber,
+  contactRecord,
+  newCompanyCharges,
+  advancedPaymentsAppliedToTransactions
+) => {
   await invoicingLibrary.insertInvoiceDetails(invoiceObject, nextInvoiceNumber, db);
   // Creates object for invoice insert
   const invoiceInsert = await invoicingLibrary.createInvoiceInsertObject(invoiceObject, db);

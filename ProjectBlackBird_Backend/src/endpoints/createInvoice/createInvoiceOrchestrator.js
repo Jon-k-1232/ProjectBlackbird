@@ -2,6 +2,7 @@ const invoicingLibrary = require('./invoicingLibrary');
 const invoicingQueryFunctions = require('./invoicingQueryFunctions');
 const invoicingCalculations = require('./invoicingCalculations');
 const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
+const advancedPaymentService = require('../advancedPayment/advancedPayment-service');
 
 /**
  * Take a company record. checks for outstanding invoices, calculates interest, and charges. Also creates a pdf bill.
@@ -31,7 +32,8 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
     );
     const transactionsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewTransactions(newCompanyCharges, 'job');
     const advancedPaymentsTotaledAndGrouped = invoicingCalculations.groupAndTotalAdvancedPayments(advancedPayments);
-    //
+
+    // Creates / calculates the object for Advanced Payments / retainers
     const advancedPaymentsAppliedToTransactions = invoicingCalculations.adjustSubTotaledTransactions(
       transactionsTotaledAndGrouped,
       advancedPaymentsTotaledAndGrouped
@@ -47,8 +49,24 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       advancedPaymentsAppliedToTransactions
     );
 
+    // ToDo test inserts
+    // const insertAdvancedPayment = async (db, advancedPaymentsAppliedToTransactions) => {
+    advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(async advancedPaymentRecord => {
+      const advancedPaymentInsert = advancedPaymentRecord.availableAmount;
+      await advancedPaymentService.updateAdvancedPayment(db, oid, advancedPaymentInsert);
+    });
+    // };
+
+    // do insert
     if (!roughDraft) {
-      invoicingQueryFunctions.postInvoiceDataToDB(db, invoiceObject, nextInvoiceNumber, contactRecord, newCompanyCharges);
+      invoicingQueryFunctions.postInvoiceDataToDB(
+        db,
+        invoiceObject,
+        nextInvoiceNumber,
+        contactRecord,
+        newCompanyCharges,
+        advancedPaymentsAppliedToTransactions
+      );
     }
 
     if (createPdf) {
