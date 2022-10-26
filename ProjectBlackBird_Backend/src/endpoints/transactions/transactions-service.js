@@ -58,7 +58,8 @@ const transactionService = {
       .from('transaction')
       .whereIn('company', [companyId])
       .whereIn('transactionType', [type])
-      .where('transactionDate', '>', dateInPast);
+      .where('transactionDate', '>', dateInPast)
+      .where('billable', '=', true);
   },
 
   getTransactionTypeToday(db, type, oid) {

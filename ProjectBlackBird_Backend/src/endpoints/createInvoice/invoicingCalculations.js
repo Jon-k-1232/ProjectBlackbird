@@ -143,7 +143,7 @@ const adjustSubTotaledTransactions = (transactionsTotaledAndGrouped, advancedPay
   const remainingRetainerAmount = transactionToAdvancedAggregate >= 0 ? transactionToAdvancedAggregate : 0;
 
   // If there are advanced payments and current cycle transactions.
-  if (advancedPaymentsAvailableTotal > 0 && groupedTransactionJobs.length > 0) {
+  if (advancedPaymentsAvailableTotal > 0 && groupedTransactionJobs && groupedTransactionJobs.length > 0) {
     const adjustedRecords = advancedPaymentRecords.map(record => {
       // Condition for if the advanced payment record is greater than all the jobs sub total
       if (record.availableAmount >= transactionsSubTotal && transactionsSubTotal !== 0) {

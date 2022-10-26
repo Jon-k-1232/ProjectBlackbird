@@ -16,6 +16,7 @@ const advancedPaymentService = require('../advancedPayment/advancedPayment-servi
  */
 const fetchInvoiceTransactionsAndInvoices = async (db, id, lastInvoiceDataEndDate) => {
   const newCompanyCharges = await createInvoiceService.getCompanyTransactionsAfterLastInvoice(db, lastInvoiceDataEndDate, id);
+  // Only accepts payments marked as billable. This is to avoid double payment with advanced payments.
   const newPayments = await transactionService.getCompanyTransactionTypeAfterGivenDate(db, id, lastInvoiceDataEndDate, 'Payment');
   const advancedPayments = await advancedPaymentService.getCompanyAdvancedPaymentsGreaterThanZero(db, id);
   return Promise.all([newCompanyCharges, newPayments, advancedPayments]);
@@ -63,6 +64,38 @@ const postInvoiceDataToDB = async (
   const invoiceInsert = await invoicingLibrary.createInvoiceInsertObject(invoiceObject, db);
   await invoicingLibrary.updateLedger(contactRecord, invoiceInsert, db);
   await invoicingLibrary.updateTransactions(newCompanyCharges, nextInvoiceNumber, db);
+  // Insert each of the updated adjusted invoices for advanced payments
+  if (advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.length) {
+    advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(async advancedPaymentRecord => {
+      const advancedPaymentInsert = advancedPaymentRecord.availableAmount;
+      const recordId = advancedPaymentRecord.oid;
+      const arrayOfInvoices = [...advancedPaymentRecord.appliedOnInvoices, nextInvoiceNumber];
+      await advancedPaymentService.updateAdvancedPayment(db, arrayOfInvoices, recordId, advancedPaymentInsert);
+      // if (advancedPaymentRecord.availableAmount !== advancedPaymentRecord.startingCycleAmountAvailable) {
+      //   const paymentObject = createPaymentInsert(advancedPaymentRecord, nextInvoiceNumber);
+      //   await transactionService.insertNewTransaction(db, paymentObject);
+      // }
+    });
+  }
+};
+
+const createPaymentInsert = (advancedPaymentRecord, nextInvoiceNumber) => {
+  const { startingCycleAmountAvailable, company, availableAmount } = advancedPaymentRecord;
+  const paymentAmount = startingCycleAmountAvailable - availableAmount;
+
+  return {
+    company: company,
+    job: 0,
+    employee: 0,
+    transactionType: 'Payment',
+    transactionDate: dayjs().format(),
+    quantity: 1,
+    unitOfMeasure: 'Each',
+    unitTransaction: paymentAmount,
+    totalTransaction: paymentAmount,
+    invoice: nextInvoiceNumber,
+    billable: false
+  };
 };
 
 module.exports = {

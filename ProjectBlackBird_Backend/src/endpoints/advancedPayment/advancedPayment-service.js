@@ -15,8 +15,13 @@ const advancedPaymentService = {
     return db.insert(newAdvancedPayment).into('advancedPayments').returning('*');
   },
 
-  updateAdvancedPayment(db, recordOid, availableAmount) {
-    return db.update('availableAmount', availableAmount).from('advancedPayments').where('oid', recordOid).returning('*');
+  updateAdvancedPayment(db, arrayOfInvoices, recordOid, availableAmount) {
+    return db
+      .update('availableAmount', availableAmount)
+      .update('appliedOnInvoices', arrayOfInvoices)
+      .from('advancedPayments')
+      .where('oid', recordOid)
+      .returning('*');
   }
 };
 

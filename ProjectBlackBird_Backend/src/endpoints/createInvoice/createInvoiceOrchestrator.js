@@ -49,14 +49,6 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       advancedPaymentsAppliedToTransactions
     );
 
-    // ToDo test inserts
-    // const insertAdvancedPayment = async (db, advancedPaymentsAppliedToTransactions) => {
-    advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(async advancedPaymentRecord => {
-      const advancedPaymentInsert = advancedPaymentRecord.availableAmount;
-      await advancedPaymentService.updateAdvancedPayment(db, oid, advancedPaymentInsert);
-    });
-    // };
-
     // do insert
     if (!roughDraft) {
       invoicingQueryFunctions.postInvoiceDataToDB(
