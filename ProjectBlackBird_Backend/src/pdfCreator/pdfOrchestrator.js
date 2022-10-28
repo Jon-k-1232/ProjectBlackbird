@@ -241,7 +241,7 @@ const pdfAndZipFunctions = {
         doc
           .font(boldFont)
           .fontSize(14)
-          .text('Reatainer / Pre-Payment', 10, height + 65);
+          .text('Retainer / Pre-Payment', 10, height + 65);
         doc
           .font(normalFont)
           .fontSize(12)
@@ -353,7 +353,7 @@ const pdfAndZipFunctions = {
       doc
         .font(normalFont)
         .fontSize(12)
-        .text(`${advancedPaymentsAppliedToTransactions.transactionsSubTotal.toFixed(2)}`, 700, height + 55);
+        .text(`${transactionsTotaledAndGrouped.subTotal.toFixed(2)}`, 700, height + 55);
 
       // Total ------------------------------------------------------------------------------------------
 
