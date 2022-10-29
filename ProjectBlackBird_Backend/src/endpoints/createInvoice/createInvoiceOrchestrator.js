@@ -2,7 +2,6 @@ const invoicingLibrary = require('./invoicingLibrary');
 const invoicingQueryFunctions = require('./invoicingQueryFunctions');
 const invoicingCalculations = require('./invoicingCalculations');
 const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
-const advancedPaymentService = require('../advancedPayment/advancedPayment-service');
 
 /**
  * Take a company record. checks for outstanding invoices, calculates interest, and charges. Also creates a pdf bill.

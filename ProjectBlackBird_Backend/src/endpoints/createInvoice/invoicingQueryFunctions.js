@@ -1,5 +1,4 @@
 const invoiceService = require('../invoice/invoice-service');
-const ledgerService = require('../ledger/ledger-service');
 const transactionService = require('../transactions/transactions-service');
 const createInvoiceService = require('./createInvoice-service');
 const contactService = require('../contacts/contacts-service');
@@ -19,6 +18,7 @@ const fetchInvoiceTransactionsAndInvoices = async (db, id, lastInvoiceDataEndDat
   // Only accepts payments marked as billable. This is to avoid double payment with advanced payments.
   const newPayments = await transactionService.getCompanyTransactionTypeAfterGivenDate(db, id, lastInvoiceDataEndDate, 'Payment');
   const advancedPayments = await advancedPaymentService.getCompanyAdvancedPaymentsGreaterThanZero(db, id);
+
   return Promise.all([newCompanyCharges, newPayments, advancedPayments]);
 };
 
@@ -38,8 +38,10 @@ const fetchInitialData = async (db, id, i) => {
   // Getting transactions occurring between last billing cycle and today, grabs onto newly inserted interest transactions
   const lastCompanyInvoiceNumber = await invoiceService.getMostRecentCompanyInvoiceNumber(db, id);
   const lastCompanyInvoice = await invoiceService.getMostRecentCompanyInvoice(db, id, Number(lastCompanyInvoiceNumber[0].max));
-  const lastInvoiceDataEndDate = lastCompanyInvoice.length ? lastCompanyInvoice[0].dataEndDate : dayjs().subtract(365, 'day');
+  const lastInvoiceDate = lastCompanyInvoice.length && dayjs(lastCompanyInvoice[0].dataEndDate).format();
+  const lastInvoiceDataEndDate = lastCompanyInvoice.length ? lastInvoiceDate : dayjs().subtract(365, 'day');
   const payTo = await createInvoiceService.getBillTo(db);
+
   return Promise.all([nextInvoiceNumber, contactRecord, lastInvoiceDataEndDate, payTo]);
 };
 
@@ -64,38 +66,7 @@ const postInvoiceDataToDB = async (
   const invoiceInsert = await invoicingLibrary.createInvoiceInsertObject(invoiceObject, db);
   await invoicingLibrary.updateLedger(contactRecord, invoiceInsert, db);
   await invoicingLibrary.updateTransactions(newCompanyCharges, nextInvoiceNumber, db);
-  // Insert each of the updated adjusted invoices for advanced payments
-  if (advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.length) {
-    advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(async advancedPaymentRecord => {
-      const advancedPaymentInsert = advancedPaymentRecord.availableAmount;
-      const recordId = advancedPaymentRecord.oid;
-      const arrayOfInvoices = [...advancedPaymentRecord.appliedOnInvoices, nextInvoiceNumber];
-      await advancedPaymentService.updateAdvancedPayment(db, arrayOfInvoices, recordId, advancedPaymentInsert);
-      // if (advancedPaymentRecord.availableAmount !== advancedPaymentRecord.startingCycleAmountAvailable) {
-      //   const paymentObject = createPaymentInsert(advancedPaymentRecord, nextInvoiceNumber);
-      //   await transactionService.insertNewTransaction(db, paymentObject);
-      // }
-    });
-  }
-};
-
-const createPaymentInsert = (advancedPaymentRecord, nextInvoiceNumber) => {
-  const { startingCycleAmountAvailable, company, availableAmount } = advancedPaymentRecord;
-  const paymentAmount = startingCycleAmountAvailable - availableAmount;
-
-  return {
-    company: company,
-    job: 0,
-    employee: 0,
-    transactionType: 'Payment',
-    transactionDate: dayjs().format(),
-    quantity: 1,
-    unitOfMeasure: 'Each',
-    unitTransaction: paymentAmount,
-    totalTransaction: paymentAmount,
-    invoice: nextInvoiceNumber,
-    billable: false
-  };
+  await invoicingLibrary.handleAdvancedPayments(advancedPaymentsAppliedToTransactions, nextInvoiceNumber, db);
 };
 
 module.exports = {

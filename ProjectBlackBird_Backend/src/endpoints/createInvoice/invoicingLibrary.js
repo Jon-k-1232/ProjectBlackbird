@@ -1,6 +1,8 @@
 const invoiceService = require('../invoice/invoice-service');
 const ledgerService = require('../ledger/ledger-service');
 const transactionService = require('../transactions/transactions-service');
+const transactionsObjects = require('../transactions/transactionsObjects');
+const advancedPaymentService = require('../advancedPayment/advancedPayment-service');
 const dayjs = require('dayjs');
 
 /**
@@ -228,11 +230,36 @@ const updateTransactions = async (transactionsToUpdate, invoiceNumber, db) => {
   });
 };
 
+/**
+ * Inserts payments for advanced payments, and updates the advanced payment record in advancedPayment table
+ * @param {*} advancedPaymentsAppliedToTransactions
+ * @param {*} nextInvoiceNumber
+ * @param {*} db
+ */
+const handleAdvancedPayments = async (advancedPaymentsAppliedToTransactions, nextInvoiceNumber, db) => {
+  // Insert each of the updated adjusted invoices for advanced payments
+  if (advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.length) {
+    advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments.forEach(async advancedPaymentRecord => {
+      const advancedPaymentInsert = advancedPaymentRecord.availableAmount;
+      const recordId = advancedPaymentRecord.oid;
+      const arrayOfInvoices = [...advancedPaymentRecord.appliedOnInvoices, nextInvoiceNumber];
+      await advancedPaymentService.updateAdvancedPayment(db, arrayOfInvoices, recordId, advancedPaymentInsert);
+
+      // After the bill is created, this inserts the Advanced payment as a payment into 'transactions' table.
+      if (advancedPaymentRecord.availableAmount !== advancedPaymentRecord.startingCycleAmountAvailable) {
+        const paymentObject = transactionsObjects.createPaymentInsert(advancedPaymentRecord, nextInvoiceNumber);
+        await transactionService.insertNewTransaction(db, paymentObject);
+      }
+    });
+  }
+};
+
 module.exports = {
   getBeginningBalanceInvoices,
   createInvoiceInsertObject,
   createInvoice,
   updateLedger,
   insertInvoiceDetails,
-  updateTransactions
+  updateTransactions,
+  handleAdvancedPayments
 };
