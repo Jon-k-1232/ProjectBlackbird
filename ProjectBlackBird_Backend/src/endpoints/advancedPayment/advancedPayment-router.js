@@ -83,6 +83,7 @@ advancedPaymentRouter
 
 /**
  * Add a new advanced payment record for a company
+ * TODO: Being handled under transaction router right now.
  */
 advancedPaymentRouter
   .route('/new/advancedPayment')

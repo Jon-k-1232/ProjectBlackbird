@@ -12,8 +12,10 @@ const handleChargesAndPayments = async (db, newTransaction) => {
   if (newTransaction.transactionType === 'Charge' || newTransaction.transactionType === 'Time') {
     // Insures that all charges and Time charges are positive
     if (newTransaction.totalTransaction <= 0) newTransaction.totalTransaction = Math.abs(newTransaction.totalTransaction);
-    const ledgerRecordUpdate = updateCompanyTotal(ledgerRecord, newTransaction);
-    await ledgerService.updateCompanyCurrentBalance(db, ledgerRecordUpdate);
+    if (newTransaction.billable) {
+      const ledgerRecordUpdate = updateCompanyTotal(ledgerRecord, newTransaction);
+      await ledgerService.updateCompanyCurrentBalance(db, ledgerRecordUpdate);
+    }
     await transactionService.insertNewTransaction(db, newTransaction);
     return newTransaction;
   }
