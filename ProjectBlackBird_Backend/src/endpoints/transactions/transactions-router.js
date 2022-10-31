@@ -7,6 +7,7 @@ const { defaultDaysInPast } = require('../../../config');
 const transactionService = require('./transactions-service');
 const ledgerService = require('../ledger/ledger-service');
 const contactService = require('../contacts/contacts-service');
+const advancedPaymentService = require('../advancedPayment/advancedPayment-service');
 const contactObjects = require('../contacts/contactObjects');
 const handleChargesAndPayments = require('./transactionOrchestrator');
 const { requireAuth } = require('../auth/jwt-auth');
@@ -114,12 +115,18 @@ transactionsRouter
     const newTransaction = convertToOriginalTypes(cleanedFields);
     const nullValues = doesObjectContainNullValue(newTransaction);
 
-    if (nullValues) {
+    if (newTransaction.transactionType === 'Advanced Payment') {
+      const advancedPayment = advancedPaymentObject(newTransaction);
+
+      await advancedPaymentService.insertNewAdvancedPayment(db, advancedPayment);
+
+      res.send({ status: 200 });
+    } else if (nullValues && newTransaction.transactionType !== 'Advanced Payment') {
       res.send({
         message: 'NOT SUCCESSFUL, not all fields are filled out. Please complete all fields and resubmit.',
         status: 400
       });
-    } else {
+    } else if (!nullValues && newTransaction.transactionType !== 'Advanced Payment') {
       // Orchestrator in transactionOrchestrator file.
       const balanceResponse = await handleChargesAndPayments(db, newTransaction);
       const contactInfo = await contactService.getContactInfo(db, newTransaction.company);
@@ -166,7 +173,7 @@ const convertToOriginalTypes = newTransaction => {
 const doesObjectContainNullValue = newTransaction => {
   const transaction = Object.entries(newTransaction).map(item => {
     const [key, value] = item;
-    if (key !== 'invoice' && (value === null || value === 'null' || value === '' || value === undefined)) {
+    if (key !== 'invoice' && !value) {
       return true;
     }
     return false;
@@ -196,3 +203,16 @@ const transactionObject = transactions => {
     billable: transactions.billable
   };
 };
+
+/**
+ * Form object for advanced payment
+ * @param {*} advancedPayment
+ * @returns
+ */
+const advancedPaymentObject = advancedPayment => ({
+  company: Number(advancedPayment.company),
+  appliedOnInvoices: [],
+  originalAmount: Number(advancedPayment.totalTransaction),
+  availableAmount: Number(advancedPayment.totalTransaction),
+  createdDate: new Date(advancedPayment.transactionDate)
+});

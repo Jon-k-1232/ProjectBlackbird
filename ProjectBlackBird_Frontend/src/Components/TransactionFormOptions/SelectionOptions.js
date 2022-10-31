@@ -60,6 +60,7 @@ export default function SelectionOptions({
         />
 
         <Autocomplete
+          required
           value={selectedJob}
           onChange={(event, newValue) => setSelectedJob(newValue)}
           inputValue={selectedJobInputValue}
@@ -70,6 +71,7 @@ export default function SelectionOptions({
         />
 
         <Autocomplete
+          required
           value={selectedEmployee}
           onChange={(event, newValue) => setSelectedEmployee(newValue)}
           inputValue={selectedEmployeeInputValue}

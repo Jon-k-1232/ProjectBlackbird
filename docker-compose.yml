@@ -91,3 +91,4 @@ networks:
 volumes:
   data:
 # Dont forget to homebrew jq.... https://formulae.brew.sh/formula/jq
+

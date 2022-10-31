@@ -11,6 +11,7 @@ import WriteOffOptions from '../../Components/TransactionFormOptions/WriteOffOpt
 import TimeOptions from '../../Components/TransactionFormOptions/TimeOptions';
 import AdjustmentOptions from '../../Components/TransactionFormOptions/AdjustmentOptions';
 import SelectionOptions from '../../Components/TransactionFormOptions/SelectionOptions';
+import AdvancedPayments from 'src/Components/TransactionFormOptions/AdvancedPayments';
 
 export default function NewTransactions({
   passedCompany,
@@ -43,22 +44,19 @@ export default function NewTransactions({
     resetState();
   };
 
-  const formObjectForPost = () => {
-    const postObj = {
-      company: selectedCompany.oid,
-      job: selectedJob.oid,
-      employee: selectedEmployee.oid,
-      transactionType: selectedTransaction.displayValue,
-      transactionDate: selectedDate,
-      quantity: selectedQuantity,
-      unitOfMeasure: selectedTransaction.displayValue === 'Time' ? 'Hour' : 'Each',
-      unitTransaction: selectedAmount,
-      totalTransaction: totalTransaction,
-      invoice: invoice,
-      billable: billable
-    };
-    return postObj;
-  };
+  const formObjectForPost = () => ({
+    company: selectedCompany.oid,
+    job: selectedJob?.oid || 0,
+    employee: selectedEmployee?.oid || 0,
+    transactionType: selectedTransaction.displayValue,
+    transactionDate: selectedDate,
+    quantity: selectedQuantity,
+    unitOfMeasure: selectedTransaction.displayValue === 'Time' ? 'Hour' : 'Each',
+    unitTransaction: selectedAmount,
+    totalTransaction: totalTransaction,
+    invoice: invoice,
+    billable: billable
+  });
 
   const resetState = () => {
     setSelectedCompany(passedCompany ? passedCompany : null);
@@ -115,6 +113,7 @@ export default function NewTransactions({
                   renderInput={params => <TextField {...params} />}
                 />
               </Stack>
+
               {selectedTransaction && selectedTransaction.value === 'charge' && (
                 <ChargeOptions
                   selectedQuantity={selectedQuantity}
@@ -172,6 +171,15 @@ export default function NewTransactions({
                   setDisableSubmit={boolValue => setDisableSubmit(boolValue)}
                 />
               )}
+              {selectedTransaction && selectedTransaction.value === 'advancedPayment' && (
+                <AdvancedPayments
+                  selectedQuantity={selectedQuantity}
+                  setTotalTransaction={total => setTotalTransaction(total)}
+                  selectedAmount={selectedAmount}
+                  setSelectedAmount={amt => setSelectedAmount(amt)}
+                  setDisableSubmit={boolValue => setDisableSubmit(boolValue)}
+                />
+              )}
               <Typography style={{ color: '#92999f' }} variant='h5'>
                 Total ${totalTransaction}
               </Typography>
@@ -207,5 +215,9 @@ const transactionTypes = [
   {
     displayValue: 'Write Off',
     value: 'writeOff'
+  },
+  {
+    displayValue: 'Advanced Payment',
+    value: 'advancedPayment'
   }
 ];

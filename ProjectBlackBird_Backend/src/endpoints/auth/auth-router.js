@@ -34,14 +34,6 @@ authentication.post('/login', jsonParser, (req, res, next) => {
         });
       }
 
-      // TODO get working with password Hash
-      // return AuthService.comparePasswords(loginUser.password, dbUser.password).then(compareMatch => {
-      //   if (!compareMatch) {
-      //     return res.status(400).json({
-      //       error: 'Incorrect password'
-      //     });
-      //   }
-
       // Returns JWT token and user info to set front, so front end can then make another call for data
       const sub = dbUser.username;
       const payload = { userid: dbUser.oid };
