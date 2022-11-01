@@ -26,14 +26,6 @@ const getBeginningBalanceInvoices = async (db, id, paymentsTotaledAndGrouped) =>
   We have to find the payment that matches the outstanding invoice and add that amount back only on the bill, Not the db so the client of the company can see the break down of the bill. 
    */
   beginningBalanceInvoices.forEach(outstandingInvoice => {
-    // Returns true/false
-    const duplicateSearch = beginningBalanceArray.includes(grr => Number(grr.invoiceNumber) === Number(outstandingInvoice.invoiceNumber));
-
-    // If a duplicate outstanding invoices exists then do not push to end array.
-    if (duplicateSearch) {
-      return outstandingInvoice;
-    }
-
     // If payments exist
     if (Object.keys(newPayments).length) {
       // Match this is where the matching of invoices occurs in this loop.
@@ -56,7 +48,8 @@ const getBeginningBalanceInvoices = async (db, id, paymentsTotaledAndGrouped) =>
     return outstandingInvoice;
   });
 
-  return beginningBalanceArray;
+  // If any duplicate beginning balance invoices found, this removes duplicate objects
+  return [...new Set(beginningBalanceArray)];
 };
 
 /**
