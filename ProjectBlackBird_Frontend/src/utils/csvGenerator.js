@@ -26,21 +26,27 @@ export const csvGenerator = (data, title) => {
   csvExporter.generateCsv(data);
 };
 
-export const updateReviewInvoiceObject = invoicesForReviewArray =>
-  invoicesForReviewArray.map(invoice => {
-    const newObject = {
-      company: invoice.company,
-      contactName: invoice.contactName,
-      address1: invoice.address1,
-      address2: invoice.address2,
-      address3: invoice.address3,
-      address4: invoice.address4,
-      dataEndDate: invoice.dataEndDate,
-      beginningBalance: invoice.beginningBalance,
-      totalPayments: invoice.totalPayments,
-      totalNewCharges: invoice.totalNewCharges,
-      unPaidBalance: invoice.unPaidBalance,
-      endingBalance: invoice.endingBalance,
+export const updateReviewInvoiceObject = invoicesForReviewArray => {
+  return invoicesForReviewArray.map(invoice => {
+    const { unPaidBalance, endingBalance } = invoice;
+    const { oid, companyName, address1, city, zip, state, firstName, lastName } = invoice.contact;
+    const startingSubTotal = invoice.beginningBalanceTotaledAndGrouped.subTotal;
+    const paymentSubTotal = invoice.paymentsTotaledAndGrouped.subTotal;
+    const chargesSubTotal = invoice.transactionsTotaledAndGrouped.subTotal;
+    const { advancedPaymentsAvailableTotal, advancedPaymentSubtotal } = invoice.advancedPaymentsAppliedToTransactions;
+
+    return {
+      company: oid,
+      contactName: companyName,
+      address1: `${firstName} ${lastName}`,
+      address2: `${address1}, ${city}, ${state} ${zip}`,
+      beginningBalance: startingSubTotal.toFixed(2),
+      totalPayments: paymentSubTotal.toFixed(2),
+      totalNewCharges: chargesSubTotal.toFixed(2),
+      beginningRetainer: advancedPaymentSubtotal.toFixed(2),
+      remainingRetainer: advancedPaymentsAvailableTotal.toFixed(2),
+      unPaidBalance: unPaidBalance.toFixed(2),
+      endingBalance: endingBalance.toFixed(2),
       hold: '',
       mail: '',
       email: '',
@@ -49,6 +55,5 @@ export const updateReviewInvoiceObject = invoicesForReviewArray =>
       reasonForAdjustment: '',
       jobToAdjust: ''
     };
-
-    return newObject;
   });
+};
