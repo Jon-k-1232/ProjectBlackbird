@@ -40,7 +40,7 @@ export default function SelectionOptions({
 
   const handleCompanyChange = async newValue => {
     setSelectedCompany(newValue);
-    const allJobs = await getCompanyJobs(newValue.oid, null);
+    const allJobs = await getCompanyJobs(newValue.oid, '548');
     setCompanyJobList(allJobs.rawData);
     setCompanyToGetOutstandingInvoice(newValue);
   };
