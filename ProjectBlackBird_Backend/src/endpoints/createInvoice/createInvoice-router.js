@@ -40,8 +40,8 @@ createInvoiceRouter
     const db = req.app.get('db');
     const list = req.params.list;
     const { invoiceRoughDraft, createPdfInvoice } = req.params;
-    const roughDraft = invoiceRoughDraft === 'true' ? true : false;
-    const createPdf = createPdfInvoice === 'true' ? true : false;
+    const roughDraft = JSON.parse(invoiceRoughDraft);
+    const createPdf = JSON.parse(createPdfInvoice);
 
     const sanitizedData = sanitizeFields({ list });
     // Since sanitized, list is one giant string, must be separated at commas then converted into ints

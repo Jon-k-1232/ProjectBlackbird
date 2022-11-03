@@ -170,8 +170,7 @@ const insertInvoiceDetails = async (invoiceObject, invoiceNumber, db) => {
 
   if (Object.keys(transactionsTotaledAndGrouped.groupedTransactions)) {
     // Handles for Transactions
-    Object.entries(transactionsTotaledAndGrouped.groupedTransactions).forEach(async transaction => {
-      const [key, value] = transaction;
+    Object.values(transactionsTotaledAndGrouped.groupedTransactions).forEach(async value => {
       const { description, transactionType, jobTotal } = value;
       const invoiceDetail = {
         invoice: invoiceNumber,
@@ -190,8 +189,7 @@ const insertInvoiceDetails = async (invoiceObject, invoiceNumber, db) => {
 
   if (Object.keys(paymentsTotaledAndGrouped.groupedPayments)) {
     // Handles For Payments and Write offs.
-    Object.entries(paymentsTotaledAndGrouped.groupedPayments).forEach(async transaction => {
-      const [key, value] = transaction;
+    Object.values(paymentsTotaledAndGrouped.groupedPayments).forEach(async value => {
       const { transactionType, invoiceTotal } = value;
       const invoiceDetail = {
         invoice: invoiceNumber,
