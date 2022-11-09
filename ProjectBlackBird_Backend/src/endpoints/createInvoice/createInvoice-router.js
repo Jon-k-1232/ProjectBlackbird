@@ -1,17 +1,17 @@
 const express = require('express');
-const createInvoiceRouter = express.Router();
-const createInvoiceService = require('./createInvoice-service');
-const contactObjects = require('../contacts/contactObjects');
-const invoiceService = require('./../invoice/invoice-service');
-const transactionService = require('./../transactions/transactions-service');
-const createNewInvoice = require('./createInvoiceOrchestrator');
-const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
-const { defaultPdfSaveLocation } = require('../../../config');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { requireAuth } = require('../auth/jwt-auth');
 const fs = require('fs');
 const path = require('path');
+const createInvoiceRouter = express.Router();
+const createInvoiceService = require('./createInvoice-service');
+const invoiceService = require('./../invoice/invoice-service');
+const transactionService = require('./../transactions/transactions-service');
+const createNewInvoice = require('./createInvoiceOrchestrator');
+const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
+const contactObjects = require('../contacts/contactObjects');
+const { defaultPdfSaveLocation } = require('../../../config');
 
 /**
  * List of invoice ready to bill. User to select which invoices to create
@@ -42,13 +42,14 @@ createInvoiceRouter
     const { invoiceRoughDraft, createPdfInvoice } = req.params;
     const roughDraft = JSON.parse(invoiceRoughDraft);
     const createPdf = JSON.parse(createPdfInvoice);
+    const contactBalance = false;
 
     const sanitizedData = sanitizeFields({ list });
     // Since sanitized, list is one giant string, must be separated at commas then converted into ints
     const separatedList = sanitizedData.list.split(',');
     const arrayOfIds = separatedList.map(item => Number(item));
 
-    const newInvoices = await createNewInvoice(arrayOfIds, roughDraft, createPdf, db);
+    const newInvoices = await createNewInvoice(arrayOfIds, roughDraft, createPdf, db, contactBalance);
 
     res.send({
       newInvoices,
@@ -81,26 +82,6 @@ createInvoiceRouter
           if (err) throw err;
         });
       });
-    });
-  });
-
-/**
- * DEBUG
- * http://localhost:8000/create/createInvoices/readyToBill/debug
- */
-createInvoiceRouter
-  .route('/createInvoices/readyToBill/debug')
-  .all(requireAuth)
-  .get(jsonParser, async (req, res) => {
-    const db = req.app.get('db');
-
-    const arrayOfIds = [372677];
-    // const arrayOfIds = [245];
-
-    const newInvoices = await Promise.all(arrayOfIds.map((contactRecord, i) => createNewInvoice(contactRecord, i, db)));
-    res.send({
-      newInvoices,
-      status: 200
     });
   });
 

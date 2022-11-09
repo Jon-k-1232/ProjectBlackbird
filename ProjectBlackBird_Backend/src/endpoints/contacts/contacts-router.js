@@ -1,11 +1,12 @@
 const express = require('express');
+const jsonParser = express.json();
+const { sanitizeFields } = require('../../utils');
+const { requireAuth } = require('../auth/jwt-auth');
 const contactsRouter = express.Router();
 const contactService = require('./contacts-service');
 const contactObjects = require('./contactObjects');
 const ledgerService = require('../ledger/ledger-service');
-const jsonParser = express.json();
-const { sanitizeFields } = require('../../utils');
-const { requireAuth } = require('../auth/jwt-auth');
+const createNewInvoice = require('../createInvoice/createInvoiceOrchestrator');
 
 /**
  * Gets all contacts
@@ -34,10 +35,16 @@ contactsRouter
     const db = req.app.get('db');
     const companyId = Number(req.params.companyId);
 
+    const roughDraft = true;
+    const createPdf = false;
+    const contactBalance = true;
+
+    const currentAmounts = await createNewInvoice([companyId], roughDraft, createPdf, db, contactBalance);
     const ledgers = await ledgerService.getCompanyLedger(db, Number(companyId));
 
     contactService.getContactInfo(db, companyId).then(company => {
-      const companyContactInformation = contactObjects.mergeContactAndLedger(company[0], ledgers[0]);
+      const companyContactInformation = contactObjects.mergeContactAndInvoice(company[0], currentAmounts[0], ledgers[0]);
+
       res.send({
         companyContactInformation,
         status: 200

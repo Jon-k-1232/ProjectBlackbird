@@ -24,6 +24,37 @@ contactObjects = {
     };
   },
 
+  mergeContactAndInvoice(contactItem, currentAmounts, ledger) {
+    const advancedAmount = -Math.abs(currentAmounts.advancedPaymentsAppliedToTransactions.advancedPaymentSubtotal);
+    const beginningAmount = currentAmounts.beginningBalanceTotaledAndGrouped.subTotal;
+    const paymentAmount = currentAmounts.paymentsTotaledAndGrouped.subTotal;
+    const transactionAmount = currentAmounts.transactionsTotaledAndGrouped.subTotal;
+    const accountBalance = beginningAmount + paymentAmount + transactionAmount + advancedAmount;
+
+    return {
+      oid: contactItem.oid,
+      newBalance: ledger.newBalance,
+      companyName: contactItem.companyName,
+      firstName: contactItem.firstName,
+      lastName: contactItem.lastName,
+      middleI: contactItem.middleI,
+      address1: contactItem.address1,
+      address2: contactItem.address2,
+      city: contactItem.city,
+      state: contactItem.state,
+      zip: contactItem.zip,
+      country: contactItem.country,
+      phoneNumber1: contactItem.phoneNumber1,
+      mobilePhone: contactItem.mobilePhone,
+      advancedPayment: -Math.abs(currentAmounts.advancedPaymentsAppliedToTransactions.advancedPaymentsAvailableTotal),
+      currentBalance: parseFloat(accountBalance).toFixed(2),
+      beginningBalance: ledger.beginningAccountBalance,
+      statementBalance: ledger.statementBalance,
+      inactive: contactItem.inactive,
+      notBillable: contactItem.notBillable
+    };
+  },
+
   contactObject(contact) {
     return {
       oid: contact.company,

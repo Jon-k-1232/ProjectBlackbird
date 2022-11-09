@@ -4,13 +4,13 @@ const invoicingCalculations = require('./invoicingCalculations');
 const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
 
 /**
- * Take a company record. checks for outstanding invoices, calculates interest, and charges. Also creates a pdf bill.
+ * For each company record given, the advanced payments, payments, outstanding bills, and transactions will be calculated. In addition a pdf bill will be created.
  * @param {*} contactRecord {} object is company record
  * @param {*} i index of map
  * @param {*} db
  * @returns object {} object is the invoice with required fields
  */
-const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
+const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db, contactBalance) => {
   const invoiceCreation = arrayOfIds.map(async (id, i) => {
     const [nextInvoiceNumber, contactRecord, lastInvoiceDataEndDate, payTo] = await invoicingQueryFunctions.fetchInitialData(db, id, i);
     const [newCompanyCharges, newPayments, advancedPayments] = await invoicingQueryFunctions.fetchInvoiceTransactionsAndInvoices(
@@ -48,8 +48,7 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       advancedPaymentsAppliedToTransactions
     );
 
-    // do insert
-    if (!roughDraft) {
+    if (!contactBalance && !roughDraft) {
       invoicingQueryFunctions.postInvoiceDataToDB(
         db,
         invoiceObject,
@@ -60,7 +59,7 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db) => {
       );
     }
 
-    if (createPdf) {
+    if (!contactBalance && createPdf) {
       // Array with single number indicates number of pdf copies of current invoice needed
       await pdfAndZipFunctions.pdfCreate(invoiceObject, [1], payTo[0]);
     }

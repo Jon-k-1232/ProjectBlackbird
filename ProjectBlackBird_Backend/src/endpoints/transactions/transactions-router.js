@@ -1,16 +1,17 @@
 const express = require('express');
-const transactionsRouter = express.Router();
-const helperFunctions = require('../../helperFunctions/helperFunctions');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
-const { defaultDaysInPast } = require('../../../config');
+const { requireAuth } = require('../auth/jwt-auth');
+const transactionsRouter = express.Router();
 const transactionService = require('./transactions-service');
 const ledgerService = require('../ledger/ledger-service');
 const contactService = require('../contacts/contacts-service');
 const advancedPaymentService = require('../advancedPayment/advancedPayment-service');
+const helperFunctions = require('../../helperFunctions/helperFunctions');
 const contactObjects = require('../contacts/contactObjects');
 const handleChargesAndPayments = require('./transactionOrchestrator');
-const { requireAuth } = require('../auth/jwt-auth');
+const createNewInvoice = require('../createInvoice/createInvoiceOrchestrator');
+const { defaultDaysInPast } = require('../../../config');
 
 /**
  * All Transactions within a given time frame- in days.
@@ -128,10 +129,14 @@ transactionsRouter
       });
     } else if (!nullValues && newTransaction.transactionType !== 'Advanced Payment') {
       // Orchestrator in transactionOrchestrator file.
+      const roughDraft = true;
+      const createPdf = false;
+      const contactBalance = true;
       const balanceResponse = await handleChargesAndPayments(db, newTransaction);
       const contactInfo = await contactService.getContactInfo(db, newTransaction.company);
       const companyLedger = await ledgerService.getCompanyLedger(db, newTransaction.company);
-      const updatedAccountInfo = contactObjects.mergeContactAndLedger(contactInfo[0], companyLedger[0]);
+      const currentAmounts = await createNewInvoice([newTransaction.company], roughDraft, createPdf, db, contactBalance);
+      const updatedAccountInfo = contactObjects.mergeContactAndInvoice(contactInfo[0], currentAmounts[0], companyLedger[0]);
 
       res.send({
         balanceResponse,
