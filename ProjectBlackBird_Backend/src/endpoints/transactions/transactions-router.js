@@ -118,9 +118,7 @@ transactionsRouter
 
     if (newTransaction.transactionType === 'Advanced Payment') {
       const advancedPayment = advancedPaymentObject(newTransaction);
-
       await advancedPaymentService.insertNewAdvancedPayment(db, advancedPayment);
-
       res.send({ status: 200 });
     } else if (nullValues && newTransaction.transactionType !== 'Advanced Payment') {
       res.send({
@@ -178,7 +176,10 @@ const convertToOriginalTypes = newTransaction => {
 const doesObjectContainNullValue = newTransaction => {
   const transaction = Object.entries(newTransaction).map(item => {
     const [key, value] = item;
-    if (key !== 'invoice' && !value) {
+
+    if (key !== 'invoice' && (value === null || value === undefined)) {
+      return true;
+    } else if (key === 'job' && (value === null || value === undefined || value === 0)) {
       return true;
     }
     return false;

@@ -19,10 +19,6 @@ const createNewInvoice = async (arrayOfIds, roughDraft, createPdf, db, contactBa
       lastInvoiceDataEndDate
     );
 
-    /* 
-    DO NOT CHANGE ORDER OF FETCH NOR GROUPINGS.
-    Grouping of payments must come before getting the outstanding invoices. Outstanding invoices is dependant on it.
-    */
     const paymentsTotaledAndGrouped = invoicingCalculations.groupAndTotalNewPayments(newPayments, 'invoice');
     const beginningBalanceInvoices = await invoicingLibrary.getBeginningBalanceInvoices(db, id, paymentsTotaledAndGrouped);
     const beginningBalanceTotaledAndGrouped = invoicingCalculations.groupAndTotalBeginningBalance(
