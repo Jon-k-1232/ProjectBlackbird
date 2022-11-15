@@ -57,6 +57,10 @@ const invoiceService = {
     return db.select().from('invoicedetail').whereIn('invoice', arrayOfIds);
   },
 
+  getAnInvoicesDetail(db, invoiceOid) {
+    return db.select().from('invoicedetail').whereIn('oid', [invoiceOid]);
+  },
+
   /**
    * Gets all items that are showing a balance
    * @param {*} db

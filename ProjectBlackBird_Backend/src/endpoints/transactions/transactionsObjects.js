@@ -25,4 +25,36 @@ const createPaymentInsert = (advancedPaymentRecord, nextInvoiceNumber) => {
   };
 };
 
-module.exports = { createPaymentInsert };
+const createTransactionJobJoinObject = transaction => {
+  const {
+    job,
+    company,
+    transactionType,
+    transactionDate,
+    quantity,
+    unitOfMeasure,
+    unitTransaction,
+    totalTransaction,
+    invoice,
+    billable,
+    description,
+    firstName,
+    lastName
+  } = transaction;
+  return {
+    company,
+    job,
+    description,
+    employee: `${firstName} ${lastName}`,
+    transactionType,
+    transactionDate,
+    quantity,
+    unitOfMeasure,
+    unitTransaction,
+    totalTransaction,
+    invoice,
+    billable
+  };
+};
+
+module.exports = { createPaymentInsert, createTransactionJobJoinObject };

@@ -33,6 +33,19 @@ const transactionService = {
       .innerJoin('job', 'transaction.job', '=', 'job.oid');
   },
 
+  // Gets all transactions between two dates.
+  getCompanyTransactionsBetweenDates(db, company, currDate, prevDate) {
+    return db
+      .select()
+      .from('transaction')
+      .whereIn('transaction.company', [company])
+      .where('transaction.billable', '=', true)
+      .whereBetween('transaction.transactionDate', [prevDate, currDate])
+      .innerJoin('company', 'transaction.company', '=', 'company.oid')
+      .innerJoin('job', 'transaction.job', '=', 'job.oid')
+      .join('employee', 'transaction.employee', '=', 'employee.oid');
+  },
+
   /**
    * Get transactions for a given job
    * @param {*} db

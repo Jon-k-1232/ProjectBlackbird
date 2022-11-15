@@ -52,7 +52,9 @@ export default function InvoiceDetails() {
 
   return (
     <Page title='invoiceDetails'>
-      <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} listOfButtons={button} />
+      {/* TODO re-enable button once invoice detail completed */}
+      {/* <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} listOfButtons={button} /> */}
+      <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} />
       <AlertBanner postStatus={postStatus} type='Invoice Re-Printed' />
       <Container style={{ maxWidth: '1280px' }}>
         <Card className='contactWrapper'>

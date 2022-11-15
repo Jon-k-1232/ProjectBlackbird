@@ -2,6 +2,8 @@ const express = require('express');
 const invoiceRouter = express.Router();
 const invoiceService = require('./invoice-service');
 const helperFunctions = require('../../helperFunctions/helperFunctions');
+const transactionService = require('../transactions/transactions-service');
+const transactionsObjects = require('../transactions/transactionsObjects');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { defaultDaysInPast } = require('../../../config');
@@ -107,8 +109,8 @@ invoiceRouter
     const dataToPass = { invoice, company };
     const db = req.app.get('db');
 
-    const returnedInvoice = await invoiceService.getSingleCompanyInvoice(db, dataToPass);
-    const invoiceDetails = await invoiceService.getInvoiceDetail(db, [returnedInvoice[0].oid]);
+    // ToDo update this to get all invoice details. Invoice details to have all transactions and outstanding.
+    const [invoiceDetails, returnedInvoice] = await fetchAllTransactionsOnInvoice(db, dataToPass);
 
     res.send({
       returnedInvoice,
@@ -198,4 +200,37 @@ const convertToOriginalTypes = invoice => {
     paymentDueDate: invoice.paymentDueDate,
     dataEndDate: invoice.dataEndDate
   };
+};
+
+/**
+ * Returns requested invoice and transactions.
+ * @param {*} db
+ * @param {*} dataToPass
+ * @returns [invoiceDetails, returnedInvoice]
+ */
+const fetchAllTransactionsOnInvoice = async (db, dataToPass) => {
+  const { invoice, company } = dataToPass;
+
+  const returnedInvoice = await invoiceService.getSingleCompanyInvoice(db, dataToPass);
+
+  // Having to get all transaction between dates since old data in transactions prior to June 2022 may not have a correct invoiceNumber.
+  const returnedSelectedInvoice = await invoiceService.getSingleCompanyInvoice(db, dataToPass);
+  const selectedInvoice = returnedSelectedInvoice[0];
+  const returnedCompanyInvoices = await invoiceService.getCompanyInvoices(db, company);
+  const sortedByDateCompanyInvoices = returnedCompanyInvoices.sort((a, b) => new Date(b.invoiceDate) - new Date(a.invoiceDate));
+
+  const indexOfPriorInvoice = sortedByDateCompanyInvoices.findIndex(invoice => invoice.oid === selectedInvoice.oid) + 1;
+  const priorInvoiceEndDate = sortedByDateCompanyInvoices[indexOfPriorInvoice].dataEndDate;
+  const selectedInvoiceEndDate = selectedInvoice.dataEndDate;
+
+  const invoiceDetailsReturned = await transactionService.getCompanyTransactionsBetweenDates(
+    db,
+    company,
+    selectedInvoiceEndDate,
+    priorInvoiceEndDate
+  );
+
+  const invoiceDetails = invoiceDetailsReturned.map(transaction => transactionsObjects.createTransactionJobJoinObject(transaction));
+
+  return [invoiceDetails, returnedInvoice];
 };
