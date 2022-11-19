@@ -61,7 +61,11 @@ const postInvoiceDataToDB = async (
   newCompanyCharges,
   advancedPaymentsAppliedToTransactions
 ) => {
-  await invoicingLibrary.insertInvoiceDetails(invoiceObject, nextInvoiceNumber, db);
+  invoicingLibrary.insertOutstandingInvoiceDetails(db, invoiceObject, nextInvoiceNumber);
+  invoicingLibrary.insertPaymentInvoiceDetails(db, invoiceObject, nextInvoiceNumber);
+  invoicingLibrary.insertChargeInvoiceDetails(db, invoiceObject, nextInvoiceNumber);
+  invoicingLibrary.insertAdvancedPaymentInvoiceDetails(db, invoiceObject, nextInvoiceNumber);
+
   // Creates object for invoice insert
   const invoiceInsert = await invoicingLibrary.createInvoiceInsertObject(invoiceObject, db);
   await invoicingLibrary.updateLedger(contactRecord, invoiceInsert, db);

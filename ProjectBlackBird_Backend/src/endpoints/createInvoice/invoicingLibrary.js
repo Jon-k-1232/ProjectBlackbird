@@ -71,7 +71,7 @@ const createInvoice = (
 ) => {
   const today = new Date();
   const endOfCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  const now = dayjs(today.toLocaleString()).format('YYYY-MM-DD HH:mm:ss');
+  const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
   const newEndingBalance =
     beginningBalanceTotaledAndGrouped.subTotal +
     paymentsTotaledAndGrouped.subTotal +
@@ -159,47 +159,124 @@ const updateLedger = async (contactRecord, invoiceObject, db) => {
 };
 
 /**
- * Forms invoice detail
+ * Insert outstanding invoice into details
+ * @param {*} db
  * @param {*} invoiceObject
  * @param {*} invoiceNumber
- * @param {*} db
- * @returns no return
  */
-const insertInvoiceDetails = async (invoiceObject, invoiceNumber, db) => {
-  const { transactionsTotaledAndGrouped, paymentsTotaledAndGrouped } = invoiceObject;
+const insertOutstandingInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
+  const { beginningBalanceTotaledAndGrouped, paymentDueDate, contact } = invoiceObject;
 
-  if (Object.keys(transactionsTotaledAndGrouped.groupedTransactions)) {
-    // Handles for Transactions
-    Object.values(transactionsTotaledAndGrouped.groupedTransactions).forEach(async value => {
-      const { description, transactionType, jobTotal } = value;
+  if (Object.keys(beginningBalanceTotaledAndGrouped.groupedInvoices)) {
+    Object.values(beginningBalanceTotaledAndGrouped.groupedInvoices).forEach(async value => {
+      const { invoiceTotal, invoice } = value;
       const invoiceDetail = {
+        company: contact.oid,
         invoice: invoiceNumber,
-        detailDate: dayjs().format(),
-        detailType: transactionType,
-        jobDescription: description,
-        charges: jobTotal,
-        writeOff: 0,
-        net: jobTotal,
-        payment: 0
+        invoiceDate: dayjs().format(),
+        paymentDueDate: paymentDueDate,
+        job: null,
+        transactionType: 'Invoice',
+        transactionDescription: 'Outstanding Invoice',
+        transactionTotal: null,
+        transactionInvoiceNumber: invoice,
+        outstandingInvoiceUnpaid: invoiceTotal,
+        advancedPaymentAvailable: null,
+        advancedPaymentRemaining: null
       };
-
       return invoiceService.insertNewInvoiceDetails(db, invoiceDetail);
     });
   }
+};
+
+/**
+ * Insert payment invoice into details
+ * @param {*} db
+ * @param {*} invoiceObject
+ * @param {*} invoiceNumber
+ */
+const insertPaymentInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
+  const { paymentsTotaledAndGrouped, paymentDueDate, contact } = invoiceObject;
 
   if (Object.keys(paymentsTotaledAndGrouped.groupedPayments)) {
-    // Handles For Payments and Write offs.
     Object.values(paymentsTotaledAndGrouped.groupedPayments).forEach(async value => {
-      const { transactionType, invoiceTotal } = value;
+      const { invoice, invoiceTotal, transactionType } = value;
       const invoiceDetail = {
+        company: contact.oid,
         invoice: invoiceNumber,
-        detailDate: dayjs().format(),
-        detailType: transactionType,
-        jobDescription: transactionType,
-        charges: 0,
-        writeOff: transactionType === 'Write Off' ? invoiceTotal : 0,
-        net: invoiceTotal,
-        payment: transactionType === 'Payment' ? invoiceTotal : 0
+        invoiceDate: dayjs().format(),
+        paymentDueDate: paymentDueDate,
+        job: null,
+        transactionType: transactionType,
+        transactionDescription: transactionType,
+        transactionTotal: invoiceTotal,
+        transactionInvoiceNumber: invoice,
+        outstandingInvoiceUnpaid: null,
+        advancedPaymentAvailable: null,
+        advancedPaymentRemaining: null
+      };
+      return invoiceService.insertNewInvoiceDetails(db, invoiceDetail);
+    });
+  }
+};
+
+/**
+ * Insert charges invoice into details
+ * @param {*} db
+ * @param {*} invoiceObject
+ * @param {*} invoiceNumber
+ */
+const insertChargeInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
+  const { transactionsTotaledAndGrouped, paymentDueDate, contact } = invoiceObject;
+
+  if (Object.keys(transactionsTotaledAndGrouped.groupedTransactions)) {
+    Object.values(transactionsTotaledAndGrouped.groupedTransactions).forEach(async value => {
+      const { description, transactionType, jobTotal, job } = value;
+      const invoiceDetail = {
+        company: contact.oid,
+        invoice: invoiceNumber,
+        invoiceDate: dayjs().format(),
+        paymentDueDate: paymentDueDate,
+        job: job,
+        transactionType: transactionType,
+        transactionDescription: description,
+        transactionTotal: jobTotal,
+        transactionInvoiceNumber: null,
+        outstandingInvoiceUnpaid: null,
+        advancedPaymentAvailable: null,
+        advancedPaymentRemaining: null
+      };
+      return invoiceService.insertNewInvoiceDetails(db, invoiceDetail);
+    });
+  }
+};
+
+/**
+ * Insert charges invoice into details
+ * @param {*} db
+ * @param {*} invoiceObject
+ * @param {*} invoiceNumber
+ */
+const insertAdvancedPaymentInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
+  const { advancedPaymentsAppliedToTransactions, paymentDueDate, contact } = invoiceObject;
+
+  if (Object.keys(advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments)) {
+    Object.values(advancedPaymentsAppliedToTransactions.adjustedAdvancedPayments).forEach(async value => {
+      const { startingCycleAmountAvailable, availableAmount } = value;
+
+      const invoiceDetail = {
+        company: contact.oid,
+        invoice: invoiceNumber,
+        invoiceDate: dayjs().format(),
+        paymentDueDate: paymentDueDate,
+        job: null,
+        transactionType: 'Payment',
+        transactionDescription: 'Advanced Payment',
+        transactionTotal: startingCycleAmountAvailable - availableAmount,
+        transactionInvoiceNumber: null,
+        outstandingInvoiceUnpaid: null,
+        advancedPaymentAvailable: startingCycleAmountAvailable,
+        advancedPaymentRemaining: availableAmount
       };
       return invoiceService.insertNewInvoiceDetails(db, invoiceDetail);
     });
@@ -250,7 +327,10 @@ module.exports = {
   createInvoiceInsertObject,
   createInvoice,
   updateLedger,
-  insertInvoiceDetails,
+  insertChargeInvoiceDetails,
+  insertPaymentInvoiceDetails,
+  insertOutstandingInvoiceDetails,
+  insertAdvancedPaymentInvoiceDetails,
   updateTransactions,
   handleAdvancedPayments
 };
