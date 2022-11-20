@@ -55,7 +55,7 @@ export default function ClientDetails() {
 
   return (
     <Page title='Client Details'>
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <HeaderMenu handleOnClick={data => setDataToShow(data)} page={'Client Details'} listOfButtons={button} />
         <ContactCard {...company} />
         {dataToShow === 'invoices' && (

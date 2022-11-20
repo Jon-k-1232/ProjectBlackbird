@@ -56,7 +56,7 @@ export default function InvoiceDetails() {
       {/* <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} listOfButtons={button} /> */}
       <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} />
       <AlertBanner postStatus={postStatus} type='Invoice Re-Printed' />
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <Card className='contactWrapper'>
           <CardContent style={styles.header} className='contactHeader'>
             <Typography variant='h4'>{address1 ? address1 : contactName}</Typography>

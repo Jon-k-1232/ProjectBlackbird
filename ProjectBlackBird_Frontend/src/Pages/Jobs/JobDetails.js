@@ -64,7 +64,7 @@ export default function JobDetails() {
 
   return (
     <Page title='Client Details'>
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <HeaderMenu page={'Job Details'} />
         <JobCard selectedJob={selectedJob} company={company} statistics={jobFinancials} />
         <DataTable {...jobTransactions} />

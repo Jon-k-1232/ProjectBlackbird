@@ -56,7 +56,7 @@ export default function NewInvoice() {
 
   return (
     <Page title='Invoices'>
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
           <HeaderMenu
             handleOnClick={buttonName => {

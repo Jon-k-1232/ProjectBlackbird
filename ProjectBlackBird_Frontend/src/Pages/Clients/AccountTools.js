@@ -18,7 +18,7 @@ export default function AccountTools({ companyId, updateContact }) {
 
   return (
     <Page title='Invoices'>
-      <Container style={{ maxWidth: '1280px', marginTop: '20px' }}>
+      <Container style={{ display: 'contents' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
           <Stack spacing={3}>
             {buttons &&
@@ -29,7 +29,8 @@ export default function AccountTools({ companyId, updateContact }) {
                   name={button.name}
                   style={{ height: '30px', margin: '10px' }}
                   variant={button.variant}
-                  startIcon={<Icon icon={button.icon} />}>
+                  startIcon={<Icon icon={button.icon} />}
+                >
                   {button.htmlName}
                 </Button>
               ))}

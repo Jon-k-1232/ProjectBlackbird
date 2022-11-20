@@ -20,7 +20,7 @@ export default function MonthlyClients() {
 
   return (
     <Page title='MonthlyClients'>
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
           <HeaderMenu page={'Monthly Clients'} />
         </Stack>

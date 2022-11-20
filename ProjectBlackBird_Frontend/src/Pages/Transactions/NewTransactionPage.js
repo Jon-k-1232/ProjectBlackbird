@@ -16,7 +16,7 @@ export default function NewTransactionsPage({ passedCompany, updateContactCard }
 
   return (
     <Page title='Transactions'>
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <NewTransactions
           passedCompany={passedCompany}
           setCompanyToGetOutstandingInvoice={company => handleChange(company)}

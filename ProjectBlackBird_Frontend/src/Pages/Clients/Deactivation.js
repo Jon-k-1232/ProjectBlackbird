@@ -30,7 +30,7 @@ export default function Deactivation() {
 
   return (
     <Page title='deactivation'>
-      <Container style={{ maxWidth: '1280px' }}>
+      <Container style={{ display: 'contents' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
           <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Deactivate and Zero Accounts'} listOfButtons={button} />
         </Stack>

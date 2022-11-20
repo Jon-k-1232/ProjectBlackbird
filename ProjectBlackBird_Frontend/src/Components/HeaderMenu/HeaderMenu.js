@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react';
 
 export default function HeaderMenu({ page, handleOnClick, listOfButtons }) {
   return (
-    <Container style={{ padding: '0' }}>
+    <Container style={{ padding: '0', margin: '0', maxWidth: '100%' }}>
       <Stack direction='row' alignItems='right' justifyContent='space-between' mb={2}>
         <Typography variant='h4' gutterBottom>
           {page}
@@ -17,7 +17,8 @@ export default function HeaderMenu({ page, handleOnClick, listOfButtons }) {
                 name={button.name}
                 style={{ height: '30px', margin: '10px' }}
                 variant={button.variant}
-                startIcon={<Icon icon={button.icon} />}>
+                startIcon={<Icon icon={button.icon} />}
+              >
                 {button.htmlName}
               </Button>
             ))}

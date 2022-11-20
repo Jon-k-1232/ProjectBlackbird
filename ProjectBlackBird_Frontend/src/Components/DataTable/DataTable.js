@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
+import styled from '@emotion/styled';
+import dayjs from 'dayjs';
 
 /**
  * @param {*} props props.tableData, props.tableHeaders, props.route
@@ -34,8 +36,8 @@ export default function DataTable(props) {
       name: columnToSortAscOrDesc ? columnToSortAscOrDesc : 'Transaction Date',
       direction: ascOrDesc ? ascOrDesc : 'desc'
     },
-    rowsPerPage: tableSize ? tableSize : 50,
-    rowsPerPageOptions: paginationIncrement ? paginationIncrement : [50, 150, 300],
+    rowsPerPage: tableSize ? tableSize : 25,
+    rowsPerPageOptions: paginationIncrement ? paginationIncrement : [25, 50, 100, 150],
     rowHover: true,
     jumpToPage: true,
     draggableColumns: { enabled: true },
@@ -60,14 +62,47 @@ export default function DataTable(props) {
       const data = rawData;
       const dataToState = selectedIndex.map(item => data[item]);
       props.selectedList(dataToState);
+    },
+    setTableProps: () => {
+      return {
+        size: 'small'
+      };
     }
   };
 
+  // Adjust table columns
+  const DataTableContainer = styled('div')(() => ({
+    marginTop: '25px',
+    '& .MuiTableCell-root': {
+      whiteSpace: 'nowrap'
+    },
+    '& .MuiTableCell-paddingCheckbox': {
+      background: 'white'
+    }
+  }));
+
+  /**
+   * Filters data, and reformats for ease of reading.
+   */
+  const filteredTableData =
+    tableData &&
+    tableData.map(row =>
+      row.map(stringedItem => {
+        if (+stringedItem && stringedItem % 1) {
+          const formattedNumber = Number(stringedItem).toFixed(2);
+          if (formattedNumber === '0.00' || formattedNumber === '-0.00') return 0;
+          return formattedNumber;
+        } else if (stringedItem !== 'null') {
+          return stringedItem.replace('null', ' ');
+        }
+      })
+    );
+
   return (
     <>
-      <div style={{ marginTop: '25px' }}>
-        <MUIDataTable data={tableData} columns={tableHeaders} options={options} />
-      </div>
+      <DataTableContainer>
+        <MUIDataTable data={filteredTableData} columns={tableHeaders} options={options} />
+      </DataTableContainer>
     </>
   );
 }

@@ -21,7 +21,7 @@ export default function JobDefinitions() {
 
   return (
     <Page>
-      <CardContent style={{ maxWidth: '1280px' }}>
+      <CardContent style={{ display: 'contents' }}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mb={5}>
           <HeaderMenu handleOnClick={data => navigate(`/${data}/`)} page={'Job Descriptions'} listOfButtons={button} />
         </Stack>
