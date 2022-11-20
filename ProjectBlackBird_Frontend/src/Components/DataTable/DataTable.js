@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
 import styled from '@emotion/styled';
-import dayjs from 'dayjs';
 
 /**
  * @param {*} props props.tableData, props.tableHeaders, props.route
@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
  */
 export default function DataTable(props) {
   const navigate = useNavigate();
+  const [selectedRowData, setSelectedRowData] = useState(null);
+
   const {
     useCheckboxes,
     selectOnRowClick,
@@ -49,6 +51,7 @@ export default function DataTable(props) {
     responsive,
     tableBodyHeight,
     tableBodyMaxHeight,
+    rowsSelected: selectedRowData,
     onRowClick: rowData => {
       if (noRoute) {
         passRowData(rowData);
@@ -61,6 +64,7 @@ export default function DataTable(props) {
     onRowSelectionChange: (rowsSelected, allRows, selectedIndex) => {
       const data = rawData;
       const dataToState = selectedIndex.map(item => data[item]);
+      setSelectedRowData(selectedIndex);
       props.selectedList(dataToState);
     },
     setTableProps: () => {
@@ -87,6 +91,7 @@ export default function DataTable(props) {
   const filteredTableData =
     tableData &&
     tableData.map(row =>
+      // eslint-disable-next-line
       row.map(stringedItem => {
         if (+stringedItem && stringedItem % 1) {
           const formattedNumber = Number(stringedItem).toFixed(2);
