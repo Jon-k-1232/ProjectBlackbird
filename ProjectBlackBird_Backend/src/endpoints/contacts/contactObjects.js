@@ -80,6 +80,15 @@ contactObjects = {
     };
   },
 
+  contactObjectReduced(contact) {
+    return {
+      oid: contact.company,
+      companyName: contact.companyName,
+      firstName: contact.firstName,
+      lastName: contact.lastName
+    };
+  },
+
   convertToRequiredLedgerTypes(ledger, newCompanyId) {
     return {
       newBalance: Number(ledger.newBalance),

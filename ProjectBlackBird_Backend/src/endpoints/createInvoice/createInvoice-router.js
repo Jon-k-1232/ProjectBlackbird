@@ -23,7 +23,8 @@ createInvoiceRouter
     const db = req.app.get('db');
 
     const readyToBill = await createInvoiceService.getReadyToBill(db);
-    const readyToBillContacts = readyToBill.map(contact => contactObjects.contactObject(contact));
+    const readyToBillContacts = readyToBill.map(contact => contactObjects.contactObjectReduced(contact));
+
     res.send({
       readyToBillContacts,
       status: 200
