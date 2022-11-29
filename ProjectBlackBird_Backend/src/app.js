@@ -17,6 +17,7 @@ const authentication = require('./endpoints/auth/auth-router');
 const monthlyClientsRouter = require('./endpoints/monthlyClients/monthlyClients-router');
 const ledgerRouter = require('./endpoints/ledger/ledger-router');
 const advancedPaymentRouter = require('./endpoints/advancedPayment/advancedPayment-router');
+const employeeTime = require('./endpoints/employeeTime/employeeTime-router');
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 const config = require('../config');
 
@@ -64,6 +65,7 @@ app.use('/jobDescription', jobDescriptionRouter);
 app.use('/payTo', payTo);
 app.use('/transactions', transactions);
 app.use('/employee', employee);
+app.use('/employeeTime', employeeTime);
 app.use('/invoices', invoices);
 app.use('/create', createInvoices);
 app.use('/advancedPayment', advancedPaymentRouter);

@@ -22,6 +22,7 @@ import NewTransactionsPage from '../Pages/Transactions/NewTransactionPage';
 import Deactivation from '../Pages/Clients/Deactivation';
 import EditAnInvoice from '../Pages/Invoices/EditAnInvoice';
 import MonthlyClients from 'src/Pages/MonthlyClients/MonthlyClients';
+import Dashboard from 'src/Pages/Dashboard/Dashboard';
 
 export default function Router() {
   return (
@@ -35,6 +36,7 @@ export default function Router() {
 
       {/* Any route that goes through DashboardLayout will be checked by Private Route component */}
       <Route element={<DashboardLayout />}>
+        <Route path='dashboard' element={<Dashboard />} />
         <Route path='clients' element={<Clients />} />
         <Route path='clientDetails' element={<ClientDetails />} />
         <Route path='newClient' element={<NewClient />} />
