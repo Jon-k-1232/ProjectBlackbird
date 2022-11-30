@@ -1,16 +1,13 @@
 const express = require('express');
 const employeeTimeRouter = express.Router();
 const employeeTimeService = require('./employeeTime-service');
-// const { requireAuth } = require('../auth/jwt-auth');
+const { requireAuth } = require('../auth/jwt-auth');
 const dayjs = require('dayjs');
-const { currentLineHeight } = require('pdfkit');
-const { createTransactionJobJoinObject } = require('../transactions/transactionsObjects');
-const { zipObjectDeep } = require('lodash');
 
 // Returns all employees active and inactive
 employeeTimeRouter
   .route('/history/:date')
-  // .all(requireAuth)
+  .all(requireAuth)
   .get(async (req, res) => {
     const db = req.app.get('db');
     const date = req.params.date;
@@ -23,6 +20,7 @@ employeeTimeRouter
 
     res.send({
       sortedTimeByEmployee,
+      // TODO add list of active employees
       status: 200
     });
   });
@@ -42,9 +40,6 @@ const sortEmployeeTime = employeeTime =>
     const key = obj['employee'];
 
     if (!acc[key]) acc[key] = { employee: null, id: null, hours: 0, clients: [] };
-
-    delete obj.username;
-    delete obj.password;
 
     if (!acc[key].clients.some(item => item.company === obj.company)) {
       newClientsObject['jobs'].push(newJobObject);

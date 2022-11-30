@@ -81,19 +81,19 @@ export default function ContactCard(props) {
           <tbody>
             <tr>
               <th>Prepay Balance:</th>
-              <td>{advancedPayment || 0.0}</td>
+              <td>{Number(advancedPayment).toFixed(2) || 0.0}</td>
             </tr>
             <tr>
               <th>Beginning Balance:</th>
-              <td>{beginningBalance}</td>
+              <td>{Number(beginningBalance).toFixed(2)}</td>
             </tr>
             <tr>
               <th>Statement Balance:</th>
-              <td>{statementBalance}</td>
+              <td>{Number(statementBalance).toFixed(2)}</td>
             </tr>
             <tr>
               <th>Current Balance:</th>
-              <td>{currentBalance}</td>
+              <td>{Number(currentBalance).toFixed(2)}</td>
             </tr>
             <tr>
               <th>New Balance:</th>

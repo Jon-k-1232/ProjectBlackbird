@@ -10,11 +10,11 @@ import bulbFill from '@iconify/icons-eva/bulb-fill';
 const getIcon = name => <Icon icon={name} width={22} height={22} />;
 
 const sidebarConfig = [
-  {
-    title: 'Dashboard',
-    path: '/dashboard',
-    icon: getIcon(pieChart2Fill)
-  },
+  // {
+  //   title: 'Dashboard',
+  //   path: '/dashboard',
+  //   icon: getIcon(pieChart2Fill)
+  // },
   {
     title: 'Clients',
     path: '/clients',

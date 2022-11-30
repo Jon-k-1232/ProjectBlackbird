@@ -36,8 +36,8 @@ export default function Router() {
 
       {/* Any route that goes through DashboardLayout will be checked by Private Route component */}
       <Route element={<DashboardLayout />}>
-        <Route path='dashboard' element={<Dashboard />} />
         <Route path='clients' element={<Clients />} />
+        <Route path='dashboard' element={<Dashboard />} />
         <Route path='clientDetails' element={<ClientDetails />} />
         <Route path='newClient' element={<NewClient />} />
         <Route path='transactions' element={<Transactions />} />
