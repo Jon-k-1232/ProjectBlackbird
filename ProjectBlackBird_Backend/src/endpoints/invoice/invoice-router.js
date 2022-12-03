@@ -8,6 +8,7 @@ const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { defaultDaysInPast } = require('../../../config');
 const { requireAuth } = require('../auth/jwt-auth');
+const dayjs = require('dayjs');
 
 invoiceRouter
   .route('/all/time/:time')
@@ -217,11 +218,18 @@ const fetchAllTransactionsOnInvoice = async (db, dataToPass) => {
   const returnedSelectedInvoice = await invoiceService.getSingleCompanyInvoice(db, dataToPass);
   const selectedInvoice = returnedSelectedInvoice[0];
   const returnedCompanyInvoices = await invoiceService.getCompanyInvoices(db, company);
-  const sortedByDateCompanyInvoices = returnedCompanyInvoices.sort((a, b) => new Date(b.invoiceDate) - new Date(a.invoiceDate));
+  // Sorted oldest to newest
+  const sortedByDateCompanyInvoices = returnedCompanyInvoices.sort((a, b) => new Date(a.invoiceDate) - new Date(b.invoiceDate));
 
-  const indexOfPriorInvoice = sortedByDateCompanyInvoices.findIndex(invoice => invoice.oid === selectedInvoice.oid) + 1;
-  const priorInvoiceEndDate = sortedByDateCompanyInvoices[indexOfPriorInvoice].dataEndDate;
   const selectedInvoiceEndDate = selectedInvoice.dataEndDate;
+  const indexOfSelectedInvoice = sortedByDateCompanyInvoices.findIndex(invoice => invoice.oid === selectedInvoice.oid);
+  const indexOfPriorInvoice = indexOfSelectedInvoice - 1;
+
+  // If not the first invoice get transaction between selected, and previous invoice. If this is the first invoice then get transaction 365 days in past since unknown time frame of when transaction started.
+  const priorInvoiceEndDate =
+    indexOfPriorInvoice >= 0
+      ? sortedByDateCompanyInvoices[indexOfPriorInvoice].dataEndDate
+      : dayjs(selectedInvoiceEndDate).subtract(365, 'day').format();
 
   const invoiceDetailsReturned = await transactionService.getCompanyTransactionsBetweenDates(
     db,

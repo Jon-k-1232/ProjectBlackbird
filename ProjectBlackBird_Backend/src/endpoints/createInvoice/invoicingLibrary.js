@@ -170,17 +170,18 @@ const insertOutstandingInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
   if (Object.keys(beginningBalanceTotaledAndGrouped.groupedInvoices)) {
     Object.values(beginningBalanceTotaledAndGrouped.groupedInvoices).forEach(async value => {
       const { invoiceTotal, invoice } = value;
+
       const invoiceDetail = {
         company: contact.oid,
-        invoice: invoiceNumber,
+        invoice: Number(invoiceNumber),
         invoiceDate: dayjs().format(),
         paymentDueDate: paymentDueDate,
         job: null,
         transactionType: 'Invoice',
         transactionDescription: 'Outstanding Invoice',
         transactionTotal: null,
-        transactionInvoiceNumber: invoice,
-        outstandingInvoiceUnpaid: invoiceTotal,
+        transactionInvoiceNumber: parseInt(invoice, 10),
+        outstandingInvoiceUnpaid: parseInt(invoiceTotal, 10),
         advancedPaymentAvailable: null,
         advancedPaymentRemaining: null
       };
@@ -203,14 +204,14 @@ const insertPaymentInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
       const { invoice, invoiceTotal, transactionType } = value;
       const invoiceDetail = {
         company: contact.oid,
-        invoice: invoiceNumber,
+        invoice: Number(invoiceNumber),
         invoiceDate: dayjs().format(),
         paymentDueDate: paymentDueDate,
         job: null,
         transactionType: transactionType,
         transactionDescription: transactionType,
-        transactionTotal: invoiceTotal,
-        transactionInvoiceNumber: invoice,
+        transactionTotal: parseInt(invoiceTotal, 10),
+        transactionInvoiceNumber: parseInt(invoice, 10),
         outstandingInvoiceUnpaid: null,
         advancedPaymentAvailable: null,
         advancedPaymentRemaining: null
@@ -234,13 +235,13 @@ const insertChargeInvoiceDetails = (db, invoiceObject, invoiceNumber) => {
       const { description, transactionType, jobTotal, job } = value;
       const invoiceDetail = {
         company: contact.oid,
-        invoice: invoiceNumber,
+        invoice: Number(invoiceNumber),
         invoiceDate: dayjs().format(),
         paymentDueDate: paymentDueDate,
         job: job,
         transactionType: transactionType,
         transactionDescription: description,
-        transactionTotal: jobTotal,
+        transactionTotal: parseInt(jobTotal, 10),
         transactionInvoiceNumber: null,
         outstandingInvoiceUnpaid: null,
         advancedPaymentAvailable: null,
@@ -266,17 +267,17 @@ const insertAdvancedPaymentInvoiceDetails = (db, invoiceObject, invoiceNumber) =
 
       const invoiceDetail = {
         company: contact.oid,
-        invoice: invoiceNumber,
+        invoice: Number(invoiceNumber),
         invoiceDate: dayjs().format(),
         paymentDueDate: paymentDueDate,
         job: null,
         transactionType: 'Payment',
         transactionDescription: 'Advanced Payment',
-        transactionTotal: startingCycleAmountAvailable - availableAmount,
+        transactionTotal: parseInt(startingCycleAmountAvailable, 10) - parseInt(availableAmount, 10),
         transactionInvoiceNumber: null,
         outstandingInvoiceUnpaid: null,
-        advancedPaymentAvailable: startingCycleAmountAvailable,
-        advancedPaymentRemaining: availableAmount
+        advancedPaymentAvailable: parseInt(startingCycleAmountAvailable, 10),
+        advancedPaymentRemaining: parseInt(availableAmount, 10)
       };
       return invoiceService.insertNewInvoiceDetails(db, invoiceDetail);
     });

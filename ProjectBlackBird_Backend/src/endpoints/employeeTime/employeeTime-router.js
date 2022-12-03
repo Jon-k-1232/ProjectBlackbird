@@ -1,6 +1,8 @@
 const express = require('express');
 const employeeTimeRouter = express.Router();
 const employeeTimeService = require('./employeeTime-service');
+const employeeService = require('../employee/employee-service');
+const employeeObjects = require('../employee/employeeObjects');
 const { requireAuth } = require('../auth/jwt-auth');
 const dayjs = require('dayjs');
 
@@ -17,10 +19,12 @@ employeeTimeRouter
 
     const employeeTime = await employeeTimeService.fetchTransactionsForGivenDate(db, startOfDay, endOfDay);
     const sortedTimeByEmployee = sortEmployeeTime(employeeTime);
+    const employees = await employeeService.getActiveEmployees(db);
+    const activeEmployees = employeeObjects.sendColumnsTypes(employees);
 
     res.send({
       sortedTimeByEmployee,
-      // TODO add list of active employees
+      activeEmployees,
       status: 200
     });
   });

@@ -1,6 +1,7 @@
 const express = require('express');
 const employeeRouter = express.Router();
 const employeeService = require('./employee-service');
+const employeeObjects = require('./employeeObjects');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { requireAuth } = require('../auth/jwt-auth');
@@ -13,7 +14,7 @@ employeeRouter
     const db = req.app.get('db');
 
     employeeService.getAllEmployees(db).then(employeeData => {
-      const employees = sendColumnsTypes(employeeData);
+      const employees = employeeObjects.sendColumnsTypes(employeeData);
       res.send({
         employees,
         status: 200
@@ -29,7 +30,7 @@ employeeRouter
     const db = req.app.get('db');
 
     employeeService.getActiveEmployees(db).then(employeeData => {
-      const employees = sendColumnsTypes(employeeData);
+      const employees = employeeObjects.sendColumnsTypes(employeeData);
 
       res.send({
         employees,
@@ -46,7 +47,7 @@ employeeRouter
     const employeeId = Number(req.params.employeeId);
 
     employeeService.getEmployee(db, employeeId).then(employeeData => {
-      const employee = sendColumnsTypes(employeeData);
+      const employee = employeeObjects.sendColumnsTypes(employeeData);
       res.send({
         employee,
         status: 200
@@ -75,7 +76,7 @@ employeeRouter
       role
     });
 
-    const newEmployee = convertToOriginalTypes(sanitizeEmployee);
+    const newEmployee = employeeObjects.convertToOriginalTypes(sanitizeEmployee);
 
     employeeService.insertEmployee(db, newEmployee).then(() => {
       res.send({
@@ -108,7 +109,7 @@ employeeRouter
       role
     });
 
-    const updatedEmployee = convertToOriginalTypes(sanitizeEmployee);
+    const updatedEmployee = employeeObjects.convertToOriginalTypes(sanitizeEmployee);
 
     employeeService.updateEmployee(db, id, updatedEmployee).then(() => {
       employeeService.getAllEmployees(db).then(employees => {
@@ -122,28 +123,3 @@ employeeRouter
   });
 
 module.exports = employeeRouter;
-
-const convertToOriginalTypes = sanitizeEmployee => {
-  return {
-    firstName: sanitizeEmployee.firstName,
-    lastName: sanitizeEmployee.lastName,
-    middleI: sanitizeEmployee.middleI,
-    hourlyCost: Number(sanitizeEmployee.hourlyCost),
-    inactive: Boolean(sanitizeEmployee.inactive),
-    username: sanitizeEmployee.username,
-    password: sanitizeEmployee.password,
-    role: sanitizeEmployee.role
-  };
-};
-
-const sendColumnsTypes = employees =>
-  employees.map(item => {
-    return {
-      oid: Number(item.oid),
-      firstName: item.firstName,
-      lastName: item.lastName,
-      middleI: item.middleI,
-      hourlyCost: item.hourlyCost,
-      inactive: item.inactive
-    };
-  });

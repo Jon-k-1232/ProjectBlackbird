@@ -4,7 +4,8 @@
   font-weight: 400;
   color: #4e5b66;
   padding: 15px;
-  background-color: #fafafa;
+  background-color: #ffffff;
+  border-radius: 8px;
 }
 
 .contactWrapper img {
