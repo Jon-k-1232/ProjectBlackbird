@@ -364,6 +364,18 @@ export const rePrintInvoice = async invoiceId => {
     .catch(error => error);
 };
 
+export const getEmployeeTime = async date => {
+  return fetch(`${config.API_ENDPOINT}/employeeTime/history/${date}`, getHeader)
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.status);
+      }
+      return resp.json();
+    })
+    .then(res => res)
+    .catch(error => error);
+};
+
 const noData = {
   rawData: [],
   tableData: [],

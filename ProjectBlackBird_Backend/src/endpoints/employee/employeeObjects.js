@@ -19,7 +19,8 @@ const sendColumnsTypes = employees =>
       lastName: item.lastName,
       middleI: item.middleI,
       hourlyCost: item.hourlyCost,
-      inactive: item.inactive
+      inactive: item.inactive,
+      displayname: item.displayname
     };
   });
 
