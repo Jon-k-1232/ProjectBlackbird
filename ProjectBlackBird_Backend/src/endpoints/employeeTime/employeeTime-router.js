@@ -19,6 +19,7 @@ employeeTimeRouter
     const db = req.app.get('db');
     const date = req.params.date;
 
+    // Having to use timezone as server deployed on keeps defaulting to different timezone for these two lines.
     const startOfDay = dayjs(date).tz('America/Phoenix').startOf('day').format();
     const endOfDay = dayjs(date).tz('America/Phoenix').endOf('day').format();
 

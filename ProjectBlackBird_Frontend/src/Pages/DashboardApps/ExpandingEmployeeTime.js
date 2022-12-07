@@ -59,10 +59,14 @@ export default function ExpandingEmployeeTime() {
                   inputFormat='MM/DD/YYYY'
                   value={selectedDate}
                   onChange={async newValue => {
-                    setSelectedDate(newValue.$d);
-                    const employeeTime = await getEmployeeTime(newValue.$d);
-                    const filteredByEmployeeAccess = filterListOnEmployeeAccess(employeeTime);
-                    setEmployeeTime(filteredByEmployeeAccess);
+                    const date = dayjs(newValue).format();
+                    setSelectedDate(date);
+                    // Need to validate date is valid as api call auto fires onChange
+                    if (dayjs(date).isValid()) {
+                      const employeeTime = await getEmployeeTime(date);
+                      const filteredByEmployeeAccess = filterListOnEmployeeAccess(employeeTime);
+                      setEmployeeTime(filteredByEmployeeAccess);
+                    }
                   }}
                   renderInput={params => <TextField size='small' {...params} />}
                 />
