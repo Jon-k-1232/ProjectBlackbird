@@ -15,6 +15,8 @@ employeeTimeRouter
     const date = req.params.date;
     const requestedDate = checkForWeekendRequest(date);
 
+    console.log(requestedDate);
+
     // Get transactions and create list of employees with time
     const transactions = await employeeTimeService.fetchTransactionsForGivenDate(db, requestedDate.startOfDay, requestedDate.endOfDay);
     const employeesWithTime = getEmployeeTime(transactions);
@@ -55,8 +57,8 @@ const checkForWeekendRequest = date => {
 
   // if {
   // Monday-Friday condition
-  const startOfDay = dayjs(date).startOf('day').format();
-  const endOfDay = dayjs(date).endOf('day').format();
+  const startOfDay = dayjs(date).startOf('day').format('YYYY-MM-DDTHH:mm:ss');
+  const endOfDay = dayjs(date).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
   return { startOfDay, endOfDay };
   // }
 };
