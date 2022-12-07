@@ -15,8 +15,6 @@ employeeTimeRouter
     const date = req.params.date;
     const requestedDate = checkForWeekendRequest(date);
 
-    console.log(requestedDate);
-
     // Get transactions and create list of employees with time
     const transactions = await employeeTimeService.fetchTransactionsForGivenDate(db, requestedDate.startOfDay, requestedDate.endOfDay);
     const employeesWithTime = getEmployeeTime(transactions);
