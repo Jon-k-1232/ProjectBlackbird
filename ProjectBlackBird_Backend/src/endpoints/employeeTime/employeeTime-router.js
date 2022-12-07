@@ -15,6 +15,8 @@ employeeTimeRouter
     const date = req.params.date;
     const requestedDate = checkForWeekendRequest(date);
 
+    console.log(requestedDate);
+
     // Get transactions and create list of employees with time
     const transactions = await employeeTimeService.fetchTransactionsForGivenDate(db, requestedDate.startOfDay, requestedDate.endOfDay);
     const employeesWithTime = getEmployeeTime(transactions);
@@ -39,24 +41,26 @@ module.exports = employeeTimeRouter;
  * @returns
  */
 const checkForWeekendRequest = date => {
-  const checkDayOfWeekOnStart = dayjs(date).get('day');
+  // const checkDayOfWeekOnStart = dayjs(date).get('day');
 
-  if (checkDayOfWeekOnStart === 0) {
-    // sunday condition
-    const startOfDay = dayjs(date).subtract(3, 'day').startOf('day').format();
-    const endOfDay = dayjs(date).subtract(3, 'day').endOf('day').format();
-    return { startOfDay, endOfDay };
-  } else if (checkDayOfWeekOnStart === 6) {
-    // saturday condition
-    const startOfDay = dayjs(date).subtract(2, 'day').startOf('day').format();
-    const endOfDay = dayjs(date).subtract(2, 'day').endOf('day').format();
-    return { startOfDay, endOfDay };
-  } else {
-    // Monday-Friday condition
-    const startOfDay = dayjs(date).startOf('day').format();
-    const endOfDay = dayjs(date).endOf('day').format();
-    return { startOfDay, endOfDay };
-  }
+  // if (checkDayOfWeekOnStart === 0) {
+  //   // sunday condition
+  //   const startOfDay = dayjs(date).subtract(3, 'day').startOf('day').format();
+  //   const endOfDay = dayjs(date).subtract(3, 'day').endOf('day').format();
+  //   return { startOfDay, endOfDay };
+  // } else if (checkDayOfWeekOnStart === 6) {
+  //   // saturday condition
+  //   const startOfDay = dayjs(date).subtract(2, 'day').startOf('day').format();
+  //   const endOfDay = dayjs(date).subtract(2, 'day').endOf('day').format();
+  //   return { startOfDay, endOfDay };
+  // }
+
+  // if {
+  // Monday-Friday condition
+  const startOfDay = dayjs(date).startOf('day').format();
+  const endOfDay = dayjs(date).endOf('day').format();
+  return { startOfDay, endOfDay };
+  // }
 };
 
 /**
