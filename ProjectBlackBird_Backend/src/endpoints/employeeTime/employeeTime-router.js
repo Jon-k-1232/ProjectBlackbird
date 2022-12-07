@@ -6,7 +6,11 @@ const employeeObjects = require('../employee/employeeObjects');
 const { requireAuth } = require('../auth/jwt-auth');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
+var timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const tz = 'America/New_York';
 
 // Returns all employees active and inactive
 employeeTimeRouter
@@ -59,8 +63,9 @@ const checkForWeekendRequest = date => {
 
   // if {
   // Monday-Friday condition
-  const startOfDay = dayjs(date).utc().local().startOf('day').format();
-  const endOfDay = dayjs(date).utc().local().endOf('day').format();
+  const tzdDate = dayjs(date).tz('America/Phoenix').format();
+  const startOfDay = dayjs(tzdDate).utc().local().startOf('day').format();
+  const endOfDay = dayjs(tzdDate).utc().local().endOf('day').format();
   return { startOfDay, endOfDay };
   // }
 };
