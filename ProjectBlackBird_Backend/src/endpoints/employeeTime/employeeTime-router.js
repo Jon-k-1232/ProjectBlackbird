@@ -5,6 +5,8 @@ const employeeService = require('../employee/employee-service');
 const employeeObjects = require('../employee/employeeObjects');
 const { requireAuth } = require('../auth/jwt-auth');
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
 
 // Returns all employees active and inactive
 employeeTimeRouter
@@ -57,8 +59,8 @@ const checkForWeekendRequest = date => {
 
   // if {
   // Monday-Friday condition
-  const startOfDay = dayjs(date).startOf('day').format('YYYY-MM-DDTHH:mm:ss');
-  const endOfDay = dayjs(date).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+  const startOfDay = dayjs(date).utc().local().startOf('day').format();
+  const endOfDay = dayjs(date).utc().local().endOf('day').format();
   return { startOfDay, endOfDay };
   // }
 };

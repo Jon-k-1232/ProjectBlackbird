@@ -19,7 +19,7 @@ export default function ExpandingEmployeeTime() {
       // Get prior days time by default
       const date = dayjs().subtract(1, 'day').format();
       setSelectedDate(date);
-
+      console.log(date);
       const employeeTime = await getEmployeeTime(date);
       const filteredByEmployeeAccess = filterListOnEmployeeAccess(employeeTime);
       setEmployeeTime(filteredByEmployeeAccess);
