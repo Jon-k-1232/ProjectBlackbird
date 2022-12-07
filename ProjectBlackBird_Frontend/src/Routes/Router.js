@@ -29,15 +29,15 @@ export default function Router() {
     <Routes>
       <Route element={<LogoOnlyLayout />}>
         <Route exact path='/login' element={<Login />} />
-        <Route path='/' element={<Navigate to='/clients' />} />
+        <Route path='/' element={<Navigate to='/dashboard' />} />
         <Route path='404' element={<NotFound />} />
         <Route path='*' element={<Navigate to='/404' />} />
       </Route>
 
       {/* Any route that goes through DashboardLayout will be checked by Private Route component */}
       <Route element={<DashboardLayout />}>
-        <Route path='clients' element={<Clients />} />
         <Route path='dashboard' element={<Dashboard />} />
+        <Route path='clients' element={<Clients />} />
         <Route path='clientDetails' element={<ClientDetails />} />
         <Route path='newClient' element={<NewClient />} />
         <Route path='transactions' element={<Transactions />} />

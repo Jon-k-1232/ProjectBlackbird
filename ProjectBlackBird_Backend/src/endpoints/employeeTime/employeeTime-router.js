@@ -13,12 +13,10 @@ employeeTimeRouter
   .get(async (req, res) => {
     const db = req.app.get('db');
     const date = req.params.date;
-
-    const startOfDay = dayjs(date).format();
-    const endOfDay = dayjs(date).endOf('day').format();
+    const requestedDate = checkForWeekendRequest(date);
 
     // Get transactions and create list of employees with time
-    const transactions = await employeeTimeService.fetchTransactionsForGivenDate(db, startOfDay, endOfDay);
+    const transactions = await employeeTimeService.fetchTransactionsForGivenDate(db, requestedDate.startOfDay, requestedDate.endOfDay);
     const employeesWithTime = getEmployeeTime(transactions);
     // Get list of active employees
     const employees = await employeeService.getActiveEmployees(db);
@@ -34,6 +32,32 @@ employeeTimeRouter
   });
 
 module.exports = employeeTimeRouter;
+
+/**
+ * Checks to see if date requested is a weekend.
+ * @param {*} date
+ * @returns
+ */
+const checkForWeekendRequest = date => {
+  const checkDayOfWeekOnStart = dayjs(date).get('day');
+
+  if (checkDayOfWeekOnStart === 0) {
+    // sunday condition
+    const startOfDay = dayjs(date).subtract(3, 'day').startOf('day').format();
+    const endOfDay = dayjs(date).subtract(3, 'day').endOf('day').format();
+    return { startOfDay, endOfDay };
+  } else if (checkDayOfWeekOnStart === 6) {
+    // saturday condition
+    const startOfDay = dayjs(date).subtract(2, 'day').startOf('day').format();
+    const endOfDay = dayjs(date).subtract(2, 'day').endOf('day').format();
+    return { startOfDay, endOfDay };
+  } else {
+    // Monday-Friday condition
+    const startOfDay = dayjs(date).startOf('day').format();
+    const endOfDay = dayjs(date).endOf('day').format();
+    return { startOfDay, endOfDay };
+  }
+};
 
 /**
  * Time is broken down by how a employee spent time on a client

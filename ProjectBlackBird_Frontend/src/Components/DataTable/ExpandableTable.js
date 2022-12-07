@@ -11,14 +11,14 @@ export function SubRow({ headers, row }) {
       <React.Fragment>
         <TableRow>
           <TableCell style={{ padding: '0' }}>
-            <IconButton style={{ padding: '15' }} aria-label='expand row' size='small' onClick={() => setOpen(!open)}>
+            <IconButton style={{ padding: '15', paddingLeft: '5px' }} aria-label='expand row' size='small' onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
           <TableCell style={{ padding: '0' }} component='th' scope='row'>
             {row.companyName}
           </TableCell>
-          <TableCell style={{ padding: '0' }} align='right'>
+          <TableCell style={{ padding: '0', paddingRight: '18px' }} align='right'>
             {row.time}
           </TableCell>
         </TableRow>
@@ -35,13 +35,13 @@ export function SubRow({ headers, row }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {row.jobs.map(job => (
-                      <TableRow key={job.job}>
+                    {row.jobs.map((job, i) => (
+                      <TableRow key={i}>
                         <TableCell style={{ width: '14em' }} />
                         <TableCell component='th' scope='row'>
                           {job.description}
                         </TableCell>
-                        <TableCell style={{ padding: '0' }} align='right'>
+                        <TableCell style={{ padding: '0', paddingRight: '18px' }} align='right'>
                           {job.time}
                         </TableCell>
                       </TableRow>
@@ -68,7 +68,7 @@ export function Row({ headers, row }) {
   return (
     <React.Fragment>
       <TableRow style={{ background: row.time > 0 ? '#d5f2df' : '#ffd0d0' }}>
-        <TableCell style={{ padding: '0' }}>
+        <TableCell style={{ padding: '0', paddingLeft: '5px' }}>
           <IconButton
             style={{ padding: '0' }}
             aria-label='expand row'
@@ -81,7 +81,7 @@ export function Row({ headers, row }) {
         <TableCell style={{ padding: '0' }} component='th' scope='row'>
           {row.employee}
         </TableCell>
-        <TableCell style={{ padding: '0' }} align='right'>
+        <TableCell style={{ padding: '0', paddingRight: '18px' }} align='right'>
           {row.time}
         </TableCell>
       </TableRow>
@@ -99,8 +99,8 @@ export function Row({ headers, row }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {row.clients.map(client => (
-                      <SubRow key={client.company} headers={expandableHeaders} row={client} />
+                    {row.clients.map((client, i) => (
+                      <SubRow key={i} headers={expandableHeaders} row={client} />
                     ))}
                   </TableBody>
                 </Table>
@@ -130,8 +130,8 @@ export function CollapsibleTable({ data }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.values(data.employeeTime).map(employeeRow => (
-            <Row key={employeeRow.id} headers={expandableHeaders} row={employeeRow} />
+          {Object.values(data.employeeTime).map((employeeRow, i) => (
+            <Row key={i} headers={expandableHeaders} row={employeeRow} />
           ))}
         </TableBody>
       </Table>
