@@ -72,6 +72,9 @@ export default function ExpandingEmployeeTime() {
                 />
               </Container>
               <CollapsibleTable data={employeeTime} />
+              <Typography variant='caption' style={{ padding: '5px' }}>
+                * Time transactions only
+              </Typography>
             </Container>
           )}
         </Card>

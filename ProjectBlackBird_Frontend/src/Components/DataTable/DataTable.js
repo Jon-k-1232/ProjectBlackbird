@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
 import styled from '@emotion/styled';
+import { Container } from '@mui/material';
+import PacmanLoader from 'react-spinners/PacmanLoader';
 
 /**
  * @param {*} props props.tableData, props.tableHeaders, props.route
@@ -106,7 +108,12 @@ export default function DataTable(props) {
   return (
     <>
       <DataTableContainer>
-        <MUIDataTable data={filteredTableData} columns={tableHeaders} options={options} />
+        {!filteredTableData && (
+          <Container style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
+            <PacmanLoader color='#02ab55' />
+          </Container>
+        )}
+        {filteredTableData && <MUIDataTable data={filteredTableData} columns={tableHeaders} options={options} />}
       </DataTableContainer>
     </>
   );

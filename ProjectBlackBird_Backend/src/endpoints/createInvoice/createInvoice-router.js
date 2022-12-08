@@ -8,6 +8,7 @@ const createInvoiceRouter = express.Router();
 const createInvoiceService = require('./createInvoice-service');
 const invoiceService = require('./../invoice/invoice-service');
 const transactionService = require('./../transactions/transactions-service');
+const contactService = require('../contacts/contacts-service');
 const createNewInvoice = require('./createInvoiceOrchestrator');
 const pdfAndZipFunctions = require('../../pdfCreator/pdfOrchestrator');
 const contactObjects = require('../contacts/contactObjects');
@@ -22,8 +23,21 @@ createInvoiceRouter
   .get(async (req, res) => {
     const db = req.app.get('db');
 
-    const readyToBill = await createInvoiceService.getReadyToBill(db);
-    const readyToBillContacts = readyToBill.map(contact => contactObjects.contactObjectReduced(contact));
+    // const readyToBill = await createInvoiceService.getReadyToBill(db);
+    // const readyToBillContacts = readyToBill.map(contact => contactObjects.contactObjectReduced(contact));
+
+    const roughDraft = true;
+    const createPdf = false;
+    const contactBalance = true;
+
+    const contacts = await contactService.getAllActiveContacts(db);
+    const contactIds = contacts.map(contact => contact.oid);
+    const contactsTotaled = await createNewInvoice(contactIds, roughDraft, createPdf, db, contactBalance);
+    const filteredContactsToBill = contactsTotaled.filter(
+      item => item.endingBalance > 0 || item.unPaidBalance > 0 || item.endingBalance > 0
+    );
+    const readyToBillContactInfo = filteredContactsToBill.map(item => item.contact);
+    const readyToBillContacts = readyToBillContactInfo.map(contact => contactObjects.contactObjectReduced(contact));
 
     res.send({
       readyToBillContacts,
