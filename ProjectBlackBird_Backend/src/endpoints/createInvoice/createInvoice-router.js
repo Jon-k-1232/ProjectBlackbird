@@ -34,7 +34,7 @@ createInvoiceRouter
     // Find who has outstanding items since last invoice
     const contactsWithNewOrOutstandingItems = await getItemsForBilling(db, contacts);
     // Format found contacts
-    const readyToBillContacts = contactsWithNewOrOutstandingItems.map(contact => contactObjects.contactObjectReduced(contact.contact));
+    const readyToBillContacts = contactsWithNewOrOutstandingItems.map(contact => contactObjects.contactObjectReduced(contact));
 
     res.send({
       readyToBillContacts,
@@ -176,15 +176,17 @@ const getItemsForBilling = async (db, contacts) => {
       lastInvoiceDataEndDate,
       'Time'
     );
+    const payments = await transactionService.getCompanyTransactionTypeAfterGivenDate(db, contact.oid, lastInvoiceDataEndDate, 'Payment');
     const advancedPayments = await advancedPaymentService.getCompanyAdvancedPaymentsGreaterThanZero(db, contact.oid);
     const unpaidInvoices = await invoiceService.getOutstandingCompanyInvoice(db, contact.oid);
 
     return {
       contact: contact,
-      advancedPayments: advancedPayments,
-      unpaidInvoices: unpaidInvoices,
-      newCompanyTime: newCompanyTime,
-      newCompanyCharges: newCompanyCharges
+      advancedPayments,
+      unpaidInvoices,
+      newCompanyTime,
+      newCompanyCharges,
+      payments
     };
   });
 

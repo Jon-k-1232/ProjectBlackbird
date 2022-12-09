@@ -81,11 +81,18 @@ contactObjects = {
   },
 
   contactObjectReduced(contact) {
+    const { advancedPayments, unpaidInvoices, newCompanyTime, newCompanyCharges, payments } = contact;
+    const { oid, companyName, firstName, lastName } = contact.contact;
     return {
-      oid: contact.oid,
-      companyName: contact.companyName,
-      firstName: contact.firstName,
-      lastName: contact.lastName
+      oid,
+      companyName,
+      firstName,
+      lastName,
+      advancedPayments: advancedPayments.length,
+      unpaidInvoices: unpaidInvoices.length,
+      newCompanyTime: newCompanyTime.length,
+      newCompanyCharges: newCompanyCharges.length,
+      payments: payments.length
     };
   },
 
