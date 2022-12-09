@@ -82,7 +82,7 @@ contactObjects = {
 
   contactObjectReduced(contact) {
     return {
-      oid: contact.company,
+      oid: contact.oid,
       companyName: contact.companyName,
       firstName: contact.firstName,
       lastName: contact.lastName
