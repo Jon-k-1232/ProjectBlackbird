@@ -32,6 +32,30 @@ contactsRouter
     });
   });
 
+contactsRouter
+  .route('/oldInvoices')
+  // .all(requireAuth)
+  .get(async (req, res) => {
+    const db = req.app.get('db');
+
+    const allInvoices = await cleanUpService.getAllInvoices(db);
+
+    await allInvoices.map(async invoice => {
+      const { company, invoiceNumber, beginningBalance, totalPayments, totalNewCharges, endingBalance, unPaidBalance } = invoice;
+      if (beginningBalance === 0 && totalPayments === 0 && totalNewCharges === 0 && (endingBalance === 0 || endingBalance === -0)) {
+        await cleanUpService.deleteInvoice(db, company, invoiceNumber);
+      }
+      if (beginningBalance === 0 && totalPayments === 0 && totalNewCharges === 0 && endingBalance === 0 && unPaidBalance === 0) {
+        await cleanUpService.deleteInvoice(db, company, invoiceNumber);
+      }
+      return invoice;
+    });
+
+    res.send({
+      status: 200
+    });
+  });
+
 module.exports = contactsRouter;
 
 /**
