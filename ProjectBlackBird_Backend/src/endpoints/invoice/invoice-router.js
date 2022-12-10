@@ -33,11 +33,10 @@ invoiceRouter
     const company = Number(req.params.company);
     const db = req.app.get('db');
 
-    invoiceService.getCompanyInvoices(db, company).then(invoicesWithNoDetail => {
-      res.send({
-        invoicesWithNoDetail,
-        status: 200
-      });
+    const invoicesWithNoDetail = await invoiceService.getCompanyInvoices(db, company);
+    res.send({
+      invoicesWithNoDetail,
+      status: 200
     });
   });
 

@@ -26,7 +26,29 @@ const invoiceService = {
   },
 
   getCompanyInvoices(db, companyId) {
-    return db.select().from('invoice').whereIn('company', [companyId]);
+    return db
+      .from('invoice')
+      .whereIn('company', [companyId])
+      .join('company', 'invoice.company', '=', 'company.oid')
+      .select(
+        'invoice.oid',
+        'invoice.invoiceNumber',
+        'invoice.company',
+        'company.companyName',
+        'invoice.contactName',
+        'invoice.address1',
+        'invoice.address2',
+        'invoice.address3',
+        'invoice.address4',
+        'invoice.beginningBalance',
+        'invoice.totalPayments',
+        'invoice.totalNewCharges',
+        'invoice.endingBalance',
+        'invoice.unPaidBalance',
+        'invoice.invoiceDate',
+        'invoice.paymentDueDate',
+        'invoice.dataEndDate'
+      );
   },
 
   getSingleCompanyInvoice(db, companyDetails) {
