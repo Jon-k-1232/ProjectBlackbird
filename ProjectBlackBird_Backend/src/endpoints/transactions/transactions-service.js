@@ -1,23 +1,8 @@
 const transactionService = {
-  /**
-   *  All transactions that are between user selected days and now.
-   * @param {*} db takes in db
-   * @param {*} date Integer, days to go back. example: 6
-   * @param {*} now todays rolling date - end of day
-   * @returns [{},{}]
-   */
-  // getTransactions(db, currDate, prevDate) {
-  //   return db
-  //     .select()
-  //     .from('transaction')
-  //     .innerJoin('company', 'transaction.company', '=', 'company.oid')
-  //     .innerJoin('job', 'transaction.job', '=', 'job.oid')
-  //     .whereBetween('transaction.transactionDate', [prevDate, currDate]);
-  // },
-
   getTransactions(db, currDate, prevDate) {
     return db
       .from('transaction')
+      .whereBetween('transaction.transactionDate', [prevDate, currDate])
       .join('company', 'transaction.company', '=', 'company.oid')
       .join('job', 'transaction.job', '=', 'job.oid')
       .join('employee', 'transaction.employee', '=', 'employee.oid')
@@ -34,8 +19,7 @@ const transactionService = {
         'transaction.totalTransaction',
         'transaction.invoice',
         'transaction.billable'
-      )
-      .whereBetween('transaction.transactionDate', [prevDate, currDate]);
+      );
   },
 
   /**
@@ -48,12 +32,37 @@ const transactionService = {
    */
   getCompanyTransactions(db, company, currDate, prevDate) {
     return db
-      .select()
       .from('transaction')
       .whereIn('transaction.company', [company])
       .whereBetween('transaction.transactionDate', [prevDate, currDate])
-      .innerJoin('company', 'transaction.company', '=', 'company.oid')
-      .innerJoin('job', 'transaction.job', '=', 'job.oid');
+      .join('company', 'transaction.company', '=', 'company.oid')
+      .join('job', 'transaction.job', '=', 'job.oid')
+      .join('employee', 'transaction.employee', '=', 'employee.oid')
+      .select(
+        'transaction.oid',
+        'transaction.company',
+        'company.companyName',
+        'transaction.job',
+        'job.defaultDescription',
+        'transaction.employee',
+        'employee.displayname',
+        'transaction.transactionType',
+        'transaction.transactionDate',
+        'transaction.quantity',
+        'transaction.unitOfMeasure',
+        'transaction.unitTransaction',
+        'transaction.totalTransaction',
+        'transaction.invoice',
+        'transaction.billable'
+      );
+    // ToDo test create invoices
+    // return db
+    //   .select()
+    //   .from('transaction')
+    //   .whereIn('transaction.company', [company])
+    //   .whereBetween('transaction.transactionDate', [prevDate, currDate])
+    //   .innerJoin('company', 'transaction.company', '=', 'company.oid')
+    //   .innerJoin('job', 'transaction.job', '=', 'job.oid');
   },
 
   // Gets all transactions between two dates.
@@ -87,17 +96,27 @@ const transactionService = {
    * @param {*} jobId
    */
   getJobTransactions(db, companyId, jobId) {
-    return db.select().from('transaction').whereIn('company', [companyId]).whereIn('job', [jobId]);
-  },
-
-  /**
-   * inserts new transaction for a company
-   * @param {*} db
-   * @param {*} newTransaction {}
-   * @returns [{},{}]
-   */
-  insertNewTransaction(db, newTransaction) {
-    return db.insert(newTransaction).into('transaction').returning('*');
+    return db
+      .from('transaction')
+      .whereIn('transaction.company', [companyId])
+      .whereIn('transaction.job', [jobId])
+      .join('company', 'transaction.company', '=', 'company.oid')
+      .join('job', 'transaction.job', '=', 'job.oid')
+      .join('employee', 'transaction.employee', '=', 'employee.oid')
+      .select(
+        'transaction.oid',
+        'company.companyName',
+        'job.defaultDescription',
+        'employee.displayname',
+        'transaction.transactionType',
+        'transaction.transactionDate',
+        'transaction.quantity',
+        'transaction.unitOfMeasure',
+        'transaction.unitTransaction',
+        'transaction.totalTransaction',
+        'transaction.invoice',
+        'transaction.billable'
+      );
   },
 
   getCompanyTransactionTypeAfterGivenDate(db, companyId, dateInPast, type) {
@@ -110,16 +129,8 @@ const transactionService = {
       .where('billable', '=', true);
   },
 
-  getTransactionTypeToday(db, type, oid) {
-    return db.select().from('transaction').where('company', oid).where('transactionType', type);
-  },
-
-  getFirstTransaction(db, oid) {
-    return db.select().from('transaction').where('company', oid);
-  },
-
-  getInvoiceTransactions(db, invoiceLineOid) {
-    return db.select().from('transaction').where('invoice', invoiceLineOid).innerJoin('job', 'transaction.job', '=', 'job.oid');
+  insertNewTransaction(db, newTransaction) {
+    return db.insert(newTransaction).into('transaction').returning('*');
   },
 
   updateTransactionWithInvoice(db, transaction, invoiceNumber) {

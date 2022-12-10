@@ -5,7 +5,7 @@ import config from '../config';
  * Gets all company information
  * @returns [{},{},{}] Array of objects
  */
-export const getAllCompanies = () => {
+export const getAllCompanies = async () => {
   return fetch(`${config.API_ENDPOINT}/contacts/all`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -24,7 +24,7 @@ export const getAllCompanies = () => {
  * Gets active company information
  * @returns [{},{},{}] Array of objects
  */
-export const getActiveCompanies = () => {
+export const getActiveCompanies = async () => {
   return fetch(`${config.API_ENDPOINT}/contacts/allActiveContacts`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -43,7 +43,7 @@ export const getActiveCompanies = () => {
  * Gets prior clients
  * @returns
  */
-export const getPriorCompanies = () => {
+export const getPriorCompanies = async () => {
   return fetch(`${config.API_ENDPOINT}/contacts/allPriorContacts`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -63,7 +63,7 @@ export const getPriorCompanies = () => {
  * @param {*} companyId Integer oid of company
  * @returns {object} Object is company information
  */
-export const getCompanyInformation = companyId => {
+export const getCompanyInformation = async companyId => {
   return fetch(`${config.API_ENDPOINT}/contacts/company/${companyId}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -78,7 +78,7 @@ export const getCompanyInformation = companyId => {
 /**
  *
  */
-export const getCompanyTransactions = (companyId, time) => {
+export const getCompanyTransactions = async (companyId, time) => {
   const allCompanyTransactions = fetch(`${config.API_ENDPOINT}/transactions/companyTransactions/${companyId}/${time}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -97,7 +97,7 @@ export const getCompanyTransactions = (companyId, time) => {
 /**
  *
  */
-export const getCompanyInvoices = companyId => {
+export const getCompanyInvoices = async companyId => {
   return fetch(`${config.API_ENDPOINT}/invoices/all/company/${companyId}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -115,7 +115,7 @@ export const getCompanyInvoices = companyId => {
 /**
  *
  */
-export const getAllTransactions = time => {
+export const getAllTransactions = async time => {
   return fetch(`${config.API_ENDPOINT}/transactions/all/${time}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -133,7 +133,7 @@ export const getAllTransactions = time => {
 /**
  *
  */
-export const getJobTransactions = (companyId, jobId) => {
+export const getJobTransactions = async (companyId, jobId) => {
   return fetch(`${config.API_ENDPOINT}/transactions/jobTransactions/${companyId}/${jobId}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -151,7 +151,7 @@ export const getJobTransactions = (companyId, jobId) => {
 /**
  *
  */
-export const getAllJobs = time => {
+export const getAllJobs = async time => {
   return fetch(`${config.API_ENDPOINT}/jobs/allJobs/${time}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -169,7 +169,7 @@ export const getAllJobs = time => {
 /**
  *
  */
-export const getCompanyJobs = (companyId, time) => {
+export const getCompanyJobs = async (companyId, time) => {
   return fetch(`${config.API_ENDPOINT}/jobs/all/${companyId}/${time}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -187,7 +187,7 @@ export const getCompanyJobs = (companyId, time) => {
 /**
  * Gets all job types/descriptions/definitions
  */
-export const getAllJobDefinitions = () => {
+export const getAllJobDefinitions = async () => {
   return fetch(`${config.API_ENDPOINT}/jobDescription/all`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -206,7 +206,7 @@ export const getAllJobDefinitions = () => {
  * Gets all Employees active and inactive
  * @returns [{},{},{}] Array of objects. Each object is a employee
  */
-export const getAllEmployees = () => {
+export const getAllEmployees = async () => {
   return fetch(`${config.API_ENDPOINT}/employee/allActiveEmployees`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -225,7 +225,7 @@ export const getAllEmployees = () => {
  * Gets a specific employee
  */
 
-export const getEmployee = employeeId => {
+export const getEmployee = async employeeId => {
   return fetch(`${config.API_ENDPOINT}/employee/findEmployee/${employeeId}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -240,7 +240,7 @@ export const getEmployee = employeeId => {
     .catch(error => error);
 };
 
-export const getMonthlyClients = () => {
+export const getMonthlyClients = async () => {
   return fetch(`${config.API_ENDPOINT}/monthlyClients/active`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -260,7 +260,7 @@ export const getMonthlyClients = () => {
  * @param {*} time Integer in days. How many days in past
  * @returns [{},{},{}] arrays of objects, each object is a invoice
  */
-export const getAllInvoices = time => {
+export const getAllInvoices = async time => {
   return fetch(`${config.API_ENDPOINT}/invoices/all/time/${time}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -280,7 +280,7 @@ export const getAllInvoices = time => {
  * @param {*} oid oid of invoice
  * @returns [{}] array of objects. object is invoice
  */
-export const getAnInvoice = (invoiceId, companyId) => {
+export const getAnInvoice = async (invoiceId, companyId) => {
   return fetch(`${config.API_ENDPOINT}/invoices/single/${invoiceId}/${companyId}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -301,7 +301,7 @@ export const getAnInvoice = (invoiceId, companyId) => {
  * Gets all users that are ready for billing
  * @returns
  */
-export const getAllReadyToBillInvoices = () => {
+export const getAllReadyToBillInvoices = async () => {
   return fetch(`${config.API_ENDPOINT}/create/createInvoices/readyToBill`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -320,7 +320,7 @@ export const getAllReadyToBillInvoices = () => {
  *
  * @returns Creates and gets zip file from backend
  */
-export const getZippedInvoices = () => {
+export const getZippedInvoices = async () => {
   return fetch(`${config.API_ENDPOINT}/create/download`, getHeader)
     .then(res => res.blob())
     .then(data => {
@@ -337,7 +337,7 @@ export const getZippedInvoices = () => {
     .catch(error => error);
 };
 
-export const getOutstandingInvoiceForCompany = selectedCompany => {
+export const getOutstandingInvoiceForCompany = async selectedCompany => {
   return fetch(`${config.API_ENDPOINT}/invoices/outstandingInvoices/${selectedCompany.oid}`, getHeader)
     .then(resp => {
       if (!resp.ok) {
@@ -349,18 +349,6 @@ export const getOutstandingInvoiceForCompany = selectedCompany => {
       const { outstandingInvoices } = data;
       return outstandingInvoices.length ? tableAndLabelCreation(outstandingInvoices, 'oid', 'companyName') : null;
     })
-    .catch(error => error);
-};
-
-export const rePrintInvoice = async invoiceId => {
-  return fetch(`${config.API_ENDPOINT}/create/createInvoices/rePrint/${invoiceId}`, getHeader)
-    .then(resp => {
-      if (!resp.ok) {
-        throw new Error(resp.status);
-      }
-      return resp.json();
-    })
-    .then(res => res)
     .catch(error => error);
 };
 

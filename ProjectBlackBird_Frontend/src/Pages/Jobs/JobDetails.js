@@ -18,7 +18,7 @@ export default function JobDetails() {
   useEffect(() => {
     const fetchData = async () => {
       // Data is being stored in props of routing
-      const companyId = Number(location.state.rowData[2]);
+      const companyId = Number(location.state.rowData[1]);
 
       // Getting contact info for company
       const contactDetails = await getCompanyInformation(companyId);

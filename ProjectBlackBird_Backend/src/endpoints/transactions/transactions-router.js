@@ -69,11 +69,11 @@ transactionsRouter
     const companyId = Number(req.params.companyId);
     const jobId = Number(req.params.jobId);
 
-    transactionService.getJobTransactions(db, companyId, jobId).then(jobTransactions => {
-      res.send({
-        jobTransactions,
-        status: 200
-      });
+    const jobTransactions = await transactionService.getJobTransactions(db, companyId, jobId);
+
+    res.send({
+      jobTransactions,
+      status: 200
     });
   });
 

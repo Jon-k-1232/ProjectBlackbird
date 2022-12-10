@@ -97,51 +97,6 @@ createInvoiceRouter
     });
   });
 
-/**
- * Reprint a invoice that already exists
- */
-createInvoiceRouter
-  .route('/createInvoices/rePrint/:id')
-  .all(requireAuth)
-  .get(jsonParser, async (req, res) => {
-    const db = req.app.get('db');
-    const { id } = req.params;
-
-    // Get data from DB to rebuild invoice
-    const invoiceId = Number(id);
-    const invoiceFromDb = await invoiceService.getInvoiceByInvoiceId(db, invoiceId);
-    const invoice = invoiceFromDb[0];
-    const transactionsFromDB = await transactionService.getInvoiceTransactions(db, invoice.oid);
-    const transactions = transactionsFromDB;
-    const payToFromDb = await createInvoiceService.getBillTo(db);
-    const payTo = payToFromDb[0];
-
-    // Form object to pass to pdf creator
-    const invoiceObject = {
-      ...invoice,
-      beginningBalance: invoice.beginningBalance.toFixed(2),
-      totalPayments: invoice.totalPayments.toFixed(2),
-      totalNewCharges: invoice.totalNewCharges.toFixed(2),
-      endingBalance: invoice.endingBalance.toFixed(2),
-      unPaidBalance: invoice.unPaidBalance.toFixed(2),
-      // Unable to get outstanding records at the specific time in history. Would need to create new table to capture unpaid invoices and their balances.
-      outstandingInvoiceRecords: [],
-      paymentRecords: transactions.filter(trans => trans.transactionType === 'Payment' || trans.transactionType === 'WriteOff'),
-      newChargesRecords: transactions.filter(
-        trans =>
-          trans.transactionType === 'Adjustment' ||
-          trans.transactionType === 'Charge' ||
-          trans.transactionType === 'Interest' ||
-          trans.transactionType === 'Time'
-      )
-    };
-
-    // Create Pdf
-    await pdfAndZipFunctions.pdfCreate(invoiceObject, payTo);
-
-    res.send({ invoiceObject, status: 200 });
-  });
-
 module.exports = createInvoiceRouter;
 
 /**
@@ -149,9 +104,9 @@ module.exports = createInvoiceRouter;
  * @param {*} db 
  * @param {*} contacts 
  * @returns {} array of all contacts 
- *    { 
- *    contact:{},
- *    advancedPayments: [],
+      { 
+      contact:{},
+      advancedPayments: [],
       unpaidInvoices: [],
       newCompanyTime: [],
       newCompanyCharges:[]

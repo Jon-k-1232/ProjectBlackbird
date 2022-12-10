@@ -24,16 +24,6 @@ const jobService = {
   },
 
   /**
-   * Gets all job details
-   * @param {*} db takes in db
-   * @param {*} arrayOfIds [array of ints]. Each int is a job number which is an 'oid' in 'jobdefinition' table
-   * @returns [{},{}] Array of objects. Each object is a matched job definition
-   */
-  getJobDetail(db, arrayOfIds) {
-    return db.select().from('jobdefinition').whereIn('oid', arrayOfIds);
-  },
-
-  /**
    * Gets all jobs within a given time frame
    * @param {*} db takes in db
    * @param {*} time company OID

@@ -4,23 +4,20 @@ import { useLocation } from 'react-router-dom';
 import Page from '../../Components/Page';
 import { Typography, Card, CardContent } from '@mui/material';
 import DataTable from '../../Components/DataTable/DataTable';
-import { getAnInvoice, rePrintInvoice, getZippedInvoices } from '../../ApiCalls/ApiCalls';
+import { getAnInvoice } from '../../ApiCalls/ApiCalls';
 import dayjs from 'dayjs';
 import HeaderMenu from '../../Components/HeaderMenu/HeaderMenu';
-import plusFill from '@iconify/icons-eva/plus-fill';
-import AlertBanner from '../../Components/AlertBanner/AlertBanner';
 
 export default function InvoiceDetails() {
   const location = useLocation();
   const [invoiceDetails, setInvoiceDetails] = useState({});
   const [invoice, setInvoice] = useState({});
-  const [postStatus, setPostStatus] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const invoiceData = location.state.rowData;
-      const invoiceId = invoiceData[2];
-      const companyId = invoiceData[1];
+      const invoiceId = invoiceData[1];
+      const companyId = invoiceData[2];
       const invoice = await getAnInvoice(invoiceId, companyId);
       setInvoice(invoice.invoice);
       setInvoiceDetails(invoice.details);
@@ -43,19 +40,9 @@ export default function InvoiceDetails() {
     totalPayments
   } = invoice;
 
-  const handleSubmit = async e => {
-    const postedItem = await rePrintInvoice(invoiceNumber);
-    setPostStatus(postedItem.status);
-    await getZippedInvoices();
-    setTimeout(() => setPostStatus(null), 4000);
-  };
-
   return (
     <Page title='invoiceDetails'>
-      {/* TODO re-enable button once invoice detail completed */}
-      {/* <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} listOfButtons={button} /> */}
-      <HeaderMenu handleOnClick={e => handleSubmit(e)} page={'Invoice Details'} />
-      <AlertBanner postStatus={postStatus} type='Invoice Re-Printed' />
+      <HeaderMenu page={'Invoice Details'} />
       <Container style={{ display: 'contents' }}>
         <Card className='contactWrapper'>
           <CardContent style={styles.header} className='contactHeader'>
@@ -135,6 +122,3 @@ const styles = {
     padding: '0px 10px'
   }
 };
-
-// eslint-disable-next-line
-const button = [{ name: 'Print', variant: 'contained', icon: plusFill, htmlName: 'Print Again' }];

@@ -6,8 +6,9 @@ const invoiceService = {
       .join('company', 'invoice.company', '=', 'company.oid')
       .select(
         'invoice.oid',
-        'company.companyName',
         'invoice.invoiceNumber',
+        'invoice.company',
+        'company.companyName',
         'invoice.contactName',
         'invoice.address1',
         'invoice.address2',

@@ -3,7 +3,6 @@ const invoiceRouter = express.Router();
 const invoiceService = require('./invoice-service');
 const helperFunctions = require('../../helperFunctions/helperFunctions');
 const transactionService = require('../transactions/transactions-service');
-const transactionsObjects = require('../transactions/transactionsObjects');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
 const { defaultDaysInPast } = require('../../../config');
@@ -110,7 +109,6 @@ invoiceRouter
     const dataToPass = { invoice, company };
     const db = req.app.get('db');
 
-    // ToDo update this to get all invoice details. Invoice details to have all transactions and outstanding.
     const [invoiceDetails, returnedInvoice] = await fetchAllTransactionsOnInvoice(db, dataToPass);
 
     res.send({
