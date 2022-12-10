@@ -231,14 +231,12 @@ const fetchAllTransactionsOnInvoice = async (db, dataToPass) => {
       ? sortedByDateCompanyInvoices[indexOfPriorInvoice].dataEndDate
       : dayjs(selectedInvoiceEndDate).subtract(365, 'day').format();
 
-  const invoiceDetailsReturned = await transactionService.getCompanyTransactionsBetweenDates(
+  const invoiceDetails = await transactionService.getCompanyTransactionsBetweenDates(
     db,
     company,
     selectedInvoiceEndDate,
     priorInvoiceEndDate
   );
-
-  const invoiceDetails = invoiceDetailsReturned.map(transaction => transactionsObjects.createTransactionJobJoinObject(transaction));
 
   return [invoiceDetails, returnedInvoice];
 };

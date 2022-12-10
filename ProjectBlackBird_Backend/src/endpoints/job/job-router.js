@@ -17,18 +17,11 @@ jobRouter
     const time = Number(req.params.time) ? Number(req.params.time) : defaultDaysInPast;
     const timeBetween = helperFunctions.timeSubtractionFromTodayCalculator(time);
 
-    jobService.getJobs(db, company, timeBetween.currDate, timeBetween.prevDate).then(allJobsForCompany => {
-      const arrayOfIds = allJobsForCompany.map(item => item.jobDefinition);
+    const jobs = await jobService.getJobs(db, company, timeBetween.currDate, timeBetween.prevDate);
 
-      jobService.getJobDetail(db, arrayOfIds).then(details => {
-        // Helper function maps jobDetails to each job
-        const jobs = helperFunctions.addProperty(allJobsForCompany, details, 'jobDefinitionDetails', 'oid', 'jobDefinition');
-
-        res.send({
-          jobs,
-          status: 200
-        });
-      });
+    res.send({
+      jobs,
+      status: 200
     });
   });
 
@@ -43,11 +36,11 @@ jobRouter
     const time = Number(req.params.time) ? Number(req.params.time) : defaultDaysInPast;
     const timeBetween = helperFunctions.timeSubtractionFromTodayCalculator(time);
 
-    jobService.getAllJobs(db, timeBetween.currDate, timeBetween.prevDate).then(allJobsWithinTimeframe => {
-      res.send({
-        allJobsWithinTimeframe,
-        status: 200
-      });
+    const allJobsWithinTimeframe = await jobService.getAllJobs(db, timeBetween.currDate, timeBetween.prevDate);
+
+    res.send({
+      allJobsWithinTimeframe,
+      status: 200
     });
   });
 

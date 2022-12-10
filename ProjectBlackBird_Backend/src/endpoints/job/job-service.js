@@ -6,7 +6,21 @@ const jobService = {
    * @returns [{},{}] Array of objects. Each object is a job for the given company
    */
   getJobs(db, companyId, currDate, prevDate) {
-    return db.select().from('job').whereIn('company', [companyId]).whereBetween('startDate', [prevDate, currDate]);
+    return db
+      .from('job')
+      .whereIn('company', [companyId])
+      .whereBetween('startDate', [prevDate, currDate])
+      .join('company', 'job.company', '=', 'company.oid')
+      .join('jobdefinition', 'job.jobDefinition', '=', 'jobdefinition.oid')
+      .select(
+        'job.oid',
+        'job.company',
+        'company.companyName',
+        'jobdefinition.description',
+        'job.description',
+        'job.defaultDescription',
+        'job.jobDefinition'
+      );
   },
 
   /**
@@ -26,7 +40,20 @@ const jobService = {
    * @returns [{},{}] Array of objects. Each object is a job
    */
   getAllJobs(db, currDate, prevDate) {
-    return db.select().from('job').whereBetween('startDate', [prevDate, currDate]);
+    return db
+      .from('job')
+      .whereBetween('startDate', [prevDate, currDate])
+      .join('company', 'job.company', '=', 'company.oid')
+      .join('jobdefinition', 'job.jobDefinition', '=', 'jobdefinition.oid')
+      .select(
+        'job.oid',
+        'job.company',
+        'company.companyName',
+        'jobdefinition.description',
+        'job.description',
+        'job.defaultDescription',
+        'job.jobDefinition'
+      );
   },
 
   /**
@@ -46,7 +73,7 @@ const jobService = {
    */
   getLastJobOidInDB(db) {
     return db.from('job').max('oid');
-  },
+  }
 };
 
 module.exports = jobService;

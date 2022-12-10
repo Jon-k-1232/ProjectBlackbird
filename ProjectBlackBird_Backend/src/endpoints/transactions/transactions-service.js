@@ -6,12 +6,35 @@ const transactionService = {
    * @param {*} now todays rolling date - end of day
    * @returns [{},{}]
    */
+  // getTransactions(db, currDate, prevDate) {
+  //   return db
+  //     .select()
+  //     .from('transaction')
+  //     .innerJoin('company', 'transaction.company', '=', 'company.oid')
+  //     .innerJoin('job', 'transaction.job', '=', 'job.oid')
+  //     .whereBetween('transaction.transactionDate', [prevDate, currDate]);
+  // },
+
   getTransactions(db, currDate, prevDate) {
     return db
-      .select()
       .from('transaction')
-      .innerJoin('company', 'transaction.company', '=', 'company.oid')
-      .innerJoin('job', 'transaction.job', '=', 'job.oid')
+      .join('company', 'transaction.company', '=', 'company.oid')
+      .join('job', 'transaction.job', '=', 'job.oid')
+      .join('employee', 'transaction.employee', '=', 'employee.oid')
+      .select(
+        'transaction.oid',
+        'company.companyName',
+        'job.defaultDescription',
+        'employee.displayname',
+        'transaction.transactionType',
+        'transaction.transactionDate',
+        'transaction.quantity',
+        'transaction.unitOfMeasure',
+        'transaction.unitTransaction',
+        'transaction.totalTransaction',
+        'transaction.invoice',
+        'transaction.billable'
+      )
       .whereBetween('transaction.transactionDate', [prevDate, currDate]);
   },
 
@@ -36,14 +59,26 @@ const transactionService = {
   // Gets all transactions between two dates.
   getCompanyTransactionsBetweenDates(db, company, currDate, prevDate) {
     return db
-      .select()
       .from('transaction')
       .whereIn('transaction.company', [company])
-      .where('transaction.billable', '=', true)
       .whereBetween('transaction.transactionDate', [prevDate, currDate])
-      .innerJoin('company', 'transaction.company', '=', 'company.oid')
-      .innerJoin('job', 'transaction.job', '=', 'job.oid')
-      .join('employee', 'transaction.employee', '=', 'employee.oid');
+      .join('company', 'transaction.company', '=', 'company.oid')
+      .join('job', 'transaction.job', '=', 'job.oid')
+      .join('employee', 'transaction.employee', '=', 'employee.oid')
+      .select(
+        'transaction.oid',
+        'company.companyName',
+        'job.defaultDescription',
+        'employee.displayname',
+        'transaction.transactionType',
+        'transaction.transactionDate',
+        'transaction.quantity',
+        'transaction.unitOfMeasure',
+        'transaction.unitTransaction',
+        'transaction.totalTransaction',
+        'transaction.invoice',
+        'transaction.billable'
+      );
   },
 
   /**

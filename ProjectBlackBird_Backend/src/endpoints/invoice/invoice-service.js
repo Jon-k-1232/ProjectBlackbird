@@ -1,6 +1,27 @@
 const invoiceService = {
   getAllInvoices(db, currDate, prevDate) {
-    return db.select().from('invoice').whereBetween('invoiceDate', [prevDate, currDate]);
+    return db
+      .from('invoice')
+      .whereBetween('invoiceDate', [prevDate, currDate])
+      .join('company', 'invoice.company', '=', 'company.oid')
+      .select(
+        'invoice.oid',
+        'company.companyName',
+        'invoice.invoiceNumber',
+        'invoice.contactName',
+        'invoice.address1',
+        'invoice.address2',
+        'invoice.address3',
+        'invoice.address4',
+        'invoice.beginningBalance',
+        'invoice.totalPayments',
+        'invoice.totalNewCharges',
+        'invoice.endingBalance',
+        'invoice.unPaidBalance',
+        'invoice.invoiceDate',
+        'invoice.paymentDueDate',
+        'invoice.dataEndDate'
+      );
   },
 
   getCompanyInvoices(db, companyId) {
