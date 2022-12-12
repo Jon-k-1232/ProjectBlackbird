@@ -23,6 +23,23 @@ const jobService = {
       );
   },
 
+  getCompanyJobs(db, companyId) {
+    return db
+      .from('job')
+      .whereIn('company', [companyId])
+      .join('company', 'job.company', '=', 'company.oid')
+      .join('jobdefinition', 'job.jobDefinition', '=', 'jobdefinition.oid')
+      .select(
+        'job.oid',
+        'job.company',
+        'company.companyName',
+        'jobdefinition.description',
+        'job.description',
+        'job.defaultDescription',
+        'job.jobDefinition'
+      );
+  },
+
   /**
    * Gets all jobs within a given time frame
    * @param {*} db takes in db

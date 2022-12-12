@@ -23,8 +23,13 @@ import Deactivation from '../Pages/Clients/Deactivation';
 import EditAnInvoice from '../Pages/Invoices/EditAnInvoice';
 import MonthlyClients from 'src/Pages/MonthlyClients/MonthlyClients';
 import Dashboard from 'src/Pages/Dashboard/Dashboard';
+import { useContext } from 'react';
+import { context } from '../App';
+import AccessControl from 'src/Pages/Access/Access';
 
 export default function Router() {
+  const { loginUser } = useContext(context);
+
   return (
     <Routes>
       <Route element={<LogoOnlyLayout />}>
@@ -45,7 +50,6 @@ export default function Router() {
         <Route path='invoices' element={<Invoices />} />
         <Route path='newInvoice' element={<NewInvoice />} />
         <Route path='invoiceDetails' element={<InvoiceDetails />} />
-        <Route path='employees' element={<Employees />} />
         <Route path='newEmployee' element={<NewEmployee />} />
         <Route path='jobs' element={<Jobs />} />
         <Route path='newJob' element={<NewJob />} />
@@ -53,9 +57,14 @@ export default function Router() {
         <Route path='jobDefinitions' element={<JobDefinitions />} />
         <Route path='createNewJobDefinition' element={<NewJobDefinition />} />
         <Route path='profile' element={<Profile />} />
-        <Route path='editAnInvoice' element={<EditAnInvoice />} />
         <Route path='deactivation' element={<Deactivation />} />
         <Route path='monthlyClients' element={<MonthlyClients />} />
+        <Route path='editAnInvoice' element={<EditAnInvoice />} />
+        {loginUser.role === 'manager' ? (
+          <Route path='employees' element={<Employees />} />
+        ) : (
+          <Route path='employees' element={<AccessControl />} />
+        )}
       </Route>
     </Routes>
   );

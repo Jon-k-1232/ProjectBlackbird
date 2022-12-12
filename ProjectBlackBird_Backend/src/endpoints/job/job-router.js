@@ -1,6 +1,7 @@
 const express = require('express');
 const jobRouter = express.Router();
 const jobService = require('./job-service');
+const transactionService = require('../transactions/transactions-service');
 const helperFunctions = require('../../helperFunctions/helperFunctions');
 const jsonParser = express.json();
 const { sanitizeFields } = require('../../utils');
@@ -40,6 +41,90 @@ jobRouter
 
     res.send({
       allJobsWithinTimeframe,
+      status: 200
+    });
+  });
+
+// Get all jobs for a company
+jobRouter
+  .route('/analytics/jobCost/:company')
+  // .all(requireAuth)
+  .get(async (req, res) => {
+    const db = req.app.get('db');
+    const company = Number(req.params.company);
+
+    const companyJobs = await jobService.getCompanyJobs(db, company);
+    const jobTransactions = await Promise.all(
+      companyJobs.map(async job => {
+        const jobTransactions = await transactionService.getJobTransactions(db, company, job.oid);
+        const filteredTransactionTypes = jobTransactions.filter(
+          item => item.transactionType === 'Charge' || item.transactionType === 'Time' || item.transactionType === 'Adjustment'
+        );
+
+        const description = job.defaultDescription;
+        const subDescription = job.description;
+        const id = job.oid;
+        const jobTotal = filteredTransactionTypes.reduce((prev, curr) => prev + curr.totalTransaction, 0);
+
+        const jobCharges = filteredTransactionTypes.reduce((prev, curr) => {
+          if (curr.transactionType === 'Charge') return prev + curr.totalTransaction;
+          return prev;
+        }, 0);
+
+        const jobTime = filteredTransactionTypes.reduce((prev, curr) => {
+          if (curr.transactionType === 'Time') return prev + curr.quantity;
+          return prev;
+        }, 0);
+
+        const jobTimeCost = filteredTransactionTypes.reduce((prev, curr) => {
+          if (curr.transactionType === 'Time') return prev + curr.totalTransaction;
+          return prev;
+        }, 0);
+
+        const jobAdjustments = filteredTransactionTypes.reduce((prev, curr) => {
+          if (curr.transactionType === 'Adjustment') return prev + curr.totalTransaction;
+          return prev;
+        }, 0);
+
+        const generalLabor = filteredTransactionTypes.reduce((prev, curr) => {
+          if (Number(curr.unitTransaction) < 140 && curr.transactionType === 'Time') return prev + curr.totalTransaction;
+          return prev;
+        }, 0);
+
+        const generalLaborTime = filteredTransactionTypes.reduce((prev, curr) => {
+          if (Number(curr.unitTransaction) < 140 && curr.transactionType === 'Time') return prev + curr.quantity;
+          return prev;
+        }, 0);
+
+        const skilledLabor = filteredTransactionTypes.reduce((prev, curr) => {
+          if (Number(curr.unitTransaction) >= 140 && curr.transactionType === 'Time') return prev + curr.totalTransaction;
+          return prev;
+        }, 0);
+
+        const skilledLaborTime = filteredTransactionTypes.reduce((prev, curr) => {
+          if (Number(curr.unitTransaction) >= 140 && curr.transactionType === 'Time') return prev + curr.quantity;
+          return prev;
+        }, 0);
+
+        return {
+          description,
+          subDescription,
+          id,
+          jobTotal,
+          jobCharges,
+          jobTime,
+          jobTimeCost,
+          jobAdjustments,
+          generalLabor,
+          generalLaborTime,
+          skilledLabor,
+          skilledLaborTime
+        };
+      })
+    );
+
+    res.send({
+      jobTransactions,
       status: 200
     });
   });

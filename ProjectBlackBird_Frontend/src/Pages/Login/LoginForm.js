@@ -44,6 +44,7 @@ export default function LoginForm() {
           type={showPassword ? 'text' : 'password'}
           label='Password'
           onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
           InputProps={{
             endAdornment: (
               <InputAdornment position='end'>
