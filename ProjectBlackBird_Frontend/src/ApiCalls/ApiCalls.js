@@ -184,6 +184,21 @@ export const getCompanyJobs = async (companyId, time) => {
     .catch(error => error);
 };
 
+export const getJobAnalytics = async company => {
+  return fetch(`${config.API_ENDPOINT}/jobs/analytics/jobCost/${company}`, getHeader)
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.status);
+      }
+      return resp.json();
+    })
+    .then(data => {
+      const { jobsBrokenDown } = data;
+      return jobsBrokenDown.length > 0 ? tableAndLabelCreation(jobsBrokenDown, 'jobDefinition', 'description') : noData;
+    })
+    .catch(error => error);
+};
+
 /**
  * Gets all job types/descriptions/definitions
  */

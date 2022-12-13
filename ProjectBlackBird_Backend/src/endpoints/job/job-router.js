@@ -45,86 +45,21 @@ jobRouter
     });
   });
 
-// Get all jobs for a company
+/**
+ * Get details on Job break down
+ */
 jobRouter
   .route('/analytics/jobCost/:company')
-  // .all(requireAuth)
+  .all(requireAuth)
   .get(async (req, res) => {
     const db = req.app.get('db');
-    const company = Number(req.params.company);
+    const companyId = Number(req.params.company);
 
-    const companyJobs = await jobService.getCompanyJobs(db, company);
-    const jobTransactions = await Promise.all(
-      companyJobs.map(async job => {
-        const jobTransactions = await transactionService.getJobTransactions(db, company, job.oid);
-        const filteredTransactionTypes = jobTransactions.filter(
-          item => item.transactionType === 'Charge' || item.transactionType === 'Time' || item.transactionType === 'Adjustment'
-        );
-
-        const description = job.defaultDescription;
-        const subDescription = job.description;
-        const id = job.oid;
-        const jobTotal = filteredTransactionTypes.reduce((prev, curr) => prev + curr.totalTransaction, 0);
-
-        const jobCharges = filteredTransactionTypes.reduce((prev, curr) => {
-          if (curr.transactionType === 'Charge') return prev + curr.totalTransaction;
-          return prev;
-        }, 0);
-
-        const jobTime = filteredTransactionTypes.reduce((prev, curr) => {
-          if (curr.transactionType === 'Time') return prev + curr.quantity;
-          return prev;
-        }, 0);
-
-        const jobTimeCost = filteredTransactionTypes.reduce((prev, curr) => {
-          if (curr.transactionType === 'Time') return prev + curr.totalTransaction;
-          return prev;
-        }, 0);
-
-        const jobAdjustments = filteredTransactionTypes.reduce((prev, curr) => {
-          if (curr.transactionType === 'Adjustment') return prev + curr.totalTransaction;
-          return prev;
-        }, 0);
-
-        const generalLabor = filteredTransactionTypes.reduce((prev, curr) => {
-          if (Number(curr.unitTransaction) < 140 && curr.transactionType === 'Time') return prev + curr.totalTransaction;
-          return prev;
-        }, 0);
-
-        const generalLaborTime = filteredTransactionTypes.reduce((prev, curr) => {
-          if (Number(curr.unitTransaction) < 140 && curr.transactionType === 'Time') return prev + curr.quantity;
-          return prev;
-        }, 0);
-
-        const skilledLabor = filteredTransactionTypes.reduce((prev, curr) => {
-          if (Number(curr.unitTransaction) >= 140 && curr.transactionType === 'Time') return prev + curr.totalTransaction;
-          return prev;
-        }, 0);
-
-        const skilledLaborTime = filteredTransactionTypes.reduce((prev, curr) => {
-          if (Number(curr.unitTransaction) >= 140 && curr.transactionType === 'Time') return prev + curr.quantity;
-          return prev;
-        }, 0);
-
-        return {
-          description,
-          subDescription,
-          id,
-          jobTotal,
-          jobCharges,
-          jobTime,
-          jobTimeCost,
-          jobAdjustments,
-          generalLabor,
-          generalLaborTime,
-          skilledLabor,
-          skilledLaborTime
-        };
-      })
-    );
+    const companyJobs = await jobService.getCompanyJobs(db, companyId);
+    const jobsBrokenDown = await totalJobAnalytics(db, companyJobs, companyId);
 
     res.send({
-      jobTransactions,
+      jobsBrokenDown,
       status: 200
     });
   });
@@ -180,4 +115,68 @@ const convertToRequiredTypes = jobItem => {
     defaultDescription: jobItem.defaultDescription,
     isComplete: Boolean(jobItem.isComplete)
   };
+};
+
+/**
+ * Totals job breakdowns of time and cost
+ * @param {*} db
+ * @param {*} companyJobs [{},{}]
+ * @param {*} companyId
+ * @returns
+ */
+const totalJobAnalytics = async (db, companyJobs, companyId) => {
+  const addTimeAndCost = (array, typeTransaction, aggregateProperty) =>
+    array.reduce((prev, curr) => {
+      if (curr.transactionType === typeTransaction) return prev + curr[aggregateProperty];
+      return prev;
+    }, 0);
+
+  const addGeneralLabor = (array, typeTransaction, aggregateProperty) =>
+    array.reduce((prev, curr) => {
+      if (Number(curr.unitTransaction) < 140 && curr.transactionType === typeTransaction) return prev + curr[aggregateProperty];
+      return prev;
+    }, 0);
+
+  const addSkilledLabor = (array, typeTransaction, aggregateProperty) =>
+    array.reduce((prev, curr) => {
+      if (Number(curr.unitTransaction) >= 140 && curr.transactionType === typeTransaction) return prev + curr[aggregateProperty];
+      return prev;
+    }, 0);
+
+  const jobAnalytics = companyJobs.map(async job => {
+    const jobTransactions = await transactionService.getJobTransactions(db, companyId, job.oid);
+    const filteredTransactionTypes = jobTransactions.filter(
+      item => item.transactionType === 'Charge' || item.transactionType === 'Time' || item.transactionType === 'Adjustment'
+    );
+
+    const description = job.defaultDescription;
+    const subDescription = job.description;
+    const jobId = job.oid;
+    const jobTotal = filteredTransactionTypes.reduce((prev, curr) => prev + curr.totalTransaction, 0).toFixed(2);
+    const chargesOnJob = addTimeAndCost(filteredTransactionTypes, 'Charge', 'totalTransaction').toFixed(2);
+    const timeOnJob = addTimeAndCost(filteredTransactionTypes, 'Time', 'quantity').toFixed(2);
+    const costOfJobTime = addTimeAndCost(filteredTransactionTypes, 'Time', 'totalTransaction').toFixed(2);
+    const adjustmentsOnJob = addTimeAndCost(filteredTransactionTypes, 'Adjustment', 'totalTransaction').toFixed(2);
+    const costOfGeneralLabor = addGeneralLabor(filteredTransactionTypes, 'Time', 'totalTransaction').toFixed(2);
+    const generalLaborTime = addGeneralLabor(filteredTransactionTypes, 'Time', 'quantity').toFixed(2);
+    const costOfSkilledLabor = addSkilledLabor(filteredTransactionTypes, 'Time', 'totalTransaction').toFixed(2);
+    const skilledLaborTime = addSkilledLabor(filteredTransactionTypes, 'Time', 'quantity').toFixed(2);
+
+    return {
+      jobId,
+      description,
+      subDescription,
+      jobTotal,
+      chargesOnJob,
+      timeOnJob,
+      costOfJobTime,
+      adjustmentsOnJob,
+      costOfGeneralLabor,
+      generalLaborTime,
+      costOfSkilledLabor,
+      skilledLaborTime
+    };
+  });
+
+  return Promise.all(jobAnalytics);
 };

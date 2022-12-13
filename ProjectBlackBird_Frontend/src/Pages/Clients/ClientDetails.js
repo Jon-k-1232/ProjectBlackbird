@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Container } from '@mui/material';
-import { getCompanyJobs, getCompanyTransactions, getCompanyInvoices, getCompanyInformation } from '../../ApiCalls/ApiCalls';
+import { Card, CardContent, Container, Typography, Stack } from '@mui/material';
+import {
+  getCompanyJobs,
+  getCompanyTransactions,
+  getCompanyInvoices,
+  getCompanyInformation,
+  getJobAnalytics
+} from '../../ApiCalls/ApiCalls';
 import Page from '../../Components/Page';
 import ContactCard from '../../Components/ContactCard/ContactCard';
 import HeaderMenu from '../../Components/HeaderMenu/HeaderMenu';
@@ -24,6 +30,7 @@ export default function ClientDetails() {
   const [companyJobs, setCompanyJobs] = useState(null);
   const [jobTransactions, setJobTransactions] = useState(null);
   const [companyInvoices, setCompanyInvoices] = useState(null);
+  const [companyJobAnalytics, setCompanyJobAnalytics] = useState(null);
 
   const location = useLocation();
 
@@ -48,6 +55,9 @@ export default function ClientDetails() {
       // Company invoices
       const companyInvoices = await getCompanyInvoices(companyId);
       setCompanyInvoices(companyInvoices);
+
+      const jobAnalytic = await getJobAnalytics(companyId);
+      setCompanyJobAnalytics(jobAnalytic);
     };
     fetchData();
     // eslint-disable-next-line
@@ -65,7 +75,18 @@ export default function ClientDetails() {
         {dataToShow === 'newTransactions' && (
           <NewTransactionsPage passedCompany={company} updateContactCard={companyUpdates => setCompany(companyUpdates)} />
         )}
-        {dataToShow === 'jobs' && <DataTable {...companyJobs} route='/jobDetails/' columnToSortAscOrDesc='Start Date' ascOrDesc='desc' />}
+        {dataToShow === 'jobs' && (
+          <Stack>
+            <Container style={{ marginTop: '2em', padding: '0' }}>
+              <Typography variant='h6'>Job Breakdown Quick Glance</Typography>
+              <DataTable {...companyJobAnalytics} chartHeight={'500'} tableSize={10} paginationIncrement={[10, 25, 50, 100]} />
+            </Container>
+            <Container style={{ marginTop: '2em', padding: '0' }}>
+              <Typography variant='h6'>Jobs</Typography>
+              <DataTable {...companyJobs} route='/jobDetails/' columnToSortAscOrDesc='Start Date' ascOrDesc='desc' />
+            </Container>
+          </Stack>
+        )}
         {dataToShow === 'newJob' && <NewJob passedCompany={company} />}
         {dataToShow === 'notes' && <ComingSoon />}
         {dataToShow === 'statistics' && <ComingSoon />}
