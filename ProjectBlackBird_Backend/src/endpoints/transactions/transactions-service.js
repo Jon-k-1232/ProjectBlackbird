@@ -55,14 +55,6 @@ const transactionService = {
         'transaction.invoice',
         'transaction.billable'
       );
-    // ToDo test create invoices
-    // return db
-    //   .select()
-    //   .from('transaction')
-    //   .whereIn('transaction.company', [company])
-    //   .whereBetween('transaction.transactionDate', [prevDate, currDate])
-    //   .innerJoin('company', 'transaction.company', '=', 'company.oid')
-    //   .innerJoin('job', 'transaction.job', '=', 'job.oid');
   },
 
   // Gets all transactions between two dates.

@@ -15,7 +15,6 @@ import NewEmployee from '../Pages/Employees/NewEmployee';
 import Jobs from '../Pages/Jobs/Jobs';
 import NewJob from '../Pages/Jobs/NewJob';
 import JobDetails from '../Pages/Jobs/JobDetails';
-import Profile from '../Pages/Profile/Profile';
 import NewJobDefinition from '../Pages/JobDefinitions/NewJobDefinition';
 import JobDefinitions from '../Pages/JobDefinitions/JobDefinitions';
 import NewTransactionsPage from '../Pages/Transactions/NewTransactionPage';
@@ -56,12 +55,13 @@ export default function Router() {
         <Route path='jobDetails' element={<JobDetails />} />
         <Route path='jobDefinitions' element={<JobDefinitions />} />
         <Route path='createNewJobDefinition' element={<NewJobDefinition />} />
-        <Route path='profile' element={<Profile />} />
         <Route path='deactivation' element={<Deactivation />} />
         <Route path='monthlyClients' element={<MonthlyClients />} />
-        <Route path='editAnInvoice' element={<EditAnInvoice />} />
         {loginUser.role === 'manager' ? (
-          <Route path='employees' element={<Employees />} />
+          <div>
+            <Route path='employees' element={<Employees />} />
+            <Route path='editAnInvoice' element={<EditAnInvoice />} />
+          </div>
         ) : (
           <Route path='employees' element={<AccessControl />} />
         )}

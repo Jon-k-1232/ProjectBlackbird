@@ -50,6 +50,7 @@ transactionsRouter
     const timeBetween = helperFunctions.timeSubtractionFromTodayCalculator(time);
 
     const companyTransactions = await transactionService.getCompanyTransactions(db, company, timeBetween.currDate, timeBetween.prevDate);
+    // Create a cleaned up object. query used is being used by other items that need the additional data. Rather than duplicate, easier to clean data.
     const sortedCompanyTransactions = companyTransactions.map(transaction => transactionObject(transaction));
 
     res.send({
@@ -197,8 +198,9 @@ const transactionObject = transactions => {
   return {
     oid: transactions.oid,
     company: transactions.companyName,
-    job: transactions.description,
-    employee: transactions.employee,
+    JobId: transactions.job,
+    job: transactions.defaultDescription,
+    employee: transactions.displayname,
     transactionType: transactions.transactionType,
     transactionDate: transactions.transactionDate,
     quantity: transactions.quantity,

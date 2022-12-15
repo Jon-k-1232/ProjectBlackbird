@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Card, CardContent, Container, Typography, Stack } from '@mui/material';
+import { Container, Typography, Stack } from '@mui/material';
 import {
   getCompanyJobs,
   getCompanyTransactions,

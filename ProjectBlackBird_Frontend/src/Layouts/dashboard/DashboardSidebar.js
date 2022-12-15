@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
+import { Box, Drawer, Typography, Avatar } from '@mui/material';
 import Logo from '../../Components/Logo';
 import Scrollbar from '../../Components/Scrollbar';
 import NavSection from '../../Components/NavSection';
@@ -62,19 +62,17 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
       </Box>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline='none' component={RouterLink} to='/profile'>
-          <AccountStyle>
-            <Avatar alt='photoURL' />
-            <Box sx={{ ml: 2 }}>
-              <Typography variant='subtitle2' sx={{ color: 'text.primary' }}>
-                {loginUser.displayname}
-              </Typography>
-              <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                {loginUser.role}
-              </Typography>
-            </Box>
-          </AccountStyle>
-        </Link>
+        <AccountStyle>
+          <Avatar alt='photoURL' />
+          <Box sx={{ ml: 2 }}>
+            <Typography variant='subtitle2' sx={{ color: 'text.primary' }}>
+              {loginUser.displayname}
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+              {loginUser.role}
+            </Typography>
+          </Box>
+        </AccountStyle>
       </Box>
 
       <NavSection navConfig={sidebarConfig} />
