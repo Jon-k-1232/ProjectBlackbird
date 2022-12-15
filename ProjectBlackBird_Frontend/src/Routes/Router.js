@@ -57,11 +57,9 @@ export default function Router() {
         <Route path='createNewJobDefinition' element={<NewJobDefinition />} />
         <Route path='deactivation' element={<Deactivation />} />
         <Route path='monthlyClients' element={<MonthlyClients />} />
+        <Route path='editAnInvoice' element={<EditAnInvoice />} />
         {loginUser.role === 'manager' ? (
-          <div>
-            <Route path='employees' element={<Employees />} />
-            <Route path='editAnInvoice' element={<EditAnInvoice />} />
-          </div>
+          <Route path='employees' element={<Employees />} />
         ) : (
           <Route path='employees' element={<AccessControl />} />
         )}
