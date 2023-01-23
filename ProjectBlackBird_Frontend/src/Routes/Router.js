@@ -25,6 +25,7 @@ import Dashboard from 'src/Pages/Dashboard/Dashboard';
 import { useContext } from 'react';
 import { context } from '../App';
 import AccessControl from 'src/Pages/Access/Access';
+import EditTransaction from 'src/Pages/Transactions/EditTransaction';
 
 export default function Router() {
   const { loginUser } = useContext(context);
@@ -57,13 +58,20 @@ export default function Router() {
         <Route path='createNewJobDefinition' element={<NewJobDefinition />} />
         <Route path='deactivation' element={<Deactivation />} />
         <Route path='monthlyClients' element={<MonthlyClients />} />
-        <Route path='editAnInvoice' element={<EditAnInvoice />} />
-        {loginUser.role === 'manager' ? (
-          <Route path='employees' element={<Employees />} />
-        ) : (
-          <Route path='employees' element={<AccessControl />} />
-        )}
       </Route>
+
+      {/* ACCESS CONTROL */}
+      {loginUser.role === 'manager' ? (
+        <Route element={<DashboardLayout />}>
+          <Route path='employees' element={<Employees />} />
+          <Route path='editAnInvoice' element={<EditAnInvoice />} />
+          <Route path='editTransaction' element={<EditTransaction />} />
+        </Route>
+      ) : (
+        <Route element={<DashboardLayout />}>
+          <Route path='employees' element={<AccessControl />} />
+        </Route>
+      )}
     </Routes>
   );
 }
