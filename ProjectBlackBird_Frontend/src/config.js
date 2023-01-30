@@ -16,7 +16,7 @@ import TokenService from './Services/TokenService';
 export default {
   API_ENDPOINT: 'http://localhost:8000',
   FRONT_WEB: '*',
-  API_TOKEN: 'f1e2993c',
+  API_TOKEN: '',
   JWT_TOKEN: `bearer ${TokenService.getAuthToken()}`,
   DISPLAY_NAME: ''
 };
