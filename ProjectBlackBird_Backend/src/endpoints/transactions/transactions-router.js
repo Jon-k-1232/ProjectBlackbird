@@ -146,6 +146,25 @@ transactionsRouter
     }
   });
 
+/** Deletes Transaction */
+transactionsRouter
+  .route('/delete')
+  .all(requireAuth)
+  .post(jsonParser, async (req, res) => {
+    const db = req.app.get('db');
+    const { oid } = req.body;
+
+    const sanitizedObject = sanitizeFields({ oid });
+
+    const deletedTransaction = await transactionService.deleteTransaction(db, sanitizedObject.oid);
+
+    res.send({
+      deletedTransaction,
+      message: 'Transaction deleted',
+      status: 200
+    });
+  });
+
 module.exports = transactionsRouter;
 
 /**

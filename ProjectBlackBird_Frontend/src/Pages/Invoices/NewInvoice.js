@@ -30,7 +30,7 @@ export default function NewInvoice() {
     const roughDraft = buttonName !== 'newInvoice' ? true : false;
     const createPdf = buttonName !== 'csvList' ? true : false;
     const postedItem = await createInvoices(arrayOfInvoicesToCreate, roughDraft, createPdf);
-    console.log(postedItem);
+
     setPostStatus(postedItem.status);
     setTimeout(() => setPostStatus(null), 4000);
 

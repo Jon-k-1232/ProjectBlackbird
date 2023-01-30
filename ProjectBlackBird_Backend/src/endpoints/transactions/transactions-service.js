@@ -136,6 +136,10 @@ const transactionService = {
       .where('transactionDate', transactionDate)
       .where('totalTransaction', totalTransaction)
       .where('invoice', invoice);
+  },
+
+  deleteTransaction(db, transactionID) {
+    return db.from('transaction').where('oid', transactionID).del().returning('*');
   }
 };
 

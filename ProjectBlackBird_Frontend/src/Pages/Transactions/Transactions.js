@@ -14,7 +14,6 @@ export default function Transactions() {
   useEffect(() => {
     const fetchData = async () => {
       const allTransactionsToDate = await getAllTransactions(730);
-      console.log(allTransactionsToDate);
       setTransactions(allTransactionsToDate);
     };
     fetchData();
@@ -34,6 +33,6 @@ export default function Transactions() {
 }
 
 const button = [
-  { name: 'editTransaction', variant: 'contained', icon: plusFill, htmlName: 'Edit Transaction' },
+  { name: 'deleteTransaction', variant: 'contained', icon: plusFill, htmlName: 'Delete Transaction' },
   { name: 'newTransaction', variant: 'contained', icon: plusFill, htmlName: 'New Transaction' }
 ];

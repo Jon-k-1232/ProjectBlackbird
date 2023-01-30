@@ -25,7 +25,7 @@ import Dashboard from 'src/Pages/Dashboard/Dashboard';
 import { useContext } from 'react';
 import { context } from '../App';
 import AccessControl from 'src/Pages/Access/Access';
-import EditTransaction from 'src/Pages/Transactions/EditTransaction';
+import DeleteTransaction from 'src/Pages/Transactions/DeleteTransaction';
 
 export default function Router() {
   const { loginUser } = useContext(context);
@@ -65,7 +65,7 @@ export default function Router() {
         <Route element={<DashboardLayout />}>
           <Route path='employees' element={<Employees />} />
           <Route path='editAnInvoice' element={<EditAnInvoice />} />
-          <Route path='editTransaction' element={<EditTransaction />} />
+          <Route path='deleteTransaction' element={<DeleteTransaction />} />
         </Route>
       ) : (
         <Route element={<DashboardLayout />}>

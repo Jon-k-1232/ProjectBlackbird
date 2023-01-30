@@ -238,3 +238,19 @@ export const postLoginAuth = async (username, password) => {
     .then(res => res)
     .catch(error => error);
 };
+
+export const deleteTransaction = async oid => {
+  return fetch(`${config.API_ENDPOINT}/transactions/delete`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `${config.JWT_TOKEN}`,
+      BearerAuthorization: `${config.API_TOKEN}`,
+      Origin: `${config.FRONT_WEB}`
+    },
+    body: JSON.stringify({ oid })
+  })
+    .then(res => res.json())
+    .then(res => res)
+    .catch(error => error);
+};
