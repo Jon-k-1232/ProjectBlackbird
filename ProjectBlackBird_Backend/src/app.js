@@ -49,10 +49,6 @@ app.use(
 );
 
 /* ///////////////////////////\\\\  USER ENDPOINTS  ////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-// make hello world endpoint
-app.get('/', (req, res) => {
-   res.send('Hello, world!');
-});
 
 app.use('/auth', authentication);
 app.use('/contacts', contactsRouter);

@@ -1,8 +1,10 @@
 node_modules
+Server_ssl
 .env
-./Server_ssl
-./Nginx/Server_ssl
+/Server_ssl
+Nginx/Server_ssl
 ProjectBlackBird_Backend/.DS_Store
+ProjectBlackBird_Backend/ssl
 .DS_Store
 .vscode
 env

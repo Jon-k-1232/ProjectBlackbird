@@ -51,7 +51,6 @@ services:
          dockerfile: Dockerfile
       ports:
          - '80:80'
-         - '443:443'
       volumes:
          - ./Nginx/Server_ssl/192.168.12.209.crt:/etc/nginx/192.168.12.209.crt
          - ./Nginx/Server_ssl/192.168.12.209.key:/etc/nginx/192.168.12.209.key
