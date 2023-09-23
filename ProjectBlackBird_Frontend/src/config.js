@@ -1,22 +1,11 @@
 import TokenService from './Services/TokenService';
 
-// Production
-// eslint-disable-next-line
-// export default {
-//   // When serving use network ip of computer hosting, Docker- use with docker
-//   API_ENDPOINT: `http://${process.env.REACT_APP_HOST_IP}:8000`,
-//   FRONT_WEB: '*',
-//   API_TOKEN: '',
-//   JWT_TOKEN: `bearer ${TokenService.getAuthToken()}`,
-//   DISPLAY_NAME: ''
-// };
-
-// Local Development
-// eslint-disable-next-line
-export default {
-  API_ENDPOINT: 'http://localhost:8000',
-  FRONT_WEB: '*',
-  API_TOKEN: '',
-  JWT_TOKEN: `bearer ${TokenService.getAuthToken()}`,
-  DISPLAY_NAME: ''
+const config = {
+   REACT_APP_ENV: process.env.REACT_APP_ENV,
+   API_ENDPOINT: process.env.REACT_APP_ENV === 'development' ? process.env.REACT_APP_API_ENDPOINT_DEV : process.env.REACT_APP_API_ENDPOINT_PROD,
+   FRONT_WEB: '*',
+   API_TOKEN: process.env.REACT_APP_API_TOKEN,
+   JWT_TOKEN: `bearer ${TokenService.getAuthToken()}`
 };
+
+export default config;

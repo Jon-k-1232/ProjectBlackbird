@@ -1,88 +1,90 @@
 {
-  "name": "project_black_bird_frontend",
-  "author": "Jon Kimmel",
-  "licence": "MIT",
-  "version": "1.2.0",
-  "private": false,
-  "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
-    "test": "react-scripts test",
-    "serve": "npm run build && serve -s build"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-react"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "dependencies": {
-    "@emotion/react": "^11.7.1",
-    "@emotion/styled": "^11.3.0",
-    "@iconify/icons-ant-design": "^1.1.0",
-    "@iconify/icons-ic": "^1.1.17",
-    "@material-ui/core": "^4.12.3",
-    "@material-ui/lab": "^4.0.0-alpha.61",
-    "@material-ui/styles": "^4.11.5",
-    "@mui/icons-material": "^5.2.5",
-    "@mui/lab": "^5.0.0-alpha.47",
-    "@mui/material": "^5.0.0",
-    "@mui/styles": "^5.2.3",
-    "@mui/utils": "^5.0.0",
-    "@mui/x-data-grid": "^5.17.19",
-    "@mui/x-data-grid-generator": "^5.17.19",
-    "@mui/x-date-pickers": "^5.0.0-alpha.6",
-    "@testing-library/jest-dom": "^5.14.1",
-    "change-case": "^4.1.2",
-    "dayjs": "^1.10.7",
-    "export-to-csv": "^0.2.1",
-    "formik": "^2.2.9",
-    "framer-motion": "^4.1.17",
-    "history": "^5.0.1",
-    "lodash": "^4.17.21",
-    "material-ui-form": "*",
-    "mui-datatables": "^4.0.0",
-    "numeral": "^2.0.6",
-    "p-memoize": "^4.0.1",
-    "prop-types": "^15.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-helmet-async": "^1.1.2",
-    "react-router-dom": "^6.0.0-beta.4",
-    "react-scripts": "^4.0.1",
-    "react-spinners": "^0.11.0",
-    "serve": "^14.0.1",
-    "simplebar": "^5.3.5",
-    "simplebar-react": "^2.3.5",
-    "web-vitals": "^2.1.0",
-    "yup": "^0.32.11"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/eslint-parser": "^7.15.7",
-    "@emotion/babel-plugin": "^11.7.2",
-    "@iconify/icons-eva": "^1.1.0",
-    "@iconify/icons-fa-solid": "^1.1.1",
-    "@iconify/icons-foundation": "^1.1.0",
-    "@iconify/icons-whh": "^1.1.0",
-    "@iconify/react": "^3.1.2",
-    "prettier": "2.5.1"
-  }
+   "name": "project_black_bird_frontend",
+   "author": "Jon Kimmel",
+   "licence": "MIT",
+   "version": "1.2.0",
+   "private": false,
+   "scripts": {
+      "start": "react-scripts --openssl-legacy-provider start",
+      "build": "react-scripts --openssl-legacy-provider build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject"
+   },
+   "eslintConfig": {
+      "extends": [
+         "react-app",
+         "react-app/jest"
+      ]
+   },
+   "babel": {
+      "presets": [
+         "@babel/preset-react"
+      ]
+   },
+   "browserslist": {
+      "production": [
+         ">0.2%",
+         "not dead",
+         "not op_mini all"
+      ],
+      "development": [
+         "last 1 chrome version",
+         "last 1 firefox version",
+         "last 1 safari version"
+      ]
+   },
+   "dependencies": {
+      "@emotion/react": "^11.7.1",
+      "@emotion/styled": "^11.3.0",
+      "@iconify/icons-ant-design": "^1.1.0",
+      "@iconify/icons-ic": "^1.1.17",
+      "@material-ui/core": "^4.12.3",
+      "@material-ui/lab": "^4.0.0-alpha.61",
+      "@material-ui/styles": "^4.11.5",
+      "@mui/icons-material": "^5.2.5",
+      "@mui/lab": "^5.0.0-alpha.47",
+      "@mui/material": "^5.0.0",
+      "@mui/styles": "^5.2.3",
+      "@mui/utils": "^5.0.0",
+      "@mui/x-data-grid": "^5.17.19",
+      "@mui/x-data-grid-generator": "^5.17.19",
+      "@mui/x-date-pickers": "^5.0.0-alpha.6",
+      "@testing-library/jest-dom": "^5.14.1",
+      "change-case": "^4.1.2",
+      "dayjs": "^1.10.7",
+      "export-to-csv": "^0.2.1",
+      "formik": "^2.2.9",
+      "framer-motion": "^4.1.17",
+      "history": "^5.0.1",
+      "lodash": "^4.17.21",
+      "material-ui-form": "*",
+      "mui-datatables": "^4.0.0",
+      "numeral": "^2.0.6",
+      "p-memoize": "^4.0.1",
+      "prop-types": "^15.7.2",
+      "react": "^17.0.2",
+      "react-dom": "^17.0.2",
+      "react-helmet-async": "^1.1.2",
+      "react-router-dom": "^6.0.0-beta.4",
+      "react-scripts": "^4.0.1",
+      "react-spinners": "^0.11.0",
+      "serve": "^14.0.1",
+      "simplebar": "^5.3.5",
+      "simplebar-react": "^2.3.5",
+      "web-vitals": "^2.1.0",
+      "yup": "^0.32.11"
+   },
+   "devDependencies": {
+      "@babel/core": "^7.15.5",
+      "@babel/eslint-parser": "^7.15.7",
+      "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+      "@babel/plugin-transform-private-property-in-object": "^7.22.11",
+      "@emotion/babel-plugin": "^11.7.2",
+      "@iconify/icons-eva": "^1.1.0",
+      "@iconify/icons-fa-solid": "^1.1.1",
+      "@iconify/icons-foundation": "^1.1.0",
+      "@iconify/icons-whh": "^1.1.0",
+      "@iconify/react": "^3.1.2",
+      "prettier": "2.5.1"
+   }
 }

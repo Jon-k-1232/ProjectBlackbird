@@ -3,7 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const { NODE_ENV } = require('../config');
+const { NODE_ENV, API_TOKEN } = require('../config');
 const app = express();
 const contactsRouter = require('./endpoints/contacts/contacts-router');
 const jobDescriptionRouter = require('./endpoints/jobDescriptions/jobDescriptions-router');
@@ -18,9 +18,7 @@ const monthlyClientsRouter = require('./endpoints/monthlyClients/monthlyClients-
 const ledgerRouter = require('./endpoints/ledger/ledger-router');
 const advancedPaymentRouter = require('./endpoints/advancedPayment/advancedPayment-router');
 const employeeTime = require('./endpoints/employeeTime/employeeTime-router');
-const cleanUp = require('./endpoints/cleanUp/cleanUp-router');
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
-const config = require('../config');
 
 //middleware
 app.use(morgan(morganOption));
@@ -28,32 +26,32 @@ app.use(helmet());
 app.use(express.json());
 
 app.use(
-  cors({
-    origin: '*'
-  })
+   cors({
+      origin: '*'
+   })
 );
 
 /* ///////////////////////////\\\\  KEY VALIDATION  ////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 app.use(
-  (validateBearerToken = (req, res, next) => {
-    const apiToken = config.API_TOKEN;
-    const authToken = req.get('BearerAuthorization');
+   (validateBearerToken = (req, res, next) => {
+      const apiToken = API_TOKEN;
+      const authToken = req.get('BearerAuthorization');
 
-    if (!authToken || authToken !== apiToken) {
-      return res.send({
-        error: 'Unauthorized request',
-        status: 401
-      });
-    }
-    next();
-  })
+      if (!authToken || authToken !== apiToken) {
+         return res.send({
+            error: 'Unauthorized request',
+            status: 401
+         });
+      }
+      next();
+   })
 );
 
 /* ///////////////////////////\\\\  USER ENDPOINTS  ////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-
+// make hello world endpoint
 app.get('/', (req, res) => {
-  res.send('Hello, world!');
+   res.send('Hello, world!');
 });
 
 app.use('/auth', authentication);
@@ -70,19 +68,18 @@ app.use('/employeeTime', employeeTime);
 app.use('/invoices', invoices);
 app.use('/create', createInvoices);
 app.use('/advancedPayment', advancedPaymentRouter);
-app.use('/cleanUp', cleanUp);
 
 /* ///////////////////////////\\\\  ERROR HANDLER  ////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 app.use(function errorHandler(error, req, res, next) {
-  let response;
-  if (NODE_ENV === 'production') {
-    response = { error: { message: 'server error' } };
-  } else {
-    console.error(error);
-    response = { message: error.message, error };
-  }
-  res.status(500).json(response);
+   let response;
+   if (NODE_ENV === 'production') {
+      response = { error: { message: 'server error' } };
+   } else {
+      console.error(error);
+      response = { message: error.message, error };
+   }
+   res.status(500).json(response);
 });
 
 module.exports = app;

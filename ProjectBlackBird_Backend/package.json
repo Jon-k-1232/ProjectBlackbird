@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
     "helmet": "^3.23.3",
+    "https": "^1.0.0",
     "json-parser": "^3.1.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.15",
